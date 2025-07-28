@@ -23,4 +23,9 @@ Route::get('/dashboard', function () {
 
 Route::get('/aws', [AwsController::class, 'index']);
 Route::get('/aws/api', [AwsController::class, 'api']); // untuk AJAX
+Route::get('/api/stations', [AwsController::class, 'stations']);
+Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
+Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
+
+
 

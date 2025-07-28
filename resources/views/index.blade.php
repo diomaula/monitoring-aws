@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Dashboard - NiceAdmin Bootstrap Template</title>
+  <title>Dashboard - Stamet Banyuwangi</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -449,354 +449,199 @@
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
-      <div class="row">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="row">
 
-        <!-- Left side columns -->
-        <div class="col-lg-12">
-          <div class="row">
-
-            <!-- Sales Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card sales-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Sales <span>| Today</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-cart"></i>
+                    <!-- Card Total AWS -->
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card sales-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Total AWS</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-hdd-network"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="total-aws">Loading...</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="ps-3">
-                      <h6>145</h6>
-                      <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
 
+                    <!-- AWS Hijau -->
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card revenue-card">
+                            <div class="card-body">
+                                <h5 class="card-title">AWS Hijau</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="aws-hijau">Loading...</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
 
-              </div>
-            </div><!-- End Sales Card -->
-
-            <!-- Revenue Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card revenue-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Revenue <span>| This Month</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-currency-dollar"></i>
+                    <!-- AWS Merah -->
+                    <div class="col-xxl-4 col-xl-12">
+                        <div class="card info-card customers-card">
+                            <div class="card-body">
+                                <h5 class="card-title">AWS Merah</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6 id="aws-merah">Loading...</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="ps-3">
-                      <h6>$3,264</h6>
-                      <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span>
 
+                    <!-- Chart -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
+                                <div id="reportsChart">Loading...</div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
 
-              </div>
-            </div><!-- End Revenue Card -->
-
-            <!-- Customers Card -->
-            <div class="col-xxl-4 col-xl-12">
-
-              <div class="card info-card customers-card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Customers <span>| This Year</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-people"></i>
+                    <!-- Peta -->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Peta AWS Banyuwangi</h5>
+                                <div id="map" style="height: 500px;">Loading Map...</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="ps-3">
-                      <h6>1244</h6>
-                      <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
-
-                    </div>
-                  </div>
 
                 </div>
-              </div>
-
-            </div><!-- End Customers Card -->
-
-            <!-- Reports -->
-            <div class="col-12">
-              <div class="card">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Reports <span>/Today</span></h5>
-
-                  <!-- Line Chart -->
-                  <div id="reportsChart"></div>
-
-                  <script>
-                    document.addEventListener("DOMContentLoaded", () => {
-                      new ApexCharts(document.querySelector("#reportsChart"), {
-                        series: [{
-                          name: 'Sales',
-                          data: [31, 40, 28, 51, 42, 82, 56],
-                        }, {
-                          name: 'Revenue',
-                          data: [11, 32, 45, 32, 34, 52, 41]
-                        }, {
-                          name: 'Customers',
-                          data: [15, 11, 32, 18, 9, 24, 11]
-                        }],
-                        chart: {
-                          height: 350,
-                          type: 'area',
-                          toolbar: {
-                            show: false
-                          },
-                        },
-                        markers: {
-                          size: 4
-                        },
-                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                        fill: {
-                          type: "gradient",
-                          gradient: {
-                            shadeIntensity: 1,
-                            opacityFrom: 0.3,
-                            opacityTo: 0.4,
-                            stops: [0, 90, 100]
-                          }
-                        },
-                        dataLabels: {
-                          enabled: false
-                        },
-                        stroke: {
-                          curve: 'smooth',
-                          width: 2
-                        },
-                        xaxis: {
-                          type: 'datetime',
-                          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                        },
-                        tooltip: {
-                          x: {
-                            format: 'dd/MM/yy HH:mm'
-                          },
-                        }
-                      }).render();
-                    });
-                  </script>
-                  <!-- End Line Chart -->
-
-                </div>
-
-              </div>
-            </div><!-- End Reports -->
-
-            <!-- Recent Sales -->
-            <div class="col-12">
-              <div class="card recent-sales overflow-auto">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Recent Sales <span>| Today</span></h5>
-
-                  <table class="table table-borderless datatable">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Product</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row"><a href="#">#2457</a></th>
-                        <td>Brandon Jacob</td>
-                        <td><a href="#" class="text-primary">At praesentium minu</a></td>
-                        <td>$64</td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2147</a></th>
-                        <td>Bridie Kessler</td>
-                        <td><a href="#" class="text-primary">Blanditiis dolor omnis similique</a></td>
-                        <td>$47</td>
-                        <td><span class="badge bg-warning">Pending</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2049</a></th>
-                        <td>Ashleigh Langosh</td>
-                        <td><a href="#" class="text-primary">At recusandae consectetur</a></td>
-                        <td>$147</td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2644</a></th>
-                        <td>Angus Grady</td>
-                        <td><a href="#" class="text-primar">Ut voluptatem id earum et</a></td>
-                        <td>$67</td>
-                        <td><span class="badge bg-danger">Rejected</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2644</a></th>
-                        <td>Raheem Lehner</td>
-                        <td><a href="#" class="text-primary">Sunt similique distinctio</a></td>
-                        <td>$165</td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                </div>
-
-              </div>
-            </div><!-- End Recent Sales -->
-
-            <!-- Top Selling -->
-            <div class="col-12">
-              <div class="card top-selling overflow-auto">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body pb-0">
-                  <h5 class="card-title">Top Selling <span>| Today</span></h5>
-
-                  <table class="table table-borderless">
-                    <thead>
-                      <tr>
-                        <th scope="col">Preview</th>
-                        <th scope="col">Product</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Sold</th>
-                        <th scope="col">Revenue</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row"><a href="#"><img src="assets/img/product-1.jpg" alt=""></a></th>
-                        <td><a href="#" class="text-primary fw-bold">Ut inventore ipsa voluptas nulla</a></td>
-                        <td>$64</td>
-                        <td class="fw-bold">124</td>
-                        <td>$5,828</td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#"><img src="assets/img/product-2.jpg" alt=""></a></th>
-                        <td><a href="#" class="text-primary fw-bold">Exercitationem similique doloremque</a></td>
-                        <td>$46</td>
-                        <td class="fw-bold">98</td>
-                        <td>$4,508</td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#"><img src="assets/img/product-3.jpg" alt=""></a></th>
-                        <td><a href="#" class="text-primary fw-bold">Doloribus nisi exercitationem</a></td>
-                        <td>$59</td>
-                        <td class="fw-bold">74</td>
-                        <td>$4,366</td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#"><img src="assets/img/product-4.jpg" alt=""></a></th>
-                        <td><a href="#" class="text-primary fw-bold">Officiis quaerat sint rerum error</a></td>
-                        <td>$32</td>
-                        <td class="fw-bold">63</td>
-                        <td>$2,016</td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#"><img src="assets/img/product-5.jpg" alt=""></a></th>
-                        <td><a href="#" class="text-primary fw-bold">Sit unde debitis delectus repellendus</a></td>
-                        <td>$79</td>
-                        <td class="fw-bold">41</td>
-                        <td>$3,239</td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                </div>
-
-              </div>
-            </div><!-- End Top Selling -->
-
-          </div>
-        </div><!-- End Left side columns -->
-
-      </div>
+            </div>
+        </div>
     </section>
+
+    <!-- Leaflet & ApexCharts -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+
+    <script>
+        var map = L.map('map').setView([-8.2191, 114.3693], 10);
+        var street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}');
+        var light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {subdomains:'abcd', maxZoom:20});
+        L.control.layers({"Street":street,"Satellite":satellite,"Light":light}).addTo(map);
+        var markers = [];
+
+        function updateDashboard() {
+            fetch('{{ url("/api/stations?region=banyuwangi") }}')
+                .then(res => res.json())
+                .then(data => {
+                    // Update cards
+                    document.getElementById('total-aws').innerText = data.length;
+                    document.getElementById('aws-hijau').innerText = data.filter(d => d.status === 'HIJAU').length;
+                    document.getElementById('aws-merah').innerText = data.filter(d => d.status === 'MERAH').length;
+
+                    // Update markers
+                    markers.forEach(m => map.removeLayer(m));
+                    markers = [];
+                    data.forEach(station => {
+                        var color = station.status === 'MERAH' ? 'red' : 'green';
+                        var iconUrl = station.status === 'MERAH'
+                        ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png'
+                        : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png';
+                        var marker = L.marker([station.lat, station.lng], {
+                            icon: L.icon({
+                                iconUrl: iconUrl,
+                                shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34]
+                            })
+                        }).addTo(map);  
+                        marker.bindPopup(`<b>${station.name}</b><br>ID: ${station.id}<br>Status: ${station.status}`);
+                        markers.push(marker);
+                    });
+
+                    fetch('{{ url("/api/aws/weekly-multi") }}')
+                        .then(res => res.json())
+                        .then(avgData => {
+                            let categories = avgData.map(d => d.date);
+                            let rainfall = avgData.map(d => parseFloat(d.rainfall));
+                            let temperature = avgData.map(d => parseFloat(d.temperature));
+                            let humidity = avgData.map(d => parseFloat(d.humidity));
+
+                            var chart = new ApexCharts(document.querySelector("#reportsChart"), {
+                                series: [
+                                    { name: 'Curah Hujan (mm)', type: 'column', data: rainfall },
+                                    { name: 'Suhu (°C)', type: 'line', data: temperature },
+                                    { name: 'Kelembapan (%)', type: 'line', data: humidity }
+                                ],
+                                chart: { height: 350, type: 'line', toolbar: { show: false } },
+                                stroke: { width: [0, 3, 3] },
+                                dataLabels: { enabled: true, enabledOnSeries: [1,2] },
+                                labels: categories,
+                                xaxis: { type: 'category' },
+                                yaxis: [
+                                    { title: { text: "Curah Hujan (mm)" } },
+                                    { opposite: true, title: { text: "Suhu & Kelembapan" } }
+                                ],
+                                colors: ['#FF0000', '#2eca6a', '#4154f1'],
+                                tooltip: { shared: true, intersect: false }
+                            });
+                            chart.render();
+                        });
+                })
+                .catch(() => {
+                    document.getElementById('total-aws').innerText = "Error";
+                    document.getElementById('aws-hijau').innerText = "Error";
+                    document.getElementById('aws-merah').innerText = "Error";
+                });
+        }
+        updateDashboard();
+        setInterval(updateDashboard, 60000); // refresh tiap 1 menit
+    </script>
+
+    // Chart Dummy
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Data dummy 7 hari terakhir
+        let categories = ["2025-07-22","2025-07-23","2025-07-24","2025-07-25","2025-07-26","2025-07-27","2025-07-28"];
+        let rainfall = [10, 20, 0, 5, 15, 0, 30];      // Curah hujan mm
+        let temperature = [27, 28, 29, 30, 28, 27, 26]; // Suhu °C
+        let humidity = [80, 82, 78, 75, 77, 79, 81];    // Kelembapan %
+
+        new ApexCharts(document.querySelector("#reportsChart"), {
+            series: [
+                { name: 'Curah Hujan (mm)', type: 'line', data: rainfall },
+                { name: 'Suhu (°C)', type: 'line', data: temperature },
+                { name: 'Kelembapan (%)', type: 'line', data: humidity }
+            ],
+            chart: { height: 350, type: 'line', toolbar: { show: false } },
+            stroke: { curve: 'smooth', width: 3 },
+            dataLabels: { enabled: false },
+            labels: categories,
+            xaxis: { type: 'category' },
+            yaxis: [
+                { title: { text: "Curah Hujan (mm)" } },
+                { opposite: true, title: { text: "Suhu & Kelembapan" } }
+            ],
+            colors: ['#FF0000', '#2eca6a', '#4154f1'],
+            tooltip: { shared: true, intersect: false }
+        }).render();
+    });
+    </script>
+
 
   </main><!-- End #main -->
 
