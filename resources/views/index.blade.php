@@ -10,7 +10,7 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/logo-bmkg.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
@@ -612,7 +612,7 @@
         setInterval(updateDashboard, 60000); // refresh tiap 1 menit
     </script>
 
-    // Chart Dummy
+    {{-- Chart Dummy --}}
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         // Data dummy 7 hari terakhir
