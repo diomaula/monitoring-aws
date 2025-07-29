@@ -273,23 +273,23 @@
         <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="components-alerts.html">
-              <i class="bi bi-circle"></i><span>Digi Banyuwangi</span>
+              <i class="bi bi-circle"></i><span>AWS Digi Banyuwangi</span>
             </a>
           </li>
           <li>
             <a href="components-accordion.html">
-              <i class="bi bi-circle"></i><span>Maritim Gilimanuk</span>
+              <i class="bi bi-circle"></i><span>AWS Maritim Gilimanuk</span>
             </a>
           </li>
           <li>
             <a href="components-badges.html">
-              <i class="bi bi-circle"></i><span>Maritim Ketapang</span>
+              <i class="bi bi-circle"></i><span>AWS Maritim Ketapang</span>
             </a>
           </li>
         </ul>
       </li><!-- End Components Nav -->
 
-      <li class="nav-item">
+      {{-- <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-journal-text"></i><span>Forms</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
@@ -430,7 +430,7 @@
           <i class="bi bi-file-earmark"></i>
           <span>Blank</span>
         </a>
-      </li><!-- End Blank Page Nav -->
+      </li><!-- End Blank Page Nav --> --}}
 
     </ul>
 
