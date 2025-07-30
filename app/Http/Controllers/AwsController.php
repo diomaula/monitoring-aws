@@ -100,4 +100,52 @@ class AwsController extends Controller
         return response()->json($data);
     }
 
+    // menambahkan fungsi baru
+
+    public function show($id)
+    {
+        $names = [
+            '3000000007' => 'AWS Maritim Ketapang',
+            '3000000046' => 'AWS Maritim Gilimanuk',
+            '5000000031' => 'AWS Digi Banyuwangi',
+        ];
+
+        if (!isset($names[$id])) {
+            return redirect('dashboard')->with('error', 'Wilayah tidak ditemukan.');
+        }
+
+        $response = Http::get("http://202.90.199.132/aws-new/data/station/latest/{$id}");
+
+        if ($response->successful()) {
+            $jsonData = $response->json();
+
+            $data = [
+                'pancitemp' => $jsonData['pancitemp'] ?? 0,
+                'pancilevel' => $jsonData['pancilevel'] ?? 0,
+                'temp' => $jsonData['temp'] ?? 0,
+                'solrad' => $jsonData['solrad'] ?? 0,
+                'rh' => $jsonData['rh'] ?? 0,
+                'rain' => $jsonData['rain'] ?? 0,
+                'watertemp' => $jsonData['watertemp'] ?? 0,
+                'pressure' => $jsonData['pressure'] ?? 0,
+                'windspeed' => $jsonData['windspeed'] ?? 0,
+                'winddir' => $jsonData['winddir'] ?? 0,
+                'waterlevel' => $jsonData['waterlevel'] ?? 0,
+                'waktu' => $jsonData['waktu'] ?? null,
+            ];
+
+            $isOnline = !empty($jsonData);
+        } else {
+            $data = [];
+            $isOnline = false;
+        }
+
+        return view('aws.show', [
+            'id' => $id,
+            'name' => $names[$id],
+            'data' => $data,
+            'online' => $isOnline
+        ]);
+    }
+
 }
