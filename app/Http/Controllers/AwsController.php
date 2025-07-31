@@ -74,7 +74,7 @@ class AwsController extends Controller
 
     public function weeklyMultiParameter()
     {
-        $stations = ['5000000069','3000000007','3000000046','5000000031']; 
+        $stations = ['5000000069','3000000007','3000000046']; 
         $days = collect(range(0,6))->map(fn($d) => Carbon::now()->subDays($d)->format('Y-m-d'))->reverse();
 
         $data = $days->map(function ($date) use ($stations) {
@@ -97,8 +97,9 @@ class AwsController extends Controller
             ];
         });
 
-        return response()->json($data);
+        return response()->json(array_values($data->toArray())); // <-- pastikan numerik array
     }
+
 
     // menambahkan fungsi baru
 

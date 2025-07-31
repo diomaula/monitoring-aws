@@ -1,441 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+@include('layouts.header')
 
-  <title>Dashboard - Stamet Banyuwangi</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <!-- Favicons -->
-  <link href="assets/img/logo-bmkg.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.gstatic.com" rel="preconnect">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
-  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
-  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
-  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="assets/css/style.css" rel="stylesheet">
-
-  <!-- =======================================================
-  * Template Name: NiceAdmin
-  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-  * Updated: Apr 20 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-</head>
 
 <body>
-
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-    <div class="d-flex align-items-center justify-content-between">
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-      <a href="#" class="logo d-flex align-items-center">
-        <img src="assets/img/bmkg.png" alt="">
-      </a>
-    </div><!-- End Logo -->
-
-    <nav class="header-nav ms-auto">
-      <ul class="d-flex align-items-center">
-
-        <li class="nav-item dropdown">
-
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-bell"></i>
-            <span class="badge bg-primary badge-number">4</span>
-          </a><!-- End Notification Icon -->
-
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
-            <li class="dropdown-header">
-              You have 4 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-exclamation-circle text-warning"></i>
-              <div>
-                <h4>Lorem Ipsum</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>30 min. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-x-circle text-danger"></i>
-              <div>
-                <h4>Atque rerum nesciunt</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>1 hr. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-check-circle text-success"></i>
-              <div>
-                <h4>Sit rerum fuga</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>2 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="notification-item">
-              <i class="bi bi-info-circle text-primary"></i>
-              <div>
-                <h4>Dicta reprehenderit</h4>
-                <p>Quae dolorem earum veritatis oditseno</p>
-                <p>4 hrs. ago</p>
-              </div>
-            </li>
-
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li class="dropdown-footer">
-              <a href="#">Show all notifications</a>
-            </li>
-
-          </ul><!-- End Notification Dropdown Items -->
-
-        </li><!-- End Notification Nav -->
-
-        <li class="nav-item dropdown">
-
-          <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
-            <i class="bi bi-chat-left-text"></i>
-            <span class="badge bg-success badge-number">3</span>
-          </a><!-- End Messages Icon -->
-
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
-            <li class="dropdown-header">
-              You have 3 new messages
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/img/messages-1.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>Maria Hudson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>4 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/img/messages-2.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>Anna Nelson</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>6 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="message-item">
-              <a href="#">
-                <img src="assets/img/messages-3.jpg" alt="" class="rounded-circle">
-                <div>
-                  <h4>David Muldon</h4>
-                  <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>
-                  <p>8 hrs. ago</p>
-                </div>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li class="dropdown-footer">
-              <a href="#">Show all messages</a>
-            </li>
-
-          </ul><!-- End Messages Dropdown Items -->
-
-        </li><!-- End Messages Nav -->
-
-        <li class="nav-item dropdown pe-3">
-
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
-          </a><!-- End Profile Iamge Icon -->
-
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-            <li class="dropdown-header">
-              <h6>Kevin Anderson</h6>
-              <span>Web Designer</span>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
-                <i class="bi bi-person"></i>
-                <span>My Profile</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
-                <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                <i class="bi bi-question-circle"></i>
-                <span>Need Help?</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="#">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Sign Out</span>
-              </a>
-            </li>
-
-          </ul><!-- End Profile Dropdown Items -->
-        </li><!-- End Profile Nav -->
-
-      </ul>
-    </nav><!-- End Icons Navigation -->
-
-  </header><!-- End Header -->
-
-  <!-- ======= Sidebar ======= -->
-  <aside id="sidebar" class="sidebar">
-
-    <ul class="sidebar-nav" id="sidebar-nav">
-
-      <li class="nav-item">
-        <a class="nav-link " href="index.html">
-          <i class="bi bi-grid"></i>
-          <span>Dashboard</span>
-        </a>
-      </li><!-- End Dashboard Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>AWS</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="{{ url('aws/5000000031') }}">
-              <i class="bi bi-circle"></i><span>AWS Digi Banyuwangi</span>
-            </a>
-          </li>
-          <li>
-            <a href="{{ url('aws/3000000046') }}">
-              <i class="bi bi-circle"></i><span>AWS Maritim Gilimanuk</span>
-            </a>
-          </li>
-          <li>
-            <a href="{{ url('aws/3000000007') }}">
-              <i class="bi bi-circle"></i><span>AWS Maritim Ketapang</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-
-
-      {{-- <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-journal-text"></i><span>Forms</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="forms-elements.html">
-              <i class="bi bi-circle"></i><span>Form Elements</span>
-            </a>
-          </li>
-          <li>
-            <a href="forms-layouts.html">
-              <i class="bi bi-circle"></i><span>Form Layouts</span>
-            </a>
-          </li>
-          <li>
-            <a href="forms-editors.html">
-              <i class="bi bi-circle"></i><span>Form Editors</span>
-            </a>
-          </li>
-          <li>
-            <a href="forms-validation.html">
-              <i class="bi bi-circle"></i><span>Form Validation</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End Forms Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-layout-text-window-reverse"></i><span>Tables</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="tables-general.html">
-              <i class="bi bi-circle"></i><span>General Tables</span>
-            </a>
-          </li>
-          <li>
-            <a href="tables-data.html">
-              <i class="bi bi-circle"></i><span>Data Tables</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End Tables Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-bar-chart"></i><span>Charts</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="charts-chartjs.html">
-              <i class="bi bi-circle"></i><span>Chart.js</span>
-            </a>
-          </li>
-          <li>
-            <a href="charts-apexcharts.html">
-              <i class="bi bi-circle"></i><span>ApexCharts</span>
-            </a>
-          </li>
-          <li>
-            <a href="charts-echarts.html">
-              <i class="bi bi-circle"></i><span>ECharts</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End Charts Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-gem"></i><span>Icons</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="icons-bootstrap.html">
-              <i class="bi bi-circle"></i><span>Bootstrap Icons</span>
-            </a>
-          </li>
-          <li>
-            <a href="icons-remix.html">
-              <i class="bi bi-circle"></i><span>Remix Icons</span>
-            </a>
-          </li>
-          <li>
-            <a href="icons-boxicons.html">
-              <i class="bi bi-circle"></i><span>Boxicons</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End Icons Nav -->
-
-      <li class="nav-heading">Pages</li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
-          <i class="bi bi-person"></i>
-          <span>Profile</span>
-        </a>
-      </li><!-- End Profile Page Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-faq.html">
-          <i class="bi bi-question-circle"></i>
-          <span>F.A.Q</span>
-        </a>
-      </li><!-- End F.A.Q Page Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-contact.html">
-          <i class="bi bi-envelope"></i>
-          <span>Contact</span>
-        </a>
-      </li><!-- End Contact Page Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-register.html">
-          <i class="bi bi-card-list"></i>
-          <span>Register</span>
-        </a>
-      </li><!-- End Register Page Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-login.html">
-          <i class="bi bi-box-arrow-in-right"></i>
-          <span>Login</span>
-        </a>
-      </li><!-- End Login Page Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-error-404.html">
-          <i class="bi bi-dash-circle"></i>
-          <span>Error 404</span>
-        </a>
-      </li><!-- End Error 404 Page Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-blank.html">
-          <i class="bi bi-file-earmark"></i>
-          <span>Blank</span>
-        </a>
-      </li><!-- End Blank Page Nav --> --}}
-
-    </ul>
-
-  </aside><!-- End Sidebar-->
+  @include('layouts.loading')
+  @include('layouts.navbar')
+  @include('layouts.sidebar')
 
   <main id="main" class="main">
 
@@ -464,7 +36,7 @@
                       <i class="bi bi-hdd-network"></i>
                     </div>
                     <div class="ps-3">
-                      <h6 id="total-aws">Loading...</h6>
+                      <h6 id="total-aws"><div class="inline-loader"></h6>
                     </div>
                   </div>
                 </div>
@@ -481,7 +53,7 @@
                       <i class="bi bi-check-circle"></i>
                     </div>
                     <div class="ps-3">
-                      <h6 id="aws-hijau">Loading...</h6>
+                      <h6 id="aws-hijau"><div class="inline-loader"></h6>
                     </div>
                   </div>
                 </div>
@@ -498,7 +70,7 @@
                       <i class="bi bi-exclamation-triangle"></i>
                     </div>
                     <div class="ps-3">
-                      <h6 id="aws-merah">Loading...</h6>
+                      <h6 id="aws-merah"><div class="inline-loader"></h6>
                     </div>
                   </div>
                 </div>
@@ -510,7 +82,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
-                  <div id="reportsChart">Loading...</div>
+                  <div id="reportsChart"><div class="inline-loader"></div>
                 </div>
               </div>
             </div>
@@ -552,107 +124,105 @@
       var markers = [];
 
       function updateDashboard() {
-        fetch('{{ url("/api/stations?region=banyuwangi") }}')
-          .then(res => res.json())
-          .then(data => {
-            // Update cards
-            document.getElementById('total-aws').innerText = data.length;
-            document.getElementById('aws-hijau').innerText = data.filter(d => d.status === 'HIJAU').length;
-            document.getElementById('aws-merah').innerText = data.filter(d => d.status === 'MERAH').length;
-
-            // Update markers
-            markers.forEach(m => map.removeLayer(m));
-            markers = [];
-            data.forEach(station => {
-              var color = station.status === 'MERAH' ? 'red' : 'green';
-              var iconUrl = station.status === 'MERAH' ?
-                'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png' :
-                'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png';
-              var marker = L.marker([station.lat, station.lng], {
-                icon: L.icon({
-                  iconUrl: iconUrl,
-                  shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-                  iconSize: [25, 41],
-                  iconAnchor: [12, 41],
-                  popupAnchor: [1, -34]
-                })
-              }).addTo(map);
-              marker.bindPopup(`<b>${station.name}</b><br>ID: ${station.id}<br>Status: ${station.status}`);
-              markers.push(marker);
-            });
-
-            fetch('{{ url("/api/aws/weekly-multi") }}')
-              .then(res => res.json())
-              .then(avgData => {
-                let categories = avgData.map(d => d.date);
-                let rainfall = avgData.map(d => parseFloat(d.rainfall));
-                let temperature = avgData.map(d => parseFloat(d.temperature));
-                let humidity = avgData.map(d => parseFloat(d.humidity));
-
-                var chart = new ApexCharts(document.querySelector("#reportsChart"), {
-                  series: [{
-                      name: 'Curah Hujan (mm)',
-                      type: 'column',
-                      data: rainfall
-                    },
-                    {
-                      name: 'Suhu (°C)',
-                      type: 'line',
-                      data: temperature
-                    },
-                    {
-                      name: 'Kelembapan (%)',
-                      type: 'line',
-                      data: humidity
-                    }
-                  ],
-                  chart: {
-                    height: 350,
-                    type: 'line',
-                    toolbar: {
-                      show: false
-                    }
-                  },
-                  stroke: {
-                    width: [0, 3, 3]
-                  },
-                  dataLabels: {
-                    enabled: true,
-                    enabledOnSeries: [1, 2]
-                  },
-                  labels: categories,
-                  xaxis: {
-                    type: 'category'
-                  },
-                  yaxis: [{
-                      title: {
-                        text: "Curah Hujan (mm)"
-                      }
-                    },
-                    {
-                      opposite: true,
-                      title: {
-                        text: "Suhu & Kelembapan"
-                      }
-                    }
-                  ],
-                  colors: ['#FF0000', '#2eca6a', '#4154f1'],
-                  tooltip: {
-                    shared: true,
-                    intersect: false
+          fetch('{{ url("/api/stations?region=banyuwangi") }}')
+              .then(async res => {
+                  // Cek status HTTP
+                  if (!res.ok) {
+                      throw new Error(`HTTP Error ${res.status} - ${res.statusText}`);
                   }
-                });
-                chart.render();
+
+                  // Ambil dulu sebagai text supaya bisa dilihat kalau gagal parse JSON
+                  const text = await res.text();
+                  try {
+                      return JSON.parse(text);
+                  } catch (e) {
+                      console.error("Response bukan JSON. Ini isinya:", text);
+                      throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
+                  }
+              })
+              .then(data => {
+                  console.log("Data stations:", data);
+
+                  // Update cards
+                  document.getElementById('total-aws').innerText = data.length;
+                  document.getElementById('aws-hijau').innerText = data.filter(d => d.status === 'HIJAU').length;
+                  document.getElementById('aws-merah').innerText = data.filter(d => d.status === 'MERAH').length;
+
+                  // Update markers
+                  markers.forEach(m => map.removeLayer(m));
+                  markers = [];
+                  data.forEach(station => {
+                      var iconUrl = station.status === 'MERAH' ?
+                          'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png' :
+                          'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png';
+                      var marker = L.marker([station.lat, station.lng], {
+                          icon: L.icon({
+                              iconUrl: iconUrl,
+                              shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+                              iconSize: [25, 41],
+                              iconAnchor: [12, 41],
+                              popupAnchor: [1, -34]
+                          })
+                      }).addTo(map);
+                      marker.bindPopup(`<b>${station.name}</b><br>ID: ${station.id}<br>Status: ${station.status}`);
+                      markers.push(marker);
+                  });
+
+                  // Fetch chart data
+                  return fetch('{{ url("/api/aws/weekly-multi") }}');
+              })
+              .then(async res => {
+                  if (!res.ok) throw new Error(`HTTP Error ${res.status} - ${res.statusText}`);
+                  const text = await res.text();
+                  try {
+                      return JSON.parse(text);
+                  } catch (e) {
+                      console.error("Response bukan JSON. Ini isinya:", text);
+                      throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
+                  }
+              })
+              .then(avgData => {
+                  console.log("Data chart:", avgData);
+
+                  if (!Array.isArray(avgData)) {
+                      avgData = Object.values(avgData);
+                  }
+                  
+                  let categories = avgData.map(d => d.date);
+                  let rainfall = avgData.map(d => parseFloat(d.rainfall));
+                  let temperature = avgData.map(d => parseFloat(d.temperature));
+                  let humidity = avgData.map(d => parseFloat(d.humidity));
+
+                  var chart = new ApexCharts(document.querySelector("#reportsChart"), {
+                      series: [
+                          { name: 'Curah Hujan (mm)', type: 'column', data: rainfall },
+                          { name: 'Suhu (°C)', type: 'line', data: temperature },
+                          { name: 'Kelembapan (%)', type: 'line', data: humidity }
+                      ],
+                      chart: { height: 350, type: 'line', toolbar: { show: false } },
+                      stroke: { width: [0, 3, 3] },
+                      dataLabels: { enabled: true, enabledOnSeries: [1, 2] },
+                      labels: categories,
+                      xaxis: { type: 'category' },
+                      yaxis: [
+                          { title: { text: "Curah Hujan (mm)" } },
+                          { opposite: true, title: { text: "Suhu & Kelembapan" } }
+                      ],
+                      colors: ['#FF0000', '#2eca6a', '#4154f1'],
+                      tooltip: { shared: true, intersect: false }
+                  });
+                  chart.render();
+              })
+              .catch(err => {
+                  console.error("Gagal memuat data:", err.message);
+                  document.getElementById('total-aws').innerText = "Error";
+                  document.getElementById('aws-hijau').innerText = "Error";
+                  document.getElementById('aws-merah').innerText = "Error";
               });
-          })
-          .catch(() => {
-            document.getElementById('total-aws').innerText = "Error";
-            document.getElementById('aws-hijau').innerText = "Error";
-            document.getElementById('aws-merah').innerText = "Error";
-          });
       }
+
       updateDashboard();
-      setInterval(updateDashboard, 60000); // refresh tiap 1 menit
+      setInterval(updateDashboard, 60000); 
     </script>
 
     {{-- Chart Dummy --}}
@@ -723,34 +293,11 @@
 
   </main><!-- End #main -->
 
-  <!-- ======= Footer ======= -->
-  <footer id="footer" class="footer">
-    <div class="copyright">
-      &copy; Copyright <strong><span>NiceAdmin</span></strong>. All Rights Reserved
-    </div>
-    <div class="credits">
-      <!-- All the links in the footer should remain intact. -->
-      <!-- You can delete the links only if you purchased the pro version. -->
-      <!-- Licensing information: https://bootstrapmade.com/license/ -->
-      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-      Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-    </div>
-  </footer><!-- End Footer -->
+  @include('layouts.footer')
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/chart.js/chart.umd.js"></script>
-  <script src="assets/vendor/echarts/echarts.min.js"></script>
-  <script src="assets/vendor/quill/quill.js"></script>
-  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
-  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
+  @include('layouts.script')
 
 </body>
 
