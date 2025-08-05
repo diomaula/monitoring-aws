@@ -226,7 +226,7 @@
     </script>
 
     {{-- Chart Dummy --}}
-    <script>
+    {{-- <script>
       document.addEventListener("DOMContentLoaded", () => {
         // Data dummy 7 hari terakhir
         let categories = ["2025-07-22", "2025-07-23", "2025-07-24", "2025-07-25", "2025-07-26", "2025-07-27", "2025-07-28"];
@@ -288,7 +288,7 @@
           }
         }).render();
       });
-    </script>
+    </script> --}}
 
 
   </main><!-- End #main -->
