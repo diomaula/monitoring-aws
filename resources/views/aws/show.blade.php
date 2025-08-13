@@ -125,9 +125,30 @@
               Status: {{ $online ? 'Online' : 'Offline / Data Tidak Ditemukan' }}
           </div>
           <div class="info-section">
-              <div>{{ \Carbon\Carbon::now()->locale('id')->translatedFormat('l, d F Y') }}</div>
-              <div>{{ \Carbon\Carbon::now()->format('H:i:s') }} (UTC)</div>
-          </div>
+            <div>{{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->locale('id')->translatedFormat('l, d F Y') }}</div>
+          <div id="clock">Memuat waktu...</div>
+        </div>
+        <!-- <script>
+            function updateClock() {
+                const now = new Date();
+
+                // Konversi ke UTC+7 (WIB)
+                const options = {
+                    timeZone: 'Asia/Jakarta',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                };
+
+                const time = now.toLocaleTimeString('en-GB', options); // Format H:i:s
+                document.getElementById('clock').textContent = `${time} (WIB)`;
+            }
+
+            // Update setiap detik
+            setInterval(updateClock, 1000);
+            updateClock(); // panggil pertama kali saat load
+        </script> -->
       </div>
     </div><!-- End Page Title -->
 
@@ -136,37 +157,98 @@
     <div class="data-grid">
         <div class="data-box">
             <strong>Kecepatan Angin (m/s)</strong>
-            <span>{{ $data['windspeed'] }}</span>
+            <!-- <span>{{ $data['windspeed'] }}</span> -->
+            <span id = "windspeed">{{ $data['windspeed'] }}</span>
         </div>
         <div class="data-box">
             <strong>Arah Angin (°)</strong>
-            <span>{{ $data['winddir'] }}</span>
+            <!-- <span>{{ $data['winddir'] }}</span> -->
+            <span id = "winddir">{{ $data['winddir'] }}</span>
         </div>
         <div class="data-box">
             <strong>Suhu Udara (°C)</strong>
-            <span>{{ $data['temp'] }}</span>
+            <!-- <span>{{ $data['temp'] }}</span> -->
+            <span id = "temp">{{ $data['temp'] }}</span>
         </div>
         <div class="data-box">
             <strong>Kelembapan (%)</strong>
-            <span>{{ $data['rh'] }}</span>
+            <!-- <span>{{ $data['rh'] }}</span> -->
+            <span id = "rh">{{ $data['rh'] }}</span>
         </div>
         <div class="data-box">
             <strong>Tekanan Udara (hPa)</strong>
-            <span>{{ $data['pressure'] }}</span>
+            <!-- <span>{{ $data['pressure'] }}</span> -->
+            <span id = "pressure">{{ $data['pressure'] }}</span>
         </div>
         <div class="data-box">
             <strong>Curah Hujan (mm)</strong>
-            <span>{{ $data['rain'] }}</span>
+            <!-- <span>{{ $data['rain'] }}</span> -->
+            <span id = "rain">{{ $data['rain'] }}</span>
         </div>
         <div class="data-box">
             <strong>Suhu Air (°C)</strong>
-            <span>{{ $data['watertemp'] }}</span>
+            <!-- <span>{{ $data['watertemp'] }}</span> -->
+            <span id = "watertemp">{{ $data['watertemp'] }}</span>
         </div>
         <div class="data-box">
             <strong>Tinggi Permukaan Air (m)</strong>
-            <span>{{ $data['waterlevel'] }}</span>
+            <!-- <span>{{ $data['waterlevel'] }}</span> -->
+            <span id = "waterlevel">{{ $data['waterlevel'] }}</span>
         </div>
     </div>
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const options = {
+                timeZone: 'Asia/Jakarta',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false,
+            };
+            const time = now.toLocaleTimeString('en-GB', options);
+            document.getElementById('clock').textContent = `${time} (WIB)`;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock(); // initial call
+
+        async function fetchWeatherData() {
+            try {
+                const response = await fetch('/api/stations');
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    console.error('Gagal fetch:', response.status);
+                    return;
+                }
+
+                const data = responseData[0]; // Ambil data pertama dari array
+
+                // Pastikan data ada sebelum update
+                if (!data) {
+                    console.warn('Data kosong');
+                    return;
+                }
+
+                // Update nilai DOM
+                document.getElementById('windspeed').textContent = data.windspeed ?? '-';
+                document.getElementById('winddir').textContent = data.winddir ?? '-';
+                document.getElementById('temp').textContent = data.temp ?? '-';
+                document.getElementById('rh').textContent = data.rh ?? '-';
+                document.getElementById('pressure').textContent = data.pressure ?? '-';
+                document.getElementById('rain').textContent = data.rain ?? '-';
+                document.getElementById('watertemp').textContent = data.watertemp ?? '-';
+                document.getElementById('waterlevel').textContent = data.waterlevel ?? '-';
+
+            } catch (error) {
+                console.error('Gagal memuat data cuaca:', error);
+            }
+        }
+        fetchWeatherData(); // Initial fetch
+        setInterval(fetchWeatherData, 60000); // Refresh setiap 1 menit
+    </script>
+
     @else
     <p>Tidak ada data yang dapat ditampilkan.</p>
     @endif
