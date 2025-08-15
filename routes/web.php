@@ -27,6 +27,5 @@ Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']
 Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
 Route::get('/aws/{id}', [AwsController::class, 'show']);
 
-Route::get('/login', [AuthController::class, 'index'])->name('login');
 
 
