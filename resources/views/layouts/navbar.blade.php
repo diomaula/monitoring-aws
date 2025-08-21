@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <i class="bi bi-list toggle-sidebar-btn"></i>
       <a href="#" class="logo d-flex align-items-center">
-        <img src="{{ asset('assets/img/bmkg.png') }}" alt="">
+        <img src="{{ asset('assets/img/stametbwi.png') }}" alt="">
       </a>
     </div><!-- End Logo -->
 
