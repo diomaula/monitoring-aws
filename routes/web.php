@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AwsController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,4 @@ Route::get('/api/stations', [AwsController::class, 'stations']);
 Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
 Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
 Route::get('/aws/{id}', [AwsController::class, 'show']);
+Route::get('/report', [ReportController::class, 'index']);
