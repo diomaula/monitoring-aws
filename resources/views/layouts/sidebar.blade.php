@@ -43,7 +43,7 @@
         </a>
         <ul id="laporan-nav" class="nav-content collapse">
           <li>
-            <a href="{{ url('laporan/bulanan') }}" class="{{ request()->is('laporan/bulanan') ? 'active' : '' }}">
+            <a href="{{ url('report') }}" class="{{ request()->is('report') ? 'active' : '' }}">
               <i class="bi bi-circle"></i><span>Laporan Bulanan</span>
             </a>
           </li>

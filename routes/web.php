@@ -20,7 +20,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/dashboard', function () {
-    return view('index');
+    return view('dashboard');
 });
 
 Route::get('/api/stations', [AwsController::class, 'stations']);
