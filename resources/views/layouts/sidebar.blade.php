@@ -47,11 +47,11 @@
               <i class="bi bi-circle"></i><span>Laporan Bulanan</span>
             </a>
           </li>
-          <li>
+          {{-- <li>
             <a href="{{ url('laporan/mingguan') }}" class="{{ request()->is('laporan/mingguan') ? 'active' : '' }}">
               <i class="bi bi-circle"></i><span>Laporan Mingguan</span>
             </a>
-          </li>
+          </li> --}}
         </ul>
       </li>
 
