@@ -148,5 +148,4 @@ class AwsController extends Controller
             'online' => $isOnline
         ]);
     }
-
 }
