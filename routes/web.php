@@ -26,5 +26,5 @@ Route::get('/dashboard', function () {
 Route::get('/api/stations', [AwsController::class, 'stations']);
 Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
 Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
-Route::get('/aws/{id}', [AwsController::class, 'show']);
+Route::get('/aws/{id}', [AwsController::class, 'index']);
 // Route::get('/report', [ReportController::class, 'index']);

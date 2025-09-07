@@ -57,19 +57,20 @@ class AwsController extends Controller
         return $values->every(fn($v) => $v == 0) ? 'MERAH' : 'HIJAU';
     }
 
+    // 7 hari terakhir
     public function getWeeklyAverage()
     {
-        $start = Carbon::now()->subDays(6); // 7 hari terakhir
-        $averages = AwsLog::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('AVG(rainfall) as avg_rainfall')
-        )
-        ->where('created_at', '>=', $start)
-        ->groupBy(DB::raw('DATE(created_at)'))
-        ->orderBy('date')
-        ->get();
+        // $start = Carbon::now()->subDays(6);
+        // $averages = AwsLog::select(
+        //     DB::raw('DATE(created_at) as date'),
+        //     DB::raw('AVG(rainfall) as avg_rainfall')
+        // )
+        // ->where('created_at', '>=', $start)
+        // ->groupBy(DB::raw('DATE(created_at)'))
+        // ->orderBy('date')
+        // ->get();
 
-        return response()->json($averages);
+        // return response()->json($averages);
     }
 
     public function weeklyMultiParameter()
@@ -100,10 +101,7 @@ class AwsController extends Controller
         return response()->json(array_values($data->toArray())); // <-- pastikan numerik array
     }
 
-
-    // menambahkan fungsi baru
-
-    public function show($id)
+    public function index($id)
     {
         $names = [
             '3000000007' => 'AWS Maritim Ketapang',
@@ -141,7 +139,7 @@ class AwsController extends Controller
             $isOnline = false;
         }
 
-        return view('aws.show', [
+        return view('aws.index', [
             'id' => $id,
             'name' => $names[$id],
             'data' => $data,
