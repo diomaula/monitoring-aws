@@ -3,7 +3,6 @@
 
 @include('layouts.header')
 
-
 <body>
   @include('layouts.loading')
   @include('layouts.navbar')

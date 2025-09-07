@@ -14,10 +14,10 @@ class AwsController extends Controller
     public function stations(Request $request)
     {
         $stationsMeta = [
-            '5000000069' => ['name' => 'AWS Digi Ketapang', 'lat' => -8.142677735101149, 'lng' => 114.40040531090388, 'region' => 'banyuwangi'],
-            '3000000007' => ['name' => 'AWS Maritim Banyuwangi/Ketapang', 'lat' => -8.2, 'lng' => 114.37, 'region' => 'banyuwangi'],
+            '5000000031' => ['name' => 'AWS Digi Banyuwangi', 'lat' => -8.142677735101149, 'lng' => 114.40040531090388, 'region' => 'banyuwangi'],
+            '3000000007' => ['name' => 'AWS Maritim Ketapang', 'lat' => -8.2, 'lng' => 114.37, 'region' => 'banyuwangi'],
             '3000000046' => ['name' => 'AWS Maritim Gilimanuk', 'lat' => -8.161597791585667, 'lng' => 114.43771049574364, 'region' => 'banyuwangi'],
-            // '5000000031' => ['name' => 'AWS Lainnya', 'lat' => -8.28, 'lng' => 114.39, 'region' => 'banyuwangi'],
+            // '5000000069' => ['name' => 'AWS Lainnya', 'lat' => -8.28, 'lng' => 114.39, 'region' => 'banyuwangi'],
             // 1000000013
         ];
 
@@ -35,11 +35,11 @@ class AwsController extends Controller
                 $data[] = $json;
 
                 // Simpan ke database (curah hujan = ambil field sesuai API, misal 'rainfall')
-                AwsLog::create([
-                    'station_id' => $id,
-                    'name' => $meta['name'],
-                    'rainfall' => floatval($json['rainfall'] ?? 0)
-                ]);
+                // AwsLog::create([
+                //     'station_id' => $id,
+                //     'name' => $meta['name'],
+                //     'rainfall' => floatval($json['rainfall'] ?? 0)
+                // ]);
             }
         }
 
@@ -49,6 +49,52 @@ class AwsController extends Controller
         }
 
         return response()->json($data);
+    }
+
+    public function index($id)
+    {
+        $names = [
+            '3000000007' => 'AWS Maritim Ketapang',
+            '3000000046' => 'AWS Maritim Gilimanuk',
+            '5000000031' => 'AWS Digi Banyuwangi',
+        ];
+
+        if (!isset($names[$id])) {
+            return redirect('dashboard')->with('error', 'Wilayah tidak ditemukan.');
+        }
+
+        $response = Http::get("http://202.90.199.132/aws-new/data/station/latest/{$id}");
+
+        if ($response->successful()) {
+            $jsonData = $response->json();
+
+            $data = [
+                'pancitemp' => $jsonData['pancitemp'] ?? 0,
+                'pancilevel' => $jsonData['pancilevel'] ?? 0,
+                'temp' => $jsonData['temp'] ?? 0,
+                'solrad' => $jsonData['solrad'] ?? 0,
+                'rh' => $jsonData['rh'] ?? 0,
+                'rain' => $jsonData['rain'] ?? 0,
+                'watertemp' => $jsonData['watertemp'] ?? 0,
+                'pressure' => $jsonData['pressure'] ?? 0,
+                'windspeed' => $jsonData['windspeed'] ?? 0,
+                'winddir' => $jsonData['winddir'] ?? 0,
+                'waterlevel' => $jsonData['waterlevel'] ?? 0,
+                'waktu' => $jsonData['waktu'] ?? null,
+            ];
+
+            $isOnline = !empty($jsonData);
+        } else {
+            $data = [];
+            $isOnline = false;
+        }
+
+        return view('aws.index', [
+            'id' => $id,
+            'name' => $names[$id],
+            'data' => $data,
+            'online' => $isOnline
+        ]);
     }
 
     private function getStatus($data)
@@ -101,49 +147,5 @@ class AwsController extends Controller
         return response()->json(array_values($data->toArray())); // <-- pastikan numerik array
     }
 
-    public function index($id)
-    {
-        $names = [
-            '3000000007' => 'AWS Maritim Ketapang',
-            '3000000046' => 'AWS Maritim Gilimanuk',
-            '5000000031' => 'AWS Digi Banyuwangi',
-        ];
-
-        if (!isset($names[$id])) {
-            return redirect('dashboard')->with('error', 'Wilayah tidak ditemukan.');
-        }
-
-        $response = Http::get("http://202.90.199.132/aws-new/data/station/latest/{$id}");
-
-        if ($response->successful()) {
-            $jsonData = $response->json();
-
-            $data = [
-                'pancitemp' => $jsonData['pancitemp'] ?? 0,
-                'pancilevel' => $jsonData['pancilevel'] ?? 0,
-                'temp' => $jsonData['temp'] ?? 0,
-                'solrad' => $jsonData['solrad'] ?? 0,
-                'rh' => $jsonData['rh'] ?? 0,
-                'rain' => $jsonData['rain'] ?? 0,
-                'watertemp' => $jsonData['watertemp'] ?? 0,
-                'pressure' => $jsonData['pressure'] ?? 0,
-                'windspeed' => $jsonData['windspeed'] ?? 0,
-                'winddir' => $jsonData['winddir'] ?? 0,
-                'waterlevel' => $jsonData['waterlevel'] ?? 0,
-                'waktu' => $jsonData['waktu'] ?? null,
-            ];
-
-            $isOnline = !empty($jsonData);
-        } else {
-            $data = [];
-            $isOnline = false;
-        }
-
-        return view('aws.index', [
-            'id' => $id,
-            'name' => $names[$id],
-            'data' => $data,
-            'online' => $isOnline
-        ]);
-    }
+    
 }

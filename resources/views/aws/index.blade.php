@@ -1,106 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
     @include('layouts.header')
     
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f4f6f9;
-            padding: 30px;
-            color: #333;
-        }
+    <head>
+        <style>
+            .logo-section {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
 
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+            .logo-section img {
+                height: 50px;
+            }
 
-        .logo-section img {
-            height: 50px;
-        }
+            .logo-section h1 {
+                font-size: 20px;
+                color: #003366;
+                margin: 0;
+            }
 
-        .logo-section h1 {
-            font-size: 20px;
-            color: #003366;
-            margin: 0;
-        }
+            .info-section {
+                text-align: right;
+            }
 
-        .info-section {
-            text-align: right;
-        }
+            .header-section {
+                display: flex;
+                justify-content: space-between; 
+                align-items: center;           
+            }
 
-        .header-section {
-            display: flex;
-            justify-content: space-between; 
-            align-items: center;           
-        }
+            .info-section div {
+                margin: 2px 0;
+            }
 
-        .info-section div {
-            margin: 2px 0;
-        }
+            .status {
+                padding: 10px 16px;
+                border-radius: 8px;
+                font-weight: bold;
+                display: inline-block;
+                margin-bottom: 0;
+            }
 
-        .status {
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: bold;
+            .online {
+                background-color: #d4edda;
+                color: #155724;
+                border: 1px solid #c3e6cb;
+            }
+
+            .offline {
+                background-color: #f8d7da;
+                color: #721c24;
+                border: 1px solid #f5c6cb;
+            }
+
+            .data-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .data-box {
+                background: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            }
+
+            .data-box strong {
+                display: block;
+                font-size: 14px;
+                margin-bottom: 6px;
+                color: #555;
+            }
+
+            .data-box span {
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            .btn-back {
+                display: inline-block;
+                padding: 10px 16px;
+                background-color: #007BFF;
+                color: white;
+                text-decoration: none;
+                border-radius: 6px;
+            }
+
+            .btn-back:hover {
+                background-color: #0056b3;
+            }
+
+            .compass {
+            width: 200px;
+            height: 200px;
+            position: relative;
             display: inline-block;
-            margin-bottom: 0;
-        }
+            }
 
-        .online {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
+            .compass-circle {
+            width: 100%;
+            height: 100%;
+            border: 8px solid #ccc;      
+            border-radius: 50%;          
+            background: #1e3a8a;         
+            position: relative;
+            }
 
-        .offline {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .data-box {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .data-box strong {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 6px;
-            color: #555;
-        }
-
-        .data-box span {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .btn-back {
-            display: inline-block;
-            padding: 10px 16px;
-            background-color: #007BFF;
+            .compass-circle span {
             color: white;
-            text-decoration: none;
-            border-radius: 6px;
-        }
+            font-weight: bold;
+            position: absolute;
+            font-size: 14px;
+            }
 
-        .btn-back:hover {
-            background-color: #0056b3;
-        }
-    </style>
+            /* Arah utama */
+            .compass-circle .north { top: 5px; left: 50%; transform: translateX(-50%); }
+            .compass-circle .south { bottom: 5px; left: 50%; transform: translateX(-50%); }
+            .compass-circle .west  { top: 50%; left: 5px; transform: translateY(-50%); }
+            .compass-circle .east  { top: 50%; right: 5px; transform: translateY(-50%); }
+
+            /* Arah tambahan */
+            .compass-circle .ne { top: 25px; right: 25px; font-size: 12px; }
+            .compass-circle .nw { top: 25px; left: 25px; font-size: 12px; }
+            .compass-circle .se { bottom: 25px; right: 25px; font-size: 12px; }
+            .compass-circle .sw { bottom: 25px; left: 25px; font-size: 12px; }
+
+            /* Jarum kompas */
+            .compass-arrow {
+            width: 4px;
+            height: 80px;
+            background: red;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(0deg);
+            transition: transform 0.5s ease-in-out; /* animasi halus */
+            }
+
+            /* Titik tengah */
+            .compass-center {
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            }
+        </style>
     </head>
 
     <body>
@@ -113,45 +166,23 @@
     <main id="main" class="main">
 
         <div class="pagetitle">
-        <h1>{{ $name }}</h1>
-        <nav>
-            <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li class="breadcrumb-item active">Dashboard</li>
-            </ol>
-        </nav>
-        <div class="header-section">
-            <div class="status {{ $online ? 'online' : 'offline' }}">
-                Status: {{ $online ? 'Online' : 'Offline / Data Tidak Ditemukan' }}
+            <h1>{{ $name }}</h1>
+            <nav>
+                <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </nav>
+            <div class="header-section">
+                <div class="status {{ $online ? 'online' : 'offline' }}">
+                    Status: {{ $online ? 'Online' : 'Offline / Data Tidak Ditemukan' }}
+                </div>
+                <div class="info-section">
+                    <div>{{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->locale('id')->translatedFormat('l, d F Y') }}</div>
+                    <div id="clock">Memuat waktu...</div>
+                </div>
             </div>
-            <div class="info-section">
-                <div>{{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->locale('id')->translatedFormat('l, d F Y') }}</div>
-            <div id="clock">Memuat waktu...</div>
-            </div>
-            <!-- <script>
-                function updateClock() {
-                    const now = new Date();
-
-                    // Konversi ke UTC+7 (WIB)
-                    const options = {
-                        timeZone: 'Asia/Jakarta',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: false,
-                    };
-
-                    const time = now.toLocaleTimeString('en-GB', options); // Format H:i:s
-                    document.getElementById('clock').textContent = `${time} (WIB)`;
-                }
-
-                // Update setiap detik
-                setInterval(updateClock, 1000);
-                updateClock(); // panggil pertama kali saat load
-            </script> -->
-        </div>
         </div><!-- End Page Title -->
-
         
         @if($online && isset($data['waktu']))
         <div class="data-grid">
@@ -196,6 +227,35 @@
                 <span id = "waterlevel">{{ $data['waterlevel'] }}</span>
             </div>
         </div>
+        
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card info-card">
+                <div class="card-body text-center">
+                    <h6 class="card-title">Arah Angin (°)</h6>
+
+                    <!-- Kompas -->
+                    <div class="compass">
+                        <div class="compass-circle">
+                            <div class="compass-arrow" id="compass-arrow"></div>
+                            <div class="compass-center"></div>
+
+                            <!-- Label arah -->
+                            <span class="north">N</span>
+                            <span class="south">S</span>
+                            <span class="west">W</span>
+                            <span class="east">E</span>
+                            <span class="ne">NE</span>
+                            <span class="nw">NW</span>
+                            <span class="se">SE</span>
+                            <span class="sw">SW</span>
+                        </div>
+                    </div>
+
+                    <h5 id="winddir" class="mt-3">{{ $data['winddir'] }}°</h5>
+                </div>
+            </div>
+        </div>
+
         <script>
             function updateClock() {
                 const now = new Date();
@@ -215,17 +275,14 @@
 
             async function fetchWeatherData() {
                 try {
-                    const response = await fetch('/api/stations');
-                    const responseData = await response.json();
-
+                    const response = await fetch(`/api/stations/${stationId}`);
                     if (!response.ok) {
                         console.error('Gagal fetch:', response.status);
                         return;
                     }
 
-                    const data = responseData[0]; // Ambil data pertama dari array
+                    const data = await response.json();
 
-                    // Pastikan data ada sebelum update
                     if (!data) {
                         console.warn('Data kosong');
                         return;
@@ -245,6 +302,7 @@
                     console.error('Gagal memuat data cuaca:', error);
                 }
             }
+
             fetchWeatherData(); // Initial fetch
             setInterval(fetchWeatherData, 60000); // Refresh setiap 1 menit
         </script>
@@ -252,6 +310,56 @@
         @else
         <p>Tidak ada data yang dapat ditampilkan.</p>
         @endif
+
+        <script>
+            function updateCompass(angle) {
+                const arrow = document.getElementById('compass-arrow');
+                if (arrow) {
+                    arrow.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+                }
+            }
+
+            // Initial set dari Blade
+            updateCompass({{ $data['winddir'] ?? 0 }});
+
+            // Saat data di-fetch ulang
+            async function fetchWeatherData() {
+                try {
+                    // Ambil id dari Blade
+                    const stationId = "{{ $id }}";
+
+                    // Fetch langsung berdasarkan ID
+                    const response = await fetch(`/api/stations/${stationId}`);
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        console.error('Gagal fetch:', response.status);
+                        return;
+                    }
+
+                    if (!data) {
+                        console.warn('Data kosong');
+                        return;
+                    }
+
+                    // Update teks derajat
+                    document.getElementById('winddir').textContent = (data.winddir ?? '-') + '°';
+
+                    // Update kompas
+                    if (data.winddir !== undefined && data.winddir !== null) {
+                        updateCompass(data.winddir);
+                    }
+
+                } catch (error) {
+                    console.error('Gagal memuat data cuaca:', error);
+                }
+            }
+
+            // initial fetch
+            fetchWeatherData();
+            // refresh setiap 1 menit
+            setInterval(fetchWeatherData, 60000);
+        </script>
 
     </main><!-- End #main -->
 
