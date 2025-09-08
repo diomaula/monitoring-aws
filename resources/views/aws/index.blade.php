@@ -257,6 +257,7 @@
         </div>
 
         <script>
+            // jam WIB realtime
             function updateClock() {
                 const now = new Date();
                 const options = {
@@ -269,13 +270,30 @@
                 const time = now.toLocaleTimeString('en-GB', options);
                 document.getElementById('clock').textContent = `${time} (WIB)`;
             }
-
             setInterval(updateClock, 1000);
-            updateClock(); // initial call
+            updateClock(); // panggilan pertama
 
+            // Kompas
+            function updateCompass(angle) {
+                const arrow = document.getElementById('compass-arrow');
+                if (arrow) {
+                    arrow.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+                }
+            }
+
+            // Ambil stationId dari Blade
+            const stationId = "{{ $id }}";
+
+            // Ambil data cuaca
             async function fetchWeatherData() {
                 try {
-                    const response = await fetch(`/api/stations/${stationId}`);
+                    const stationId = "{{ $id }}";
+                    const response = await fetch(`/aws/${stationId}`, {
+                        headers: {
+                            "Accept": "application/json"   
+                        }
+                    });
+
                     if (!response.ok) {
                         console.error('Gagal fetch:', response.status);
                         return;
@@ -290,60 +308,13 @@
 
                     // Update nilai DOM
                     document.getElementById('windspeed').textContent = data.windspeed ?? '-';
-                    document.getElementById('winddir').textContent = data.winddir ?? '-';
-                    document.getElementById('temp').textContent = data.temp ?? '-';
-                    document.getElementById('rh').textContent = data.rh ?? '-';
-                    document.getElementById('pressure').textContent = data.pressure ?? '-';
-                    document.getElementById('rain').textContent = data.rain ?? '-';
+                    document.getElementById('winddir').textContent   = (data.winddir ?? '-') + '°';
+                    document.getElementById('temp').textContent      = data.temp ?? '-';
+                    document.getElementById('rh').textContent        = data.rh ?? '-';
+                    document.getElementById('pressure').textContent  = data.pressure ?? '-';
+                    document.getElementById('rain').textContent      = data.rain ?? '-';
                     document.getElementById('watertemp').textContent = data.watertemp ?? '-';
-                    document.getElementById('waterlevel').textContent = data.waterlevel ?? '-';
-
-                } catch (error) {
-                    console.error('Gagal memuat data cuaca:', error);
-                }
-            }
-
-            fetchWeatherData(); // Initial fetch
-            setInterval(fetchWeatherData, 60000); // Refresh setiap 1 menit
-        </script>
-
-        @else
-        <p>Tidak ada data yang dapat ditampilkan.</p>
-        @endif
-
-        <script>
-            function updateCompass(angle) {
-                const arrow = document.getElementById('compass-arrow');
-                if (arrow) {
-                    arrow.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
-                }
-            }
-
-            // Initial set dari Blade
-            updateCompass({{ $data['winddir'] ?? 0 }});
-
-            // Saat data di-fetch ulang
-            async function fetchWeatherData() {
-                try {
-                    // Ambil id dari Blade
-                    const stationId = "{{ $id }}";
-
-                    // Fetch langsung berdasarkan ID
-                    const response = await fetch(`/api/stations/${stationId}`);
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        console.error('Gagal fetch:', response.status);
-                        return;
-                    }
-
-                    if (!data) {
-                        console.warn('Data kosong');
-                        return;
-                    }
-
-                    // Update teks derajat
-                    document.getElementById('winddir').textContent = (data.winddir ?? '-') + '°';
+                    document.getElementById('waterlevel').textContent= data.waterlevel ?? '-';
 
                     // Update kompas
                     if (data.winddir !== undefined && data.winddir !== null) {
@@ -355,11 +326,16 @@
                 }
             }
 
-            // initial fetch
+
+            // 🚀 Initial fetch + auto refresh tiap 1 menit
             fetchWeatherData();
-            // refresh setiap 1 menit
             setInterval(fetchWeatherData, 60000);
         </script>
+
+
+        @else
+        <p>Tidak ada data yang dapat ditampilkan.</p>
+        @endif
 
     </main><!-- End #main -->
 

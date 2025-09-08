@@ -60,6 +60,9 @@ class AwsController extends Controller
         ];
 
         if (!isset($names[$id])) {
+            if (request()->wantsJson()) {
+                return response()->json(['error' => 'Wilayah tidak ditemukan'], 404);
+            }
             return redirect('dashboard')->with('error', 'Wilayah tidak ditemukan.');
         }
 
@@ -69,18 +72,18 @@ class AwsController extends Controller
             $jsonData = $response->json();
 
             $data = [
-                'pancitemp' => $jsonData['pancitemp'] ?? 0,
-                'pancilevel' => $jsonData['pancilevel'] ?? 0,
-                'temp' => $jsonData['temp'] ?? 0,
-                'solrad' => $jsonData['solrad'] ?? 0,
-                'rh' => $jsonData['rh'] ?? 0,
-                'rain' => $jsonData['rain'] ?? 0,
-                'watertemp' => $jsonData['watertemp'] ?? 0,
-                'pressure' => $jsonData['pressure'] ?? 0,
-                'windspeed' => $jsonData['windspeed'] ?? 0,
-                'winddir' => $jsonData['winddir'] ?? 0,
-                'waterlevel' => $jsonData['waterlevel'] ?? 0,
-                'waktu' => $jsonData['waktu'] ?? null,
+                'pancitemp'   => $jsonData['pancitemp'] ?? 0,
+                'pancilevel'  => $jsonData['pancilevel'] ?? 0,
+                'temp'        => $jsonData['temp'] ?? 0,
+                'solrad'      => $jsonData['solrad'] ?? 0,
+                'rh'          => $jsonData['rh'] ?? 0,
+                'rain'        => $jsonData['rain'] ?? 0,
+                'watertemp'   => $jsonData['watertemp'] ?? 0,
+                'pressure'    => $jsonData['pressure'] ?? 0,
+                'windspeed'   => $jsonData['windspeed'] ?? 0,
+                'winddir'     => $jsonData['winddir'] ?? 0,
+                'waterlevel'  => $jsonData['waterlevel'] ?? 0,
+                'waktu'       => $jsonData['waktu'] ?? null,
             ];
 
             $isOnline = !empty($jsonData);
@@ -89,13 +92,20 @@ class AwsController extends Controller
             $isOnline = false;
         }
 
+        // 🔥 Jika request API (fetch), balikan JSON
+        if (request()->wantsJson()) {
+            return response()->json($data);
+        }
+
+        // 🔥 Jika request biasa (web), balikan view
         return view('aws.index', [
-            'id' => $id,
-            'name' => $names[$id],
-            'data' => $data,
-            'online' => $isOnline
+            'id'     => $id,
+            'name'   => $names[$id],
+            'data'   => $data,
+            'online' => $isOnline,
         ]);
     }
+
 
     private function getStatus($data)
     {

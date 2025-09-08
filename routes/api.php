@@ -19,4 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/stations/{id}', [AwsController::class, 'getStation']);
+Route::get('/stations/{id}', [AwsController::class, 'index']);
