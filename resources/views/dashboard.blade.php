@@ -80,11 +80,20 @@
             <div class="col-12">
               <div class="card">
                 <div class="card-body">
-                  <h5 class="card-title">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
-                  <div id="reportsChart"><div class="inline-loader"></div>
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
+                    <select id="chartFilter" class="form-select w-auto" onchange="updateDashboard()">
+                      <option value="daily" selected>Harian (7 Hari)</option>
+                      <option value="hourly">Per Jam (1 Hari)</option>
+                    </select>
+                  </div>
+                  <div id="reportsChart">
+                    <div class="inline-loader"></div>
+                  </div>
                 </div>
               </div>
             </div>
+
 
             <!-- Peta -->
             <div class="col-12">
@@ -123,101 +132,101 @@
       var markers = [];
 
       function updateDashboard() {
-          fetch('{{ url("/api/stations?region=banyuwangi") }}')
-              .then(async res => {
-                  // Cek status HTTP
-                  if (!res.ok) {
-                      throw new Error(`HTTP Error ${res.status} - ${res.statusText}`);
-                  }
+        fetch('{{ url("/api/stations?region=banyuwangi") }}')
+            .then(async res => {
+                // Cek status HTTP
+                if (!res.ok) {
+                    throw new Error(`HTTP Error ${res.status} - ${res.statusText}`);
+                }
 
-                  // Ambil dulu sebagai text supaya bisa dilihat kalau gagal parse JSON
-                  const text = await res.text();
-                  try {
-                      return JSON.parse(text);
-                  } catch (e) {
-                      console.error("Response bukan JSON. Ini isinya:", text);
-                      throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
-                  }
-              })
-              .then(data => {
-                  console.log("Data stations:", data);
+                // Ambil dulu sebagai text supaya bisa dilihat kalau gagal parse JSON
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error("Response bukan JSON. Ini isinya:", text);
+                    throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
+                }
+            })
+            .then(data => {
+                console.log("Data stations:", data);
 
-                  // Update cards
-                  document.getElementById('total-aws').innerText = data.length;
-                  document.getElementById('aws-hijau').innerText = data.filter(d => d.status === 'HIJAU').length;
-                  document.getElementById('aws-merah').innerText = data.filter(d => d.status === 'MERAH').length;
+                // Update cards
+                document.getElementById('total-aws').innerText = data.length;
+                document.getElementById('aws-hijau').innerText = data.filter(d => d.status === 'HIJAU').length;
+                document.getElementById('aws-merah').innerText = data.filter(d => d.status === 'MERAH').length;
 
-                  // Update markers
-                  markers.forEach(m => map.removeLayer(m));
-                  markers = [];
-                  data.forEach(station => {
-                      var iconUrl = station.status === 'MERAH' ?
-                          'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png' :
-                          'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png';
-                      var marker = L.marker([station.lat, station.lng], {
-                          icon: L.icon({
-                              iconUrl: iconUrl,
-                              shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-                              iconSize: [25, 41],
-                              iconAnchor: [12, 41],
-                              popupAnchor: [1, -34]
-                          })
-                      }).addTo(map);
-                      marker.bindPopup(`<b>${station.name}</b><br>ID: ${station.id}<br>Status: ${station.status}`);
-                      markers.push(marker);
-                  });
+                // Update markers
+                markers.forEach(m => map.removeLayer(m));
+                markers = [];
+                data.forEach(station => {
+                    var iconUrl = station.status === 'MERAH' ?
+                        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png' :
+                        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png';
+                    var marker = L.marker([station.lat, station.lng], {
+                        icon: L.icon({
+                            iconUrl: iconUrl,
+                            shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41],
+                            popupAnchor: [1, -34]
+                        })
+                    }).addTo(map);
+                    marker.bindPopup(`<b>${station.name}</b><br>ID: ${station.id}<br>Status: ${station.status}`);
+                    markers.push(marker);
+                });
 
-                  // Fetch chart data
-                  return fetch('{{ url("/api/aws/weekly-multi") }}');
-              })
-              .then(async res => {
-                  if (!res.ok) throw new Error(`HTTP Error ${res.status} - ${res.statusText}`);
-                  const text = await res.text();
-                  try {
-                      return JSON.parse(text);
-                  } catch (e) {
-                      console.error("Response bukan JSON. Ini isinya:", text);
-                      throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
-                  }
-              })
-              .then(avgData => {
-                  console.log("Data chart:", avgData);
+                // Fetch chart data
+                return fetch('{{ url("/api/aws/weekly-multi") }}');
+            })
+            .then(async res => {
+                if (!res.ok) throw new Error(`HTTP Error ${res.status} - ${res.statusText}`);
+                const text = await res.text();
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error("Response bukan JSON. Ini isinya:", text);
+                    throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
+                }
+            })
+            .then(avgData => {
+                console.log("Data chart:", avgData);
 
-                  if (!Array.isArray(avgData)) {
-                      avgData = Object.values(avgData);
-                  }
-                  
-                  let categories = avgData.map(d => d.date);
-                  let rainfall = avgData.map(d => parseFloat(d.rainfall));
-                  let temperature = avgData.map(d => parseFloat(d.temperature));
-                  let humidity = avgData.map(d => parseFloat(d.humidity));
+                if (!Array.isArray(avgData)) {
+                    avgData = Object.values(avgData);
+                }
+                
+                let categories = avgData.map(d => d.date);
+                let rainfall = avgData.map(d => parseFloat(d.rainfall));
+                let temperature = avgData.map(d => parseFloat(d.temperature));
+                let humidity = avgData.map(d => parseFloat(d.humidity));
 
-                  var chart = new ApexCharts(document.querySelector("#reportsChart"), {
-                      series: [
-                          { name: 'Curah Hujan (mm)', type: 'column', data: rainfall },
-                          { name: 'Suhu (°C)', type: 'line', data: temperature },
-                          { name: 'Kelembapan (%)', type: 'line', data: humidity }
-                      ],
-                      chart: { height: 350, type: 'line', toolbar: { show: false } },
-                      stroke: { width: [0, 3, 3] },
-                      dataLabels: { enabled: true, enabledOnSeries: [1, 2] },
-                      labels: categories,
-                      xaxis: { type: 'category' },
-                      yaxis: [
-                          { title: { text: "Curah Hujan (mm)" } },
-                          { opposite: true, title: { text: "Suhu & Kelembapan" } }
-                      ],
-                      colors: ['#FF0000', '#2eca6a', '#4154f1'],
-                      tooltip: { shared: true, intersect: false }
-                  });
-                  chart.render();
-              })
-              .catch(err => {
-                  console.error("Gagal memuat data:", err.message);
-                  document.getElementById('total-aws').innerText = "Error";
-                  document.getElementById('aws-hijau').innerText = "Error";
-                  document.getElementById('aws-merah').innerText = "Error";
-              });
+                var chart = new ApexCharts(document.querySelector("#reportsChart"), {
+                    series: [
+                        { name: 'Curah Hujan (mm)', type: 'column', data: rainfall },
+                        { name: 'Suhu (°C)', type: 'line', data: temperature },
+                        { name: 'Kelembapan (%)', type: 'line', data: humidity }
+                    ],
+                    chart: { height: 350, type: 'line', toolbar: { show: false } },
+                    stroke: { width: [0, 3, 3] },
+                    dataLabels: { enabled: true, enabledOnSeries: [1, 2] },
+                    labels: categories,
+                    xaxis: { type: 'category' },
+                    yaxis: [
+                        { title: { text: "Curah Hujan (mm)" } },
+                        { opposite: true, title: { text: "Suhu & Kelembapan" } }
+                    ],
+                    colors: ['#FF0000', '#2eca6a', '#4154f1'],
+                    tooltip: { shared: true, intersect: false }
+                });
+                chart.render();
+            })
+            .catch(err => {
+                console.error("Gagal memuat data:", err.message);
+                document.getElementById('total-aws').innerText = "Error";
+                document.getElementById('aws-hijau').innerText = "Error";
+                document.getElementById('aws-merah').innerText = "Error";
+            });
       }
 
       updateDashboard();
