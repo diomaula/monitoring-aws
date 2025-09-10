@@ -228,7 +228,7 @@
             </div>
         </div>
         
-        <div class="col-md-4 col-sm-6 mb-3">
+        <div class="col-md-12 col-sm-6 mb-3">
             <div class="card info-card">
                 <div class="card-body text-center">
                     <h6 class="card-title">Arah Angin (°)</h6>
@@ -253,6 +253,20 @@
 
                     <h5 id="winddir" class="mt-3">{{ $data['winddir'] }}°</h5>
                 </div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="col-12">
+            <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="card-title mb-0">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
+                </div>
+                <div id="reportsChart">
+                <div class="inline-loader"></div>
+                </div>
+            </div>
             </div>
         </div>
 
