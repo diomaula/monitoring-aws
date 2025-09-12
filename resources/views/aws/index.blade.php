@@ -269,13 +269,13 @@
                     document.addEventListener("DOMContentLoaded", () => {
                       new ApexCharts(document.querySelector("#reportsChart"), {
                         series: [{
-                          name: 'Sales',
+                          name: 'Curah Hujan',
                           data: [31, 40, 28, 51, 42, 82, 56],
                         }, {
-                          name: 'Revenue',
+                          name: 'Suhu',
                           data: [11, 32, 45, 32, 34, 52, 41]
                         }, {
-                          name: 'Customers',
+                          name: 'Kelembapan',
                           data: [15, 11, 32, 18, 9, 24, 11]
                         }],
                         chart: {
@@ -288,7 +288,7 @@
                         markers: {
                           size: 4
                         },
-                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                        colors: ['#FF0000', '#2eca6a', '#4154f1'],
                         fill: {
                           type: "gradient",
                           gradient: {
