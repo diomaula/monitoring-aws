@@ -257,70 +257,69 @@
         </div>
 
         <!-- Chart -->
-        <div class="col-12">
-            <div class="card">
+        <div class="card">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="card-title mb-0">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
-                </div>
-                <div id="reportsChart">
-                {{-- <div class="inline-loader"></div> --}}
+                <div id="reportsChart"></div>
+
                 <script>
                     document.addEventListener("DOMContentLoaded", () => {
-                      new ApexCharts(document.querySelector("#reportsChart"), {
-                        series: [{
-                          name: 'Curah Hujan',
-                          data: [31, 40, 28, 51, 42, 82, 56],
-                        }, {
-                          name: 'Suhu',
-                          data: [11, 32, 45, 32, 34, 52, 41]
-                        }, {
-                          name: 'Kelembapan',
-                          data: [15, 11, 32, 18, 9, 24, 11]
-                        }],
+                    let now = new Date();
+                    let rainfall = [];
+                    let temp = [];
+                    let humidity = [];
+
+                    // 7 hari terakhir dengan interval 3 jam (UTC)
+                    for (let i = 7 * 8; i >= 0; i--) { 
+                        let d = new Date(now.getTime() - i * 3 * 3600 * 1000);
+
+                        // pakai toISOString() biar selalu UTC
+                        rainfall.push([d.toISOString(), Math.floor(Math.random() * 100)]);
+                        temp.push([d.toISOString(), Math.floor(Math.random() * 15) + 20]);     // 20–35 °C
+                        humidity.push([d.toISOString(), Math.floor(Math.random() * 30) + 60]); // 60–90 %
+                    }
+
+                    new ApexCharts(document.querySelector("#reportsChart"), {
+                        series: [
+                        { name: 'Curah Hujan', data: rainfall },
+                        { name: 'Suhu', data: temp },
+                        { name: 'Kelembapan', data: humidity }
+                        ],
                         chart: {
-                          height: 350,
-                          type: 'area',
-                          toolbar: {
-                            show: false
-                          },
+                        type: 'area',
+                        height: 350,
+                        zoom: { enabled: true }
                         },
-                        markers: {
-                          size: 4
-                        },
+                        stroke: { curve: 'smooth', width: 2 },
+                        markers: { size: 0 },
                         colors: ['#FF0000', '#2eca6a', '#4154f1'],
+                        dataLabels: { enabled: false },
                         fill: {
-                          type: "gradient",
-                          gradient: {
+                        type: "gradient",
+                        gradient: {
                             shadeIntensity: 1,
                             opacityFrom: 0.3,
                             opacityTo: 0.4,
                             stops: [0, 90, 100]
-                          }
-                        },
-                        dataLabels: {
-                          enabled: false
-                        },
-                        stroke: {
-                          curve: 'smooth',
-                          width: 2
+                        }
                         },
                         xaxis: {
-                          type: 'datetime',
-                          categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                        type: 'datetime',
+                        tickAmount: 7, // hanya tampilkan beberapa label agar tidak padat
                         },
                         tooltip: {
-                          x: {
-                            format: 'dd/MM/yy HH:mm'
-                          },
+                        x: { format: 'dd/MM/yy HH:mm' }
+                        },
+                        legend: {
+                        position: 'top',
+                        horizontalAlign: 'center'
                         }
-                      }).render();
+                    }).render();
                     });
-                  </script>
-                </div>
-            </div>
+                </script>
             </div>
         </div>
+
 
         <script>
             // jam WIB realtime
