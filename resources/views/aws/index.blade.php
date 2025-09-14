@@ -320,7 +320,6 @@
             </div>
         </div>
 
-
         <script>
             // jam WIB realtime
             function updateClock() {
@@ -391,12 +390,10 @@
                 }
             }
 
-
             // 🚀 Initial fetch + auto refresh tiap 1 menit
             fetchWeatherData();
             setInterval(fetchWeatherData, 60000);
         </script>
-
 
         @else
         <p>Tidak ada data yang dapat ditampilkan.</p>
