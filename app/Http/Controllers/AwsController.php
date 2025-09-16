@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\DataAws;
 use App\Models\AwsLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -155,6 +156,31 @@ class AwsController extends Controller
         });
 
         return response()->json(array_values($data->toArray())); // <-- pastikan numerik array
+    }
+
+    public function getChartData()
+    {
+        // Ambil data 7 hari terakhir
+        $data = DataAws::where('timestamp', '>=', Carbon::now()->subDays(7))
+            ->orderBy('timestamp', 'asc')
+            ->get();
+
+        // Format untuk chart ApexCharts
+        $rainfall = [];
+        $temp = [];
+        $humidity = [];
+
+        foreach ($data as $row) {
+            $rainfall[] = [$row->timestamp->toIso8601String(), (float) $row->rainfall];
+            $temp[]     = [$row->timestamp->toIso8601String(), (float) $row->temperature];
+            $humidity[] = [$row->timestamp->toIso8601String(), (float) $row->humidity];
+        }
+
+        return response()->json([
+            'rainfall' => $rainfall,
+            'temp'     => $temp,
+            'humidity' => $humidity,
+        ]);
     }
 
     

@@ -259,66 +259,60 @@
         <!-- Chart -->
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title mb-0">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
+                <h5 class="card-title mb-0">Grafik Curah Hujan, Suhu & Kelembapan AWS</h5>
                 <div id="reportsChart"></div>
 
                 <script>
-                    document.addEventListener("DOMContentLoaded", () => {
-                    let now = new Date();
-                    let rainfall = [];
-                    let temp = [];
-                    let humidity = [];
+                    document.addEventListener("DOMContentLoaded", async () => {
+                        try {
+                            let response = await fetch("/chart-data");
+                            let result = await response.json();
 
-                    // 7 hari terakhir dengan interval 3 jam (UTC)
-                    for (let i = 7 * 8; i >= 0; i--) { 
-                        let d = new Date(now.getTime() - i * 3 * 3600 * 1000);
+                            new ApexCharts(document.querySelector("#reportsChart"), {
+                                series: [
+                                    { name: 'Curah Hujan', data: result.rainfall },
+                                    { name: 'Suhu', data: result.temp },
+                                    { name: 'Kelembapan', data: result.humidity }
+                                ],
+                                chart: {
+                                    type: 'area',
+                                    height: 350,
+                                    zoom: { enabled: true }
+                                },
+                                stroke: { curve: 'smooth', width: 2 },
+                                markers: { size: 0 },
+                                colors: ['#FF0000', '#2eca6a', '#4154f1'],
+                                dataLabels: { enabled: false },
+                                fill: {
+                                    type: "gradient",
+                                    gradient: {
+                                        shadeIntensity: 1,
+                                        opacityFrom: 0.3,
+                                        opacityTo: 0.4,
+                                        stops: [0, 90, 100]
+                                    }
+                                },
+                                xaxis: {
+                                    type: 'datetime',
+                                    tickAmount: 7,
+                                },
+                                tooltip: {
+                                    x: { format: 'dd/MM/yy HH:mm' }
+                                },
+                                legend: {
+                                    position: 'top',
+                                    horizontalAlign: 'center'
+                                }
+                            }).render();
 
-                        // pakai toISOString() biar selalu UTC
-                        rainfall.push([d.toISOString(), Math.floor(Math.random() * 100)]);
-                        temp.push([d.toISOString(), Math.floor(Math.random() * 15) + 20]);     // 20–35 °C
-                        humidity.push([d.toISOString(), Math.floor(Math.random() * 30) + 60]); // 60–90 %
-                    }
-
-                    new ApexCharts(document.querySelector("#reportsChart"), {
-                        series: [
-                        { name: 'Curah Hujan', data: rainfall },
-                        { name: 'Suhu', data: temp },
-                        { name: 'Kelembapan', data: humidity }
-                        ],
-                        chart: {
-                        type: 'area',
-                        height: 350,
-                        zoom: { enabled: true }
-                        },
-                        stroke: { curve: 'smooth', width: 2 },
-                        markers: { size: 0 },
-                        colors: ['#FF0000', '#2eca6a', '#4154f1'],
-                        dataLabels: { enabled: false },
-                        fill: {
-                        type: "gradient",
-                        gradient: {
-                            shadeIntensity: 1,
-                            opacityFrom: 0.3,
-                            opacityTo: 0.4,
-                            stops: [0, 90, 100]
+                        } catch (e) {
+                            console.error("Gagal memuat data chart:", e);
                         }
-                        },
-                        xaxis: {
-                        type: 'datetime',
-                        tickAmount: 7, // hanya tampilkan beberapa label agar tidak padat
-                        },
-                        tooltip: {
-                        x: { format: 'dd/MM/yy HH:mm' }
-                        },
-                        legend: {
-                        position: 'top',
-                        horizontalAlign: 'center'
-                        }
-                    }).render();
                     });
                 </script>
             </div>
         </div>
+
 
         <script>
             // jam WIB realtime
