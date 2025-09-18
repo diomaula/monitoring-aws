@@ -15,8 +15,8 @@ class AwsController extends Controller
     public function stations(Request $request)
     {
         $stationsMeta = [
-            '5000000031' => ['name' => 'AWS Digi Banyuwangi', 'lat' => -8.142677735101149, 'lng' => 114.40040531090388, 'region' => 'banyuwangi'],
-            '3000000007' => ['name' => 'AWS Maritim Ketapang', 'lat' => -8.2, 'lng' => 114.37, 'region' => 'banyuwangi'],
+            '5000000031' => ['name' => 'AWS Digi Banyuwangi', 'lat' => -8.214302905669573, 'lng' => 114.35563695303902, 'region' => 'banyuwangi'],
+            '3000000007' => ['name' => 'AWS Maritim Ketapang', 'lat' => -8.142126088215901, 'lng' => 114.40021580173305, 'region' => 'banyuwangi'],
             '3000000046' => ['name' => 'AWS Maritim Gilimanuk', 'lat' => -8.161597791585667, 'lng' => 114.43771049574364, 'region' => 'banyuwangi'],
             // '5000000069' => ['name' => 'AWS Lainnya', 'lat' => -8.28, 'lng' => 114.39, 'region' => 'banyuwangi'],
             // 1000000013
