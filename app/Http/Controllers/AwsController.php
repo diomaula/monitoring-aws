@@ -73,17 +73,18 @@ class AwsController extends Controller
             $jsonData = $response->json();
 
             $data = [
-                'pancitemp'   => $jsonData['pancitemp'] ?? 0,
-                'pancilevel'  => $jsonData['pancilevel'] ?? 0,
-                'temp'        => $jsonData['temp'] ?? 0,
-                'solrad'      => $jsonData['solrad'] ?? 0,
-                'rh'          => $jsonData['rh'] ?? 0,
-                'rain'        => $jsonData['rain'] ?? 0,
-                'watertemp'   => $jsonData['watertemp'] ?? 0,
-                'pressure'    => $jsonData['pressure'] ?? 0,
-                'windspeed'   => $jsonData['windspeed'] ?? 0,
-                'winddir'     => $jsonData['winddir'] ?? 0,
-                'waterlevel'  => $jsonData['waterlevel'] ?? 0,
+                'pancitemp'   => formatNumber($jsonData['pancitemp'] ?? 0,),
+                'pancilevel'  => formatNumber($jsonData['pancilevel'] ?? 0),
+                'temp'        => formatNumber($jsonData['temp'] ?? 0, true),
+                'solrad'      => formatNumber($jsonData['solrad'] ?? 0, true), 
+                'rh'          => formatNumber($jsonData['rh'] ?? 0),
+                'rain'        => formatNumber($jsonData['rain'] ?? 0),
+                'watertemp'   => formatNumber($jsonData['watertemp'] ?? 0),
+                'pressure'    => formatNumber($jsonData['pressure'] ?? 0, true), 
+                'windspeed'   => formatNumber($jsonData['windspeed'] ?? 0, true),
+                'windspeed_knot' => formatNumber(($jsonData['windspeed'] ?? 0) * 1.94384, true),
+                'winddir'     => formatNumber($jsonData['winddir'] ?? 0),
+                'waterlevel'  => formatNumber($jsonData['waterlevel'] ?? 0, true),
                 'waktu'       => $jsonData['waktu'] ?? null,
             ];
 
