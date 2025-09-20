@@ -115,66 +115,42 @@ class AwsController extends Controller
         return $values->every(fn($v) => $v == 0) ? 'MERAH' : 'HIJAU';
     }
 
-    // 7 hari terakhir
-    public function getWeeklyAverage()
+    public function getChartData($id)
     {
-        // $start = Carbon::now()->subDays(6);
-        // $averages = AwsLog::select(
-        //     DB::raw('DATE(created_at) as date'),
-        //     DB::raw('AVG(rainfall) as avg_rainfall')
-        // )
-        // ->where('created_at', '>=', $start)
-        // ->groupBy(DB::raw('DATE(created_at)'))
-        // ->orderBy('date')
-        // ->get();
+        // Cek apakah ID valid
+        $names = [
+            '3000000007' => 'AWS Maritim Ketapang',
+            '3000000046' => 'AWS Maritim Gilimanuk',
+            '5000000031' => 'AWS Digi Banyuwangi',
+        ];
 
-        // return response()->json($averages);
-    }
+        if (!isset($names[$id])) {
+            return response()->json(['error' => 'Wilayah tidak ditemukan'], 404);
+        }
 
-    public function weeklyMultiParameter()
-    {
-        $stations = ['5000000069','3000000007','3000000046']; 
-        $days = collect(range(0,6))->map(fn($d) => Carbon::now()->subDays($d)->format('Y-m-d'))->reverse();
-
-        $data = $days->map(function ($date) use ($stations) {
-            $rain = 0; $temp = 0; $humid = 0; $count = 0;
-            foreach ($stations as $station) {
-                $response = Http::get("http://202.90.199.132/aws-new/data/station/latest/{$station}");
-                if ($response->successful()) {
-                    $json = $response->json();
-                    $rain += floatval($json['rainfall'] ?? 0);
-                    $temp += floatval($json['temperature'] ?? 0);
-                    $humid += floatval($json['humidity'] ?? 0);
-                    $count++;
-                }
-            }
-            return [
-                'date' => $date,
-                'rainfall' => $count ? $rain / $count : 0,
-                'temperature' => $count ? $temp / $count : 0,
-                'humidity' => $count ? $humid / $count : 0,
-            ];
-        });
-
-        return response()->json(array_values($data->toArray())); // <-- pastikan numerik array
-    }
-
-    public function getChartData()
-    {
-        // Ambil data 7 hari terakhir
-        $data = DataAws::where('timestamp', '>=', Carbon::now()->subDays(7))
+        // Ambil data 7 hari terakhir dari DB (bukan latest API)
+        $data = DataAws::where('aws_id', $id)
+            ->where('timestamp', '>=', Carbon::now()->subDays(7))
             ->orderBy('timestamp', 'asc')
             ->get();
 
-        // Format untuk chart ApexCharts
         $rainfall = [];
         $temp = [];
         $humidity = [];
 
         foreach ($data as $row) {
-            $rainfall[] = [$row->timestamp->toIso8601String(), (float) $row->rainfall];
-            $temp[]     = [$row->timestamp->toIso8601String(), (float) $row->temperature];
-            $humidity[] = [$row->timestamp->toIso8601String(), (float) $row->humidity];
+            $rainfall[] = [
+                "x" => $row->timestamp->toIso8601String(),
+                "y" => (float) $row->rainfall,
+            ];
+            $temp[] = [
+                "x" => $row->timestamp->toIso8601String(),
+                "y" => (float) $row->temperature,
+            ];
+            $humidity[] = [
+                "x" => $row->timestamp->toIso8601String(),
+                "y" => (float) $row->humidity,
+            ];
         }
 
         return response()->json([
@@ -184,5 +160,4 @@ class AwsController extends Controller
         ]);
     }
 
-    
 }

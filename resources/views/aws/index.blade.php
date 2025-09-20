@@ -270,7 +270,8 @@
                 <script>
                     document.addEventListener("DOMContentLoaded", async () => {
                         try {
-                            let response = await fetch("/chart-data");
+                            let awsId = "{{ $id }}"; // dari controller
+                            let response = await fetch(`/aws/${awsId}/chart-data`);
                             let result = await response.json();
 
                             new ApexCharts(document.querySelector("#reportsChart"), {
@@ -317,7 +318,6 @@
                 </script>
             </div>
         </div>
-
 
         <script>
             // jam WIB realtime

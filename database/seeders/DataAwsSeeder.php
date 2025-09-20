@@ -10,31 +10,41 @@ class DataAwsSeeder extends Seeder
 {
     public function run()
     {
-        $awsIds = [1, 2, 3]; // misalnya ada 3 alat AWS
+        $startDate = Carbon::now()->subDays(7)->startOfDay(); // mulai 7 hari ke belakang
+        $endDate   = Carbon::now();
 
-        foreach ($awsIds as $awsId) {
-            $start = Carbon::now()->subDays(7)->startOfDay();
+        $awsList = [1, 2, 3];
 
-            // loop setiap 3 jam selama 7 hari
-            for ($i = 0; $i < (7 * 8); $i++) {
-                $timestamp = $start->copy()->addHours($i * 3);
+        foreach ($awsList as $awsId) {
+            $date = $startDate->copy();
 
+            while ($date <= $endDate) {
                 DataAws::create([
-                    'aws_id'        => $awsId,
-                    'timestamp'     => $timestamp,
-                    'temperature'   => rand(20, 35),  // °C
-                    'humidity'      => rand(60, 90),  // %
-                    'pressure'      => rand(1000, 1020), // hPa
-                    'rainfall'      => rand(0, 50),   // mm
-                    'wind_speed'    => rand(0, 15),   // m/s
-                    'wind_direction'=> rand(0, 360),  // derajat
-                    'pancitemp'     => rand(20, 30),
-                    'pancilevel'    => rand(0, 100),
-                    'solrad'        => rand(100, 1000),
-                    'watertemp'     => rand(20, 28),
-                    'waterlevel'    => rand(0, 200),
+                    'aws_id'      => $awsId,
+                    'timestamp'   => $date,
+                    'rainfall'    => $this->generateRainfall($awsId),
+                    'temperature' => $this->generateTemperature($awsId),
+                    'humidity'    => $this->generateHumidity($awsId),
                 ]);
+
+                $date->addHours(3); // interval 3 jam
             }
         }
+    }
+
+    private function generateRainfall($awsId)
+    {
+        // beda setiap alat (biar tidak sama)
+        return rand(0, 20) + ($awsId * 2);
+    }
+
+    private function generateTemperature($awsId)
+    {
+        return rand(24, 32) + ($awsId - 1); // alat 1,2,3 beda tipis
+    }
+
+    private function generateHumidity($awsId)
+    {
+        return rand(60, 90) - ($awsId * 2); // makin tinggi aws_id makin rendah
     }
 }
