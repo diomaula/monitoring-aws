@@ -1,55 +1,53 @@
 <?php
 
-// app/Console/Commands/ExportAwsData.php
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\DataAws;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class ExportAwsData extends Command
 {
     protected $signature = 'aws:export';
-    protected $description = 'Export AWS data older than 1 month to CSV and delete them';
+    protected $description = 'Export data AWS lama ke CSV dan hapus dari database';
 
     public function handle()
     {
-        $cutoff = now()->subMonth(); // ambil data lebih dari 1 bulan
+        // Tentukan cutoff misalnya data lebih lama dari 1 bulan
+        $cutoff = Carbon::now()->subMonth();
+
+        // Ambil semua data lebih lama dari cutoff
         $data = DataAws::where('timestamp', '<', $cutoff)->get();
 
         if ($data->isEmpty()) {
-            $this->info("Tidak ada data lama untuk di-export.");
+            $this->info('Tidak ada data lama yang diexport.');
             return;
         }
 
-        // buat nama file, contoh: aws-data-2025-08.csv
-        $filename = "aws-data-" . now()->subMonth()->format('Y-m') . ".csv";
+        // Buat nama file CSV unik
+        $filename = 'exports/aws_data_' . now()->format('Y_m_d_His') . '.csv';
 
-        // header CSV
+        // Ambil nama kolom dari tabel
+        $columns = array_keys($data->first()->toArray());
+
+        // Buat array CSV
         $csvData = [];
-        $csvData[] = ['id', 'aws_id', 'rainfall', 'temperature', 'humidity', 'timestamp'];
-
+        $csvData[] = $columns; // header
         foreach ($data as $row) {
-            $csvData[] = [
-                $row->id,
-                $row->aws_id,
-                $row->rainfall,
-                $row->temperature,
-                $row->humidity,
-                $row->timestamp,
-            ];
+            $csvData[] = array_values($row->toArray());
         }
 
-        // simpan ke storage/app/exports
-        $handle = fopen(storage_path("app/exports/{$filename}"), 'w');
+        // Simpan ke storage/app/exports
+        $handle = fopen(storage_path('app/' . $filename), 'w');
         foreach ($csvData as $line) {
             fputcsv($handle, $line);
         }
         fclose($handle);
 
-        // hapus data lama
+        // Hapus data lama dari database
         DataAws::where('timestamp', '<', $cutoff)->delete();
 
-        $this->info("Data lama berhasil di-export ke {$filename} dan dihapus dari DB.");
+        $this->info("Berhasil export " . count($data) . " record ke $filename dan hapus dari database.");
     }
 }
