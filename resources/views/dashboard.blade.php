@@ -148,6 +148,7 @@
                     throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
                 }
             })
+
             .then(data => {
                 console.log("Data stations:", data);
 
@@ -177,8 +178,9 @@
                 });
 
                 // Fetch chart data
-                return fetch('{{ url("/api/aws/weekly-multi") }}');
+                return fetch('{{ url("/api/stations") }}');
             })
+            
             .then(async res => {
                 if (!res.ok) throw new Error(`HTTP Error ${res.status} - ${res.statusText}`);
                 const text = await res.text();
@@ -189,6 +191,7 @@
                     throw new Error("Response bukan JSON (kemungkinan halaman error / redirect)");
                 }
             })
+
             .then(avgData => {
                 console.log("Data chart:", avgData);
 
@@ -221,6 +224,7 @@
                 });
                 chart.render();
             })
+            
             .catch(err => {
                 console.error("Gagal memuat data:", err.message);
                 document.getElementById('total-aws').innerText = "Error";
