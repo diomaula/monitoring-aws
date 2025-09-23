@@ -27,6 +27,6 @@ Route::get('/api/stations', [AwsController::class, 'stations']);
 Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
 Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
 Route::get('/aws/{id}', [AwsController::class, 'index']);
-Route::get('/aws/{code}/chart-data', [AwsController::class, 'getChartData']);
+Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
 
 // Route::get('/report', [ReportController::class, 'index']);

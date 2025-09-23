@@ -270,8 +270,8 @@
                 <script>
                     document.addEventListener("DOMContentLoaded", async () => {
                         try {
-                            let awsId = "{{ $id }}"; // dari controller
-                            let response = await fetch(`/aws/${awsId}/chart-data`);
+                            let code = "{{ $id }}"; // misalnya 5000000031
+                            let response = await fetch(`/chart-data/${code}`);
                             let result = await response.json();
 
                             new ApexCharts(document.querySelector("#reportsChart"), {
@@ -286,7 +286,7 @@
                                     zoom: { enabled: true }
                                 },
                                 stroke: { curve: 'smooth', width: 2 },
-                                markers: { size: 0 },
+                                markers: { size: 3 },
                                 colors: ['#FF0000', '#2eca6a', '#4154f1'],
                                 dataLabels: { enabled: false },
                                 fill: {

@@ -33,5 +33,9 @@ class DataAws extends Model
 
     public $timestamps = true; 
 
+    public function aws()
+    {
+        return $this->belongsTo(Aws::class, 'aws_id');
+    }
 
 }

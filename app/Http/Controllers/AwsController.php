@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Aws;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\DataAws;
@@ -115,21 +116,17 @@ class AwsController extends Controller
         return $values->every(fn($v) => $v == 0) ? 'MERAH' : 'HIJAU';
     }
 
-    public function getChartData($id)
+    public function getChartData($code)
     {
-        // Cek apakah ID valid
-        $names = [
-            '3000000007' => 'AWS Maritim Ketapang',
-            '3000000046' => 'AWS Maritim Gilimanuk',
-            '5000000031' => 'AWS Digi Banyuwangi',
-        ];
+        // Cari AWS berdasarkan code
+        $aws = Aws::where('code', $code)->first();
 
-        if (!isset($names[$id])) {
+        if (!$aws) {
             return response()->json(['error' => 'Wilayah tidak ditemukan'], 404);
         }
 
-        // Ambil data 7 hari terakhir dari DB (bukan latest API)
-        $data = DataAws::where('aws_id', $id)
+        // Ambil data berdasarkan aws_id
+        $data = DataAws::where('aws_id', $aws->id)
             ->where('timestamp', '>=', Carbon::now()->subDays(7))
             ->orderBy('timestamp', 'asc')
             ->get();
@@ -159,5 +156,6 @@ class AwsController extends Controller
             'humidity' => $humidity,
         ]);
     }
+
 
 }
