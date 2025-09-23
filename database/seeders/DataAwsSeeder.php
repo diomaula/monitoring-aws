@@ -19,13 +19,17 @@ class DataAwsSeeder extends Seeder
             $date = $startDate->copy();
 
             while ($date <= $endDate) {
-                DataAws::create([
-                    'aws_id'      => $awsId,
-                    'timestamp'   => $date,
-                    'rainfall'    => $this->generateRainfall($awsId),
-                    'temperature' => $this->generateTemperature($awsId),
-                    'humidity'    => $this->generateHumidity($awsId),
-                ]);
+                DataAws::updateOrCreate(
+                    [
+                        'aws_id'    => $awsId,
+                        'timestamp' => $date,
+                    ],
+                    [
+                        'rainfall'    => $this->generateRainfall($awsId),
+                        'temperature' => $this->generateTemperature($awsId),
+                        'humidity'    => $this->generateHumidity($awsId),
+                    ]
+                );
 
                 $date->addHours(3); // interval 3 jam
             }
@@ -34,17 +38,16 @@ class DataAwsSeeder extends Seeder
 
     private function generateRainfall($awsId)
     {
-        // beda setiap alat (biar tidak sama)
         return rand(0, 20) + ($awsId * 2);
     }
 
     private function generateTemperature($awsId)
     {
-        return rand(24, 32) + ($awsId - 1); // alat 1,2,3 beda tipis
+        return rand(24, 32) + ($awsId - 1);
     }
 
     private function generateHumidity($awsId)
     {
-        return rand(60, 90) - ($awsId * 2); // makin tinggi aws_id makin rendah
+        return rand(60, 90) - ($awsId * 2);
     }
 }

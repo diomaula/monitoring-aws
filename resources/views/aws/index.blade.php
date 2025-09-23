@@ -179,6 +179,7 @@
                 </div>
                 <div class="info-section">
                     <div>{{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->locale('id')->translatedFormat('l, d F Y') }}</div>
+                    <div id="utc-clock">Memuat waktu...</div>
                     <div id="clock">Memuat waktu...</div>
                 </div>
             </div>
@@ -320,6 +321,17 @@
         </div>
 
         <script>
+            function updateUtcClock() {
+                let now = new Date();
+                let utcHours = now.getUTCHours().toString().padStart(2, '0');
+                let utcMinutes = now.getUTCMinutes().toString().padStart(2, '0');
+                let utcSeconds = now.getUTCSeconds().toString().padStart(2, '0');
+                document.getElementById("utc-clock").innerText = `${utcHours}:${utcMinutes}:${utcSeconds} UTC`;
+            }
+
+            setInterval(updateUtcClock, 1000);
+            updateUtcClock();
+
             // jam WIB realtime
             function updateClock() {
                 const now = new Date();
@@ -331,7 +343,7 @@
                     hour12: false,
                 };
                 const time = now.toLocaleTimeString('en-GB', options);
-                document.getElementById('clock').textContent = `${time} (WIB)`;
+                document.getElementById('clock').textContent = `${time} WIB`;
             }
             setInterval(updateClock, 1000);
             updateClock(); // panggilan pertama
