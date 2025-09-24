@@ -16,17 +16,29 @@ use App\Http\Controllers\ReportController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/dashboard', function () {
-    return view('dashboard');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+Route::get('/', [AuthController::class, 'login'])->name('login');
+Route::post('/signUp', [AuthController::class, 'registerStore'])->name('signUp');
+Route::post('/signIn', [AuthController::class, 'loginStore'])->name('signIn');
 
-Route::get('/api/stations', [AwsController::class, 'stations']);
-Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
-Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
-Route::get('/aws/{id}', [AwsController::class, 'index']);
-Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
+// Route::get('/api/stations', [AwsController::class, 'stations']);
+// Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
+// Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
+// Route::get('/aws/{id}', [AwsController::class, 'index']);
+// Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
 
 // Route::get('/report', [ReportController::class, 'index']);
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {return view('dashboard');})->name('dashboard');
+
+    Route::get('/api/stations', [AwsController::class, 'stations']);
+    // Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
+    // Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
+    Route::get('/aws/{id}', [AwsController::class, 'index']);
+    Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
+
+    // Route::get('/report', [ReportController::class, 'index']);
+});
