@@ -189,47 +189,47 @@
         <div class="data-grid">
             <div class="data-box">
                 <strong>Suhu Udara (°C)</strong>
-                <!-- <span>{{ $data['temp'] }}</span> -->
+                {{ $data['temp'] }}</span> 
                 <span id = "temp">{{ $data['temp'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kelembapan (%RH)</strong>
-                <!-- <span>{{ $data['rh'] }}</span> -->
+                {{ $data['rh'] }}</span> 
                 <span id = "rh">{{ $data['rh'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Tekanan Udara (mbar)</strong>
-                <!-- <span>{{ $data['pressure'] }}</span> -->
+                {{ $data['pressure'] }}</span> 
                 <span id = "pressure">{{ $data['pressure'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Radiasi (w/m²)</strong>
-                <!-- <span>{{ $data['solrad'] }}</span> -->
+                {{ $data['solrad'] }}</span> 
                 <span id = "solrad">{{ $data['solrad'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Curah Hujan (mm)</strong>
-                <!-- <span>{{ $data['rain'] }}</span> -->
+                {{ $data['rain'] }}</span> 
                 <span id = "rain">{{ $data['rain'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kecepatan Angin (m/s)</strong>
-                <!-- <span>{{ $data['windspeed'] }}</span> -->
+                {{ $data['windspeed'] }}</span> 
                 <span id = "windspeed">{{ $data['windspeed'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Suhu Air (°C)</strong>
-                <!-- <span>{{ $data['watertemp'] }}</span> -->
+                {{ $data['watertemp'] }}</span> 
                 <span id = "watertemp">{{ $data['watertemp'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Tinggi Permukaan Air (m)</strong>
-                <!-- <span>{{ $data['waterlevel'] }}</span> -->
+                {{ $data['waterlevel'] }}</span> 
                 <span id = "waterlevel">{{ $data['waterlevel'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kecepatan Angin (knot)</strong>
-                <!-- <span>{{ $data['windspeed_knot'] }}</span> -->
+                {{ $data['windspeed_knot'] }}</span> 
                 <span id = "windspeed_knot">{{ $data['windspeed_knot'] }}</span>
             </div>
         </div>
@@ -271,7 +271,7 @@
                 <script>
                     document.addEventListener("DOMContentLoaded", async () => {
                         try {
-                            let code = "{{ $id }}"; // misalnya 5000000031
+                            let code = "{{ $id }}"; 
                             let response = await fetch(`/chart-data/${code}`);
                             let result = await response.json();
 
