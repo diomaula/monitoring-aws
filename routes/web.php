@@ -41,4 +41,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
 
     // Route::get('/report', [ReportController::class, 'index']);
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
