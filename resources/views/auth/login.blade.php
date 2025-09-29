@@ -116,7 +116,7 @@ form.sign-in-form {
 }
 /* saat belum ada pilihan valid → abu-abu */
 #role:invalid {
-  color: #aaa;
+  color: #727171ff;
 }
 
 /* kalau sudah pilih → jadi hitam */
@@ -432,6 +432,8 @@ form.sign-in-form {
     ></script>
     <link rel="stylesheet" href="style.css" />
     <title>Sign in / Sign up Form</title>
+    <!-- Font Awesome 5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   </head>
   <body>
     <div class="container">
@@ -449,7 +451,7 @@ form.sign-in-form {
             @enderror
             <div class="input-field">
               <i class="fas fa-lock"></i>
-              <input type="password" placeholder="Password" class="form-control" id="password" name="password" value="{{ old('password') }}"  />
+              <input type="password" placeholder="Password" class="form-control" id="signin-password" name="password" value="{{ old('password') }}"  />
             </div> 
             @error('password')
                 <small style="color:red;">{{ $message }}</small>
@@ -472,18 +474,18 @@ form.sign-in-form {
             </div>
             <div class="input-field">
               <i class="fas fa-lock"></i>
-              <input type="password" placeholder="Password" class="form-control" id="password" name="password" required/>
+              <input type="password" placeholder="Password" class="form-control" id="signup-password" name="password" required/>
             </div>  
-            <small style="color:red; display:none;" id="password-error">
+            <small style="color:red; display:none;" id="signup-password-error">
             Password minimal 6 karakter
             </small>
 
             <script>
-            const passwordInput = document.getElementById("password");
-            const passwordError = document.getElementById("password-error");
+            const passwordInput = document.getElementById("signup-password");
+            const passwordError = document.getElementById("signup-password-error");
 
             passwordInput.addEventListener("input", () => {
-                if (passwordInput.value.length < 8) {
+                if (passwordInput.value.length < 7) {
                 passwordError.style.display = "block";
                 } else {
                 passwordError.style.display = "none";
@@ -506,10 +508,9 @@ form.sign-in-form {
       <div class="panels-container">
         <div class="panel left-panel">
           <div class="content">
-            <h3>New here ?</h3>
+            <h3>Baru di sini?</h3>
             <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Debitis,
-              ex ratione. Aliquid!
+              Jika Anda belum memiliki akun, silakan daftar terlebih dahulu untuk mulai menggunakan semua fitur yang tersedia
             </p>
             <button class="btn transparent" id="sign-up-btn">
               Sign up
@@ -519,10 +520,9 @@ form.sign-in-form {
         </div>
         <div class="panel right-panel">
           <div class="content">
-            <h3>One of us ?</h3>
+            <h3>Sudah memiliki akun?</h3>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum
-              laboriosam ad deleniti.
+                Silakan masuk menggunakan username dan password Anda
             </p>
             <button class="btn transparent" id="sign-in-btn">
               Sign in
