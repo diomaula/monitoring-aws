@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Aws;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Models\DataAws;
 use App\Models\AwsLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -14,8 +16,8 @@ class AwsController extends Controller
     public function stations(Request $request)
     {
         $stationsMeta = [
-            '5000000031' => ['name' => 'AWS Digi Banyuwangi', 'lat' => -8.142677735101149, 'lng' => 114.40040531090388, 'region' => 'banyuwangi'],
-            '3000000007' => ['name' => 'AWS Maritim Ketapang', 'lat' => -8.2, 'lng' => 114.37, 'region' => 'banyuwangi'],
+            '5000000031' => ['name' => 'AWS Digi Banyuwangi', 'lat' => -8.214302905669573, 'lng' => 114.35563695303902, 'region' => 'banyuwangi'],
+            '3000000007' => ['name' => 'AWS Maritim Ketapang', 'lat' => -8.142126088215901, 'lng' => 114.40021580173305, 'region' => 'banyuwangi'],
             '3000000046' => ['name' => 'AWS Maritim Gilimanuk', 'lat' => -8.161597791585667, 'lng' => 114.43771049574364, 'region' => 'banyuwangi'],
             // '5000000069' => ['name' => 'AWS Lainnya', 'lat' => -8.28, 'lng' => 114.39, 'region' => 'banyuwangi'],
             // 1000000013
@@ -72,17 +74,18 @@ class AwsController extends Controller
             $jsonData = $response->json();
 
             $data = [
-                'pancitemp'   => $jsonData['pancitemp'] ?? 0,
-                'pancilevel'  => $jsonData['pancilevel'] ?? 0,
-                'temp'        => $jsonData['temp'] ?? 0,
-                'solrad'      => $jsonData['solrad'] ?? 0,
-                'rh'          => $jsonData['rh'] ?? 0,
-                'rain'        => $jsonData['rain'] ?? 0,
-                'watertemp'   => $jsonData['watertemp'] ?? 0,
-                'pressure'    => $jsonData['pressure'] ?? 0,
-                'windspeed'   => $jsonData['windspeed'] ?? 0,
-                'winddir'     => $jsonData['winddir'] ?? 0,
-                'waterlevel'  => $jsonData['waterlevel'] ?? 0,
+                'pancitemp'   => formatNumber($jsonData['pancitemp'] ?? 0,),
+                'pancilevel'  => formatNumber($jsonData['pancilevel'] ?? 0),
+                'temp'        => formatNumber($jsonData['temp'] ?? 0, true),
+                'solrad'      => formatNumber($jsonData['solrad'] ?? 0, true), 
+                'rh'          => formatNumber($jsonData['rh'] ?? 0),
+                'rain'        => formatNumber($jsonData['rain'] ?? 0),
+                'watertemp'   => formatNumber($jsonData['watertemp'] ?? 0),
+                'pressure'    => formatNumber($jsonData['pressure'] ?? 0, true), 
+                'windspeed'   => formatNumber($jsonData['windspeed'] ?? 0, true),
+                'windspeed_knot' => formatNumber(($jsonData['windspeed'] ?? 0) * 1.94384, true),
+                'winddir'     => formatNumber($jsonData['winddir'] ?? 0),
+                'waterlevel'  => formatNumber($jsonData['waterlevel'] ?? 0, true),
                 'waktu'       => $jsonData['waktu'] ?? null,
             ];
 
@@ -113,49 +116,46 @@ class AwsController extends Controller
         return $values->every(fn($v) => $v == 0) ? 'MERAH' : 'HIJAU';
     }
 
-    // 7 hari terakhir
-    public function getWeeklyAverage()
+    public function getChartData($code)
     {
-        // $start = Carbon::now()->subDays(6);
-        // $averages = AwsLog::select(
-        //     DB::raw('DATE(created_at) as date'),
-        //     DB::raw('AVG(rainfall) as avg_rainfall')
-        // )
-        // ->where('created_at', '>=', $start)
-        // ->groupBy(DB::raw('DATE(created_at)'))
-        // ->orderBy('date')
-        // ->get();
+        // Cari AWS berdasarkan code
+        $aws = Aws::where('code', $code)->first();
 
-        // return response()->json($averages);
-    }
+        if (!$aws) {
+            return response()->json(['error' => 'Wilayah tidak ditemukan'], 404);
+        }
 
-    public function weeklyMultiParameter()
-    {
-        $stations = ['5000000069','3000000007','3000000046']; 
-        $days = collect(range(0,6))->map(fn($d) => Carbon::now()->subDays($d)->format('Y-m-d'))->reverse();
+        // Ambil data berdasarkan aws_id
+        $data = DataAws::where('aws_id', $aws->id)
+            ->where('timestamp', '>=', Carbon::now()->subDays(7))
+            ->orderBy('timestamp', 'asc')
+            ->get();
 
-        $data = $days->map(function ($date) use ($stations) {
-            $rain = 0; $temp = 0; $humid = 0; $count = 0;
-            foreach ($stations as $station) {
-                $response = Http::get("http://202.90.199.132/aws-new/data/station/latest/{$station}");
-                if ($response->successful()) {
-                    $json = $response->json();
-                    $rain += floatval($json['rainfall'] ?? 0);
-                    $temp += floatval($json['temperature'] ?? 0);
-                    $humid += floatval($json['humidity'] ?? 0);
-                    $count++;
-                }
-            }
-            return [
-                'date' => $date,
-                'rainfall' => $count ? $rain / $count : 0,
-                'temperature' => $count ? $temp / $count : 0,
-                'humidity' => $count ? $humid / $count : 0,
+        $rainfall = [];
+        $temp = [];
+        $humidity = [];
+
+        foreach ($data as $row) {
+            $rainfall[] = [
+                "x" => $row->timestamp->toIso8601String(),
+                "y" => (float) $row->rainfall,
             ];
-        });
+            $temp[] = [
+                "x" => $row->timestamp->toIso8601String(),
+                "y" => (float) $row->temperature,
+            ];
+            $humidity[] = [
+                "x" => $row->timestamp->toIso8601String(),
+                "y" => (float) $row->humidity,
+            ];
+        }
 
-        return response()->json(array_values($data->toArray())); // <-- pastikan numerik array
+        return response()->json([
+            'rainfall' => $rainfall,
+            'temp'     => $temp,
+            'humidity' => $humidity,
+        ]);
     }
 
-    
+
 }

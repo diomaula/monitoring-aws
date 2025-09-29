@@ -218,6 +218,7 @@
                 </div>
                 <div class="info-section">
                     <div>{{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->locale('id')->translatedFormat('l, d F Y') }}</div>
+                    <div id="utc-clock">Memuat waktu...</div>
                     <div id="clock">Memuat waktu...</div>
                 </div>
             </div>
@@ -226,6 +227,7 @@
         @if($online && isset($data['waktu']))
         <div class="data-grid">
             <div class="data-box">
+<<<<<<< HEAD
                 <strong>Kecepatan Angin (m/s)</strong>
                 <!-- <span>{{ $data['windspeed'] }}</span> -->
                 <span id="windspeed">{{ $data['windspeed'] }}</span>
@@ -236,24 +238,36 @@
                 <span id="winddir">{{ $data['winddir'] }}</span>
             </div>
             <div class="data-box">
+=======
+>>>>>>> cd9c820dc9d36bc8ee6902f9bbb3395f68142d19
                 <strong>Suhu Udara (°C)</strong>
                 <!-- <span>{{ $data['temp'] }}</span> -->
                 <span id="temp">{{ $data['temp'] }}</span>
             </div>
             <div class="data-box">
-                <strong>Kelembapan (%)</strong>
+                <strong>Kelembapan (%RH)</strong>
                 <!-- <span>{{ $data['rh'] }}</span> -->
                 <span id="rh">{{ $data['rh'] }}</span>
             </div>
             <div class="data-box">
-                <strong>Tekanan Udara (hPa)</strong>
+                <strong>Tekanan Udara (mbar)</strong>
                 <!-- <span>{{ $data['pressure'] }}</span> -->
                 <span id="pressure">{{ $data['pressure'] }}</span>
+            </div>
+            <div class="data-box">
+                <strong>Radiasi (w/m²)</strong>
+                <!-- <span>{{ $data['solrad'] }}</span> -->
+                <span id = "solrad">{{ $data['solrad'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Curah Hujan (mm)</strong>
                 <!-- <span>{{ $data['rain'] }}</span> -->
                 <span id="rain">{{ $data['rain'] }}</span>
+            </div>
+            <div class="data-box">
+                <strong>Kecepatan Angin (m/s)</strong>
+                <!-- <span>{{ $data['windspeed'] }}</span> -->
+                <span id = "windspeed">{{ $data['windspeed'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Suhu Air (°C)</strong>
@@ -264,6 +278,11 @@
                 <strong>Tinggi Permukaan Air (m)</strong>
                 <!-- <span>{{ $data['waterlevel'] }}</span> -->
                 <span id="waterlevel">{{ $data['waterlevel'] }}</span>
+            </div>
+            <div class="data-box">
+                <strong>Kecepatan Angin (knot)</strong>
+                <!-- <span>{{ $data['windspeed_knot'] }}</span> -->
+                <span id = "windspeed_knot">{{ $data['windspeed_knot'] }}</span>
             </div>
         </div>
 
@@ -296,6 +315,7 @@
         </div>
 
         <!-- Chart -->
+<<<<<<< HEAD
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
@@ -358,10 +378,77 @@
                         </script>
                     </div>
                 </div>
+=======
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-0">Grafik Curah Hujan, Suhu & Kelembapan AWS</h5>
+                <div id="reportsChart"></div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", async () => {
+                        try {
+                            let code = "{{ $id }}"; // misalnya 5000000031
+                            let response = await fetch(`/chart-data/${code}`);
+                            let result = await response.json();
+
+                            new ApexCharts(document.querySelector("#reportsChart"), {
+                                series: [
+                                    { name: 'Curah Hujan', data: result.rainfall },
+                                    { name: 'Suhu', data: result.temp },
+                                    { name: 'Kelembapan', data: result.humidity }
+                                ],
+                                chart: {
+                                    type: 'area',
+                                    height: 350,
+                                    zoom: { enabled: true }
+                                },
+                                stroke: { curve: 'smooth', width: 2 },
+                                markers: { size: 3 },
+                                colors: ['#FF0000', '#2eca6a', '#4154f1'],
+                                dataLabels: { enabled: false },
+                                fill: {
+                                    type: "gradient",
+                                    gradient: {
+                                        shadeIntensity: 1,
+                                        opacityFrom: 0.3,
+                                        opacityTo: 0.4,
+                                        stops: [0, 90, 100]
+                                    }
+                                },
+                                xaxis: {
+                                    type: 'datetime',
+                                    tickAmount: 7,
+                                },
+                                tooltip: {
+                                    x: { format: 'dd/MM/yy HH:mm' }
+                                },
+                                legend: {
+                                    position: 'top',
+                                    horizontalAlign: 'center'
+                                }
+                            }).render();
+
+                        } catch (e) {
+                            console.error("Gagal memuat data chart:", e);
+                        }
+                    });
+                </script>
+>>>>>>> cd9c820dc9d36bc8ee6902f9bbb3395f68142d19
             </div>
         </div>
 
         <script>
+            function updateUtcClock() {
+                let now = new Date();
+                let utcHours = now.getUTCHours().toString().padStart(2, '0');
+                let utcMinutes = now.getUTCMinutes().toString().padStart(2, '0');
+                let utcSeconds = now.getUTCSeconds().toString().padStart(2, '0');
+                document.getElementById("utc-clock").innerText = `${utcHours}:${utcMinutes}:${utcSeconds} UTC`;
+            }
+
+            setInterval(updateUtcClock, 1000);
+            updateUtcClock();
+
             // jam WIB realtime
             function updateClock() {
                 const now = new Date();
@@ -373,7 +460,7 @@
                     hour12: false,
                 };
                 const time = now.toLocaleTimeString('en-GB', options);
-                document.getElementById('clock').textContent = `${time} (WIB)`;
+                document.getElementById('clock').textContent = `${time} WIB`;
             }
             setInterval(updateClock, 1000);
             updateClock(); // panggilan pertama
@@ -431,12 +518,10 @@
                 }
             }
 
-
             // 🚀 Initial fetch + auto refresh tiap 1 menit
             fetchWeatherData();
             setInterval(fetchWeatherData, 60000);
         </script>
-
 
         @else
         <p>Tidak ada data yang dapat ditampilkan.</p>

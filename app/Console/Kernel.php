@@ -13,6 +13,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        // $schedule->command('aws:fetch')->hourly();
+        $schedule->command('aws:fetch')->everyThreeHours();
+        // $schedule->command('aws:fetch')->everyMinute();
+
+        $schedule->command('aws:export')->monthlyOn(1, '0:10');
+
     }
 
     /**

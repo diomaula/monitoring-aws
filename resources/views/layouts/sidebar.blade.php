@@ -55,6 +55,23 @@
         </ul>
       </li>
 
+      <!-- <li class="nav-item" style="position: absolute; bottom: 10px; width: 90%;">
+        <a class="nav-link {{ request()->is('logout') ? '' : 'collapsed' }}" href="/logout">
+          <i class="bi bi-door-open"></i>
+          <span>Logout</span>
+        </a>
+      </li> -->
+
+      <li class="nav-item" style="position: absolute; bottom: 10px; width: 90%;">
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit" class="nav-link" style="background:none; border:none; padding:0; width:100%; text-align:left;">
+            <i class="bi bi-door-open"></i>
+            <span>Logout</span>
+        </button>
+    </form>
+</li>
+
 
       {{-- <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
