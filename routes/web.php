@@ -23,14 +23,7 @@ Route::get('/', [AuthController::class, 'login'])->name('login');
 Route::post('/signUp', [AuthController::class, 'registerStore'])->name('signUp');
 Route::post('/signIn', [AuthController::class, 'loginStore'])->name('signIn');
 
-<<<<<<< HEAD
-Route::get('/api/stations', [AwsController::class, 'stations']);
-Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
-Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
-Route::get('/aws/{id}', [AwsController::class, 'index']);
-Route::get('/report', [ReportController::class, 'index']);
-Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
-=======
+
 // Route::get('/api/stations', [AwsController::class, 'stations']);
 // Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
 // Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
@@ -43,13 +36,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {return view('dashboard');})->name('dashboard');
 
     Route::get('/api/stations', [AwsController::class, 'stations']);
-    // Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
-    // Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
+    Route::get('/api/aws/weekly-average', [AwsController::class, 'getWeeklyAverage']);
+    Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
     Route::get('/aws/{id}', [AwsController::class, 'index']);
     Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
+    Route::get('/report', [ReportController::class, 'index']);
+    Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
 
     // Route::get('/report', [ReportController::class, 'index']);
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
->>>>>>> cd9c820dc9d36bc8ee6902f9bbb3395f68142d19
