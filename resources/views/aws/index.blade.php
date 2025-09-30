@@ -1,136 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    @include('layouts.header')
-    
-    <head>
-        <style>
-            .logo-section {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            }
+@include('layouts.header')
 
-            .logo-section img {
-                height: 50px;
-            }
+<head>
+    <style>
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-            .logo-section h1 {
-                font-size: 20px;
-                color: #003366;
-                margin: 0;
-            }
+        .logo-section img {
+            height: 50px;
+        }
 
-            .info-section {
-                text-align: right;
-            }
+        .logo-section h1 {
+            font-size: 20px;
+            color: #003366;
+            margin: 0;
+        }
 
-            .header-section {
-                display: flex;
-                justify-content: space-between; 
-                align-items: center;           
-            }
+        .info-section {
+            text-align: right;
+        }
 
-            .info-section div {
-                margin: 2px 0;
-            }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-            .status {
-                padding: 10px 16px;
-                border-radius: 8px;
-                font-weight: bold;
-                display: inline-block;
-                margin-bottom: 0;
-            }
+        .info-section div {
+            margin: 2px 0;
+        }
 
-            .online {
-                background-color: #d4edda;
-                color: #155724;
-                border: 1px solid #c3e6cb;
-            }
+        .status {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 0;
+        }
 
-            .offline {
-                background-color: #f8d7da;
-                color: #721c24;
-                border: 1px solid #f5c6cb;
-            }
+        .online {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
 
-            .data-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-                gap: 20px;
-                margin-bottom: 30px;
-            }
+        .offline {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
 
-            .data-box {
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-            .data-box strong {
-                display: block;
-                font-size: 14px;
-                margin-bottom: 6px;
-                color: #555;
-            }
+        .data-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
 
-            .data-box span {
-                font-size: 20px;
-                font-weight: bold;
-            }
+        .data-box strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #555;
+        }
 
-            .btn-back {
-                display: inline-block;
-                padding: 10px 16px;
-                background-color: #007BFF;
-                color: white;
-                text-decoration: none;
-                border-radius: 6px;
-            }
+        .data-box span {
+            font-size: 20px;
+            font-weight: bold;
+        }
 
-            .btn-back:hover {
-                background-color: #0056b3;
-            }
+        .btn-back {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
 
-            .compass {
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+
+        .compass {
             width: 200px;
             height: 200px;
             position: relative;
             display: inline-block;
-            }
+        }
 
-            .compass-circle {
+        .compass-circle {
             width: 100%;
             height: 100%;
-            border: 8px solid #ccc;      
-            border-radius: 50%;          
-            background: #1e3a8a;         
+            border: 8px solid #ccc;
+            border-radius: 50%;
+            background: #1e3a8a;
             position: relative;
-            }
+        }
 
-            .compass-circle span {
+        .compass-circle span {
             color: white;
             font-weight: bold;
             position: absolute;
             font-size: 14px;
-            }
+        }
 
-            /* Arah utama */
-            .compass-circle .north { top: 5px; left: 50%; transform: translateX(-50%); }
-            .compass-circle .south { bottom: 5px; left: 50%; transform: translateX(-50%); }
-            .compass-circle .west  { top: 50%; left: 5px; transform: translateY(-50%); }
-            .compass-circle .east  { top: 50%; right: 5px; transform: translateY(-50%); }
+        /* Arah utama */
+        .compass-circle .north {
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
 
-            /* Arah tambahan */
-            .compass-circle .ne { top: 25px; right: 25px; font-size: 12px; }
-            .compass-circle .nw { top: 25px; left: 25px; font-size: 12px; }
-            .compass-circle .se { bottom: 25px; right: 25px; font-size: 12px; }
-            .compass-circle .sw { bottom: 25px; left: 25px; font-size: 12px; }
+        .compass-circle .south {
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
 
-            /* Jarum kompas */
-            .compass-arrow {
+        .compass-circle .west {
+            top: 50%;
+            left: 5px;
+            transform: translateY(-50%);
+        }
+
+        .compass-circle .east {
+            top: 50%;
+            right: 5px;
+            transform: translateY(-50%);
+        }
+
+        /* Arah tambahan */
+        .compass-circle .ne {
+            top: 25px;
+            right: 25px;
+            font-size: 12px;
+        }
+
+        .compass-circle .nw {
+            top: 25px;
+            left: 25px;
+            font-size: 12px;
+        }
+
+        .compass-circle .se {
+            bottom: 25px;
+            right: 25px;
+            font-size: 12px;
+        }
+
+        .compass-circle .sw {
+            bottom: 25px;
+            left: 25px;
+            font-size: 12px;
+        }
+
+        /* Jarum kompas */
+        .compass-arrow {
             width: 4px;
             height: 80px;
             background: red;
@@ -139,11 +177,12 @@
             left: 50%;
             transform-origin: bottom center;
             transform: translate(-50%, -100%) rotate(0deg);
-            transition: transform 0.5s ease-in-out; /* animasi halus */
-            }
+            transition: transform 0.5s ease-in-out;
+            /* animasi halus */
+        }
 
-            /* Titik tengah */
-            .compass-center {
+        /* Titik tengah */
+        .compass-center {
             width: 20px;
             height: 20px;
             background: #fff;
@@ -152,13 +191,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            }
-        </style>
-    </head>
+        }
+    </style>
+</head>
 
-    <body>
+<body>
     @include('layouts.loading')
-    
+
     @include('layouts.navbar')
 
     @include('layouts.sidebar')
@@ -169,8 +208,8 @@
             <h1>{{ $name }}</h1>
             <nav>
                 <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                <li class="breadcrumb-item active">Dashboard</li>
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
             </nav>
             <div class="header-section">
@@ -184,47 +223,47 @@
                 </div>
             </div>
         </div><!-- End Page Title -->
-        
+
         @if($online && isset($data['waktu']))
         <div class="data-grid">
             <div class="data-box">
                 <strong>Suhu Udara (°C)</strong>
-                <span id = "temp">{{ $data['temp'] }}</span>
+                <span id="temp">{{ $data['temp'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kelembapan (%RH)</strong>
-                <span id = "rh">{{ $data['rh'] }}</span>
+                <span id="rh">{{ $data['rh'] }}</span>
             </div>
             <div class="data-box">
-                <strong>Tekanan Udara (mbar)</strong>    
-                <span id = "pressure">{{ $data['pressure'] }}</span>
+                <strong>Tekanan Udara (mbar)</strong>
+                <span id="pressure">{{ $data['pressure'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Radiasi (w/m²)</strong>
-                <span id = "solrad">{{ $data['solrad'] }}</span>
+                <span id="solrad">{{ $data['solrad'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Curah Hujan (mm)</strong>
-                <span id = "rain">{{ $data['rain'] }}</span>
+                <span id="rain">{{ $data['rain'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kecepatan Angin (m/s)</strong>
-                <span id = "windspeed">{{ $data['windspeed'] }}</span>
+                <span id="windspeed">{{ $data['windspeed'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Suhu Air (°C)</strong>
-                <span id = "watertemp">{{ $data['watertemp'] }}</span>
+                <span id="watertemp">{{ $data['watertemp'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Tinggi Permukaan Air (m)</strong>
-                <span id = "waterlevel">{{ $data['waterlevel'] }}</span>
+                <span id="waterlevel">{{ $data['waterlevel'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kecepatan Angin (knot)</strong>
-                <span id = "windspeed_knot">{{ $data['windspeed_knot'] }}</span>
+                <span id="windspeed_knot">{{ $data['windspeed_knot'] }}</span>
             </div>
         </div>
-        
+
         <div class="col-md-12 col-sm-6 mb-3">
             <div class="card info-card">
                 <div class="card-body text-center">
@@ -267,20 +306,37 @@
                             let result = await response.json();
 
                             new ApexCharts(document.querySelector("#reportsChart"), {
-                                series: [
-                                    { name: 'Curah Hujan', data: result.rainfall },
-                                    { name: 'Suhu', data: result.temp },
-                                    { name: 'Kelembapan', data: result.humidity }
+                                series: [{
+                                        name: 'Curah Hujan',
+                                        data: result.rainfall
+                                    },
+                                    {
+                                        name: 'Suhu',
+                                        data: result.temp
+                                    },
+                                    {
+                                        name: 'Kelembapan',
+                                        data: result.humidity
+                                    }
                                 ],
                                 chart: {
                                     type: 'area',
                                     height: 350,
-                                    zoom: { enabled: true }
+                                    zoom: {
+                                        enabled: true
+                                    }
                                 },
-                                stroke: { curve: 'smooth', width: 2 },
-                                markers: { size: 3 },
+                                stroke: {
+                                    curve: 'smooth',
+                                    width: 2
+                                },
+                                markers: {
+                                    size: 3
+                                },
                                 colors: ['#FF0000', '#2eca6a', '#4154f1'],
-                                dataLabels: { enabled: false },
+                                dataLabels: {
+                                    enabled: false
+                                },
                                 fill: {
                                     type: "gradient",
                                     gradient: {
@@ -295,7 +351,9 @@
                                     tickAmount: 7,
                                 },
                                 tooltip: {
-                                    x: { format: 'dd/MM/yy HH:mm' }
+                                    x: {
+                                        format: 'dd/MM/yy HH:mm'
+                                    }
                                 },
                                 legend: {
                                     position: 'top',
@@ -356,7 +414,7 @@
                     const stationId = "{{ $id }}";
                     const response = await fetch(`/aws/${stationId}`, {
                         headers: {
-                            "Accept": "application/json"   
+                            "Accept": "application/json"
                         }
                     });
 
@@ -374,13 +432,13 @@
 
                     // Update nilai DOM
                     document.getElementById('windspeed').textContent = data.windspeed ?? '-';
-                    document.getElementById('winddir').textContent   = (data.winddir ?? '-') + '°';
-                    document.getElementById('temp').textContent      = data.temp ?? '-';
-                    document.getElementById('rh').textContent        = data.rh ?? '-';
-                    document.getElementById('pressure').textContent  = data.pressure ?? '-';
-                    document.getElementById('rain').textContent      = data.rain ?? '-';
+                    document.getElementById('winddir').textContent = (data.winddir ?? '-') + '°';
+                    document.getElementById('temp').textContent = data.temp ?? '-';
+                    document.getElementById('rh').textContent = data.rh ?? '-';
+                    document.getElementById('pressure').textContent = data.pressure ?? '-';
+                    document.getElementById('rain').textContent = data.rain ?? '-';
                     document.getElementById('watertemp').textContent = data.watertemp ?? '-';
-                    document.getElementById('waterlevel').textContent= data.waterlevel ?? '-';
+                    document.getElementById('waterlevel').textContent = data.waterlevel ?? '-';
 
                     // Update kompas
                     if (data.winddir !== undefined && data.winddir !== null) {
@@ -409,5 +467,6 @@
 
     @include('layouts.script')
 
-    </body>
+</body>
+
 </html>
