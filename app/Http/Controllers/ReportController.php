@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Barryvdh\DomPDF\Facade\Pdf;
-
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -36,15 +36,31 @@ class ReportController extends Controller
     //     ));
     // }
 
-    public function index()
+    public function index(Request $request)
     {
-        // Misal ambil bulan lalu
-        $bulanLalu = now()->subMonth();
-        $bulanNama = $bulanLalu->translatedFormat('F'); // contoh: Juli
-        $tahun = $bulanLalu->year;
-        $tanggalRilis = now()->translatedFormat('d F Y'); // contoh: 01 Agustus 2025
+        // Ambil input dari query string, default = bulan lalu dan tahun sekarang
+        $bulan = intval($request->input('bulan', Carbon::now()->subMonth()->month));
+        $tahun = intval($request->input('tahun', Carbon::now()->year));
 
-        // Dummy data contoh (isi sesuai kebutuhan)
+        // Nama bulan 
+        $bulanNama = Carbon::create()->month($bulan)->locale('id')->translatedFormat('F');
+
+        // Tanggal rilis
+        $tanggalRilis = Carbon::now()->translatedFormat('d F Y');
+
+        // jika bulan yang dipilih > bulan sekarang (atau tahun lebih besar)
+        $now = Carbon::now();
+        if ($tahun > $now->year || ($tahun == $now->year && $bulan > $now->month)) {
+            return view('report.index', [
+                'bulan' => $bulan,
+                'bulanNama' => $bulanNama,
+                'tahun' => $tahun,
+                'tanggalRilis' => $tanggalRilis,
+                'laporanAda' => false, // laporan tidak ada
+            ]);
+        }
+
+        // Dummy data 
         $suhuMin = 24.5;
         $suhuMax = 34.2;
         $suhuAvg = 28.7;
@@ -63,6 +79,7 @@ class ReportController extends Controller
         $arahAngin = "Timur Laut";
 
         return view('report.index', compact(
+            'bulan',
             'bulanNama',
             'tahun',
             'tanggalRilis',
@@ -77,13 +94,13 @@ class ReportController extends Controller
             'tekananAvg',
             'curahHujan',
             'kecepatanAngin',
-            'arahAngin'
-        ));
+            'arahAngin',
+        ) + ['laporanAda' => true]);
     }
 
     public function cetakPdf()
     {
-        // data dummy contoh (ganti dengan query/database Anda)
+        // data dummy 
         $data = [
             'bulanNama' => now()->subMonth()->translatedFormat('F'),
             'tahun' => now()->subMonth()->year,
@@ -103,7 +120,7 @@ class ReportController extends Controller
         ];
 
         $pdf = Pdf::loadView('report.laporanPDF', $data);
-        return $pdf->stream('laporan-bulanan.pdf'); // bisa juga ->download()
+        return $pdf->stream('laporan-bulanan.pdf'); 
     }
 
 }
