@@ -227,61 +227,48 @@
         @if($online && isset($data['waktu']))
         <div class="data-grid">
             <div class="data-box">
-<<<<<<< HEAD
-                <strong>Kecepatan Angin (m/s)</strong>
-                <!-- <span>{{ $data['windspeed'] }}</span> -->
-                <span id="windspeed">{{ $data['windspeed'] }}</span>
-            </div>
-            <div class="data-box">
-                <strong>Arah Angin (°)</strong>
-                <!-- <span>{{ $data['winddir'] }}</span> -->
-                <span id="winddir">{{ $data['winddir'] }}</span>
-            </div>
-            <div class="data-box">
-=======
->>>>>>> cd9c820dc9d36bc8ee6902f9bbb3395f68142d19
                 <strong>Suhu Udara (°C)</strong>
-                <!-- <span>{{ $data['temp'] }}</span> -->
-                <span id="temp">{{ $data['temp'] }}</span>
+                {{ $data['temp'] }}</span> 
+                <span id = "temp">{{ $data['temp'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kelembapan (%RH)</strong>
-                <!-- <span>{{ $data['rh'] }}</span> -->
-                <span id="rh">{{ $data['rh'] }}</span>
+                {{ $data['rh'] }}</span> 
+                <span id = "rh">{{ $data['rh'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Tekanan Udara (mbar)</strong>
-                <!-- <span>{{ $data['pressure'] }}</span> -->
-                <span id="pressure">{{ $data['pressure'] }}</span>
+                {{ $data['pressure'] }}</span> 
+                <span id = "pressure">{{ $data['pressure'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Radiasi (w/m²)</strong>
-                <!-- <span>{{ $data['solrad'] }}</span> -->
+                {{ $data['solrad'] }}</span> 
                 <span id = "solrad">{{ $data['solrad'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Curah Hujan (mm)</strong>
-                <!-- <span>{{ $data['rain'] }}</span> -->
-                <span id="rain">{{ $data['rain'] }}</span>
+                {{ $data['rain'] }}</span> 
+                <span id = "rain">{{ $data['rain'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kecepatan Angin (m/s)</strong>
-                <!-- <span>{{ $data['windspeed'] }}</span> -->
+                {{ $data['windspeed'] }}</span> 
                 <span id = "windspeed">{{ $data['windspeed'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Suhu Air (°C)</strong>
-                <!-- <span>{{ $data['watertemp'] }}</span> -->
-                <span id="watertemp">{{ $data['watertemp'] }}</span>
+                {{ $data['watertemp'] }}</span> 
+                <span id = "watertemp">{{ $data['watertemp'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Tinggi Permukaan Air (m)</strong>
-                <!-- <span>{{ $data['waterlevel'] }}</span> -->
-                <span id="waterlevel">{{ $data['waterlevel'] }}</span>
+                {{ $data['waterlevel'] }}</span> 
+                <span id = "waterlevel">{{ $data['waterlevel'] }}</span>
             </div>
             <div class="data-box">
                 <strong>Kecepatan Angin (knot)</strong>
-                <!-- <span>{{ $data['windspeed_knot'] }}</span> -->
+                {{ $data['windspeed_knot'] }}</span> 
                 <span id = "windspeed_knot">{{ $data['windspeed_knot'] }}</span>
             </div>
         </div>
@@ -311,129 +298,6 @@
 
                     <h5 id="winddir" class="mt-3">{{ $data['winddir'] }}°</h5>
                 </div>
-            </div>
-        </div>
-
-        <!-- Chart -->
-<<<<<<< HEAD
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0">Monitoring Curah Hujan, Suhu & Kelembapan AWS</h5>
-                    </div>
-                    <div id="reportsChart">
-                        {{-- <div class="inline-loader"></div> --}}
-                        <script>
-                            document.addEventListener("DOMContentLoaded", () => {
-                                new ApexCharts(document.querySelector("#reportsChart"), {
-                                    series: [{
-                                        name: 'Sales',
-                                        data: [31, 40, 28, 51, 42, 82, 56],
-                                    }, {
-                                        name: 'Revenue',
-                                        data: [11, 32, 45, 32, 34, 52, 41]
-                                    }, {
-                                        name: 'Customers',
-                                        data: [15, 11, 32, 18, 9, 24, 11]
-                                    }],
-                                    chart: {
-                                        height: 350,
-                                        type: 'area',
-                                        toolbar: {
-                                            show: false
-                                        },
-                                    },
-                                    markers: {
-                                        size: 4
-                                    },
-                                    colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                    fill: {
-                                        type: "gradient",
-                                        gradient: {
-                                            shadeIntensity: 1,
-                                            opacityFrom: 0.3,
-                                            opacityTo: 0.4,
-                                            stops: [0, 90, 100]
-                                        }
-                                    },
-                                    dataLabels: {
-                                        enabled: false
-                                    },
-                                    stroke: {
-                                        curve: 'smooth',
-                                        width: 2
-                                    },
-                                    xaxis: {
-                                        type: 'datetime',
-                                        categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
-                                    },
-                                    tooltip: {
-                                        x: {
-                                            format: 'dd/MM/yy HH:mm'
-                                        },
-                                    }
-                                }).render();
-                            });
-                        </script>
-                    </div>
-                </div>
-=======
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title mb-0">Grafik Curah Hujan, Suhu & Kelembapan AWS</h5>
-                <div id="reportsChart"></div>
-
-                <script>
-                    document.addEventListener("DOMContentLoaded", async () => {
-                        try {
-                            let code = "{{ $id }}"; // misalnya 5000000031
-                            let response = await fetch(`/chart-data/${code}`);
-                            let result = await response.json();
-
-                            new ApexCharts(document.querySelector("#reportsChart"), {
-                                series: [
-                                    { name: 'Curah Hujan', data: result.rainfall },
-                                    { name: 'Suhu', data: result.temp },
-                                    { name: 'Kelembapan', data: result.humidity }
-                                ],
-                                chart: {
-                                    type: 'area',
-                                    height: 350,
-                                    zoom: { enabled: true }
-                                },
-                                stroke: { curve: 'smooth', width: 2 },
-                                markers: { size: 3 },
-                                colors: ['#FF0000', '#2eca6a', '#4154f1'],
-                                dataLabels: { enabled: false },
-                                fill: {
-                                    type: "gradient",
-                                    gradient: {
-                                        shadeIntensity: 1,
-                                        opacityFrom: 0.3,
-                                        opacityTo: 0.4,
-                                        stops: [0, 90, 100]
-                                    }
-                                },
-                                xaxis: {
-                                    type: 'datetime',
-                                    tickAmount: 7,
-                                },
-                                tooltip: {
-                                    x: { format: 'dd/MM/yy HH:mm' }
-                                },
-                                legend: {
-                                    position: 'top',
-                                    horizontalAlign: 'center'
-                                }
-                            }).render();
-
-                        } catch (e) {
-                            console.error("Gagal memuat data chart:", e);
-                        }
-                    });
-                </script>
->>>>>>> cd9c820dc9d36bc8ee6902f9bbb3395f68142d19
             </div>
         </div>
 

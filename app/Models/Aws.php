@@ -9,10 +9,8 @@ class Aws extends Model
 {
     use HasFactory;
 
-    // Nama tabel
     protected $table = 'aws';
 
-    // Kolom yang boleh diisi
     protected $fillable = [
         'name',
         'code',
@@ -20,7 +18,6 @@ class Aws extends Model
         'status',
     ];
 
-    // Relasi ke data (misalnya DataAws)
     public function data()
     {
         return $this->hasMany(DataAws::class, 'aws_id');
