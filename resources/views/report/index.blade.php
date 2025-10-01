@@ -28,7 +28,7 @@
           <div class="card mb-4 shadow-sm">
             <div class="card-body">
               <h5 class="card-title">
-                <i class="fas fa-filter text-primary"></i> Filter Laporan
+                <i class="text-primary"></i> Filter Laporan
               </h5>
               <form action="{{ route('laporan.index') }}" method="GET" class="row g-2 align-items-end">
                 @php
@@ -72,13 +72,10 @@
           {{-- Card Laporan --}}
           <div class="card shadow-sm">
             <div class="card-body">
-              <h5 class="card-title">
-                <i class="fas fa-chart-bar text-success"></i> Laporan Bulanan
-              </h5>
 
               {{-- Info laporan --}}
               @if($laporanAda)
-              <div class="alert alert-info d-flex align-items-center">
+              <div class="alert alert-info d-flex align-items-center mt-4">
                 <i class="fas fa-info-circle me-2"></i>
                 <div>
                   <strong>Laporan Bulan {{ $bulanNama }} {{ $tahun }}</strong>
