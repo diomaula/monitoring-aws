@@ -156,6 +156,4 @@ class AwsController extends Controller
             'humidity' => $humidity,
         ]);
     }
-
-
 }
