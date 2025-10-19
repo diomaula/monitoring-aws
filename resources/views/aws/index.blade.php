@@ -295,48 +295,45 @@
         <!-- Chart -->
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title mb-0">Grafik Curah Hujan, Suhu & Kelembapan AWS</h5>
-                <div id="reportsChart"></div>
+                <h5 class="card-title mb-4">Grafik AWS (Curah Hujan, Suhu & Kelembapan)</h5>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold">Curah Hujan</h6>
+                    <div id="chartRainfall"></div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold">Suhu</h6>
+                    <div id="chartTemperature"></div>
+                </div>
+
+                <div>
+                    <h6 class="fw-bold">Kelembapan</h6>
+                    <div id="chartHumidity"></div>
+                </div>
 
                 <script>
                     document.addEventListener("DOMContentLoaded", async () => {
                         try {
-                            let code = "{{ $id }}"; // misalnya 5000000031
+                            let code = "{{ $id }}";
                             let response = await fetch(`/chart-data/${code}`);
                             let result = await response.json();
 
-                            new ApexCharts(document.querySelector("#reportsChart"), {
+                            // === Curah Hujan ===
+                            new ApexCharts(document.querySelector("#chartRainfall"), {
                                 series: [{
-                                        name: 'Curah Hujan',
-                                        data: result.rainfall
-                                    },
-                                    {
-                                        name: 'Suhu',
-                                        data: result.temp
-                                    },
-                                    {
-                                        name: 'Kelembapan',
-                                        data: result.humidity
-                                    }
-                                ],
+                                    name: 'Curah Hujan (mm)',
+                                    data: result.rainfall
+                                }],
                                 chart: {
                                     type: 'area',
-                                    height: 350,
-                                    zoom: {
-                                        enabled: true
-                                    }
+                                    height: 300,
+                                    zoom: { enabled: true }
                                 },
-                                stroke: {
-                                    curve: 'smooth',
-                                    width: 2
-                                },
-                                markers: {
-                                    size: 3
-                                },
-                                colors: ['#FF0000', '#2eca6a', '#4154f1'],
-                                dataLabels: {
-                                    enabled: false
-                                },
+                                stroke: { curve: 'smooth', width: 2 },
+                                markers: { size: 3 },
+                                colors: ['#4154f1'],
+                                dataLabels: { enabled: false },
                                 fill: {
                                     type: "gradient",
                                     gradient: {
@@ -346,19 +343,67 @@
                                         stops: [0, 90, 100]
                                     }
                                 },
-                                xaxis: {
-                                    type: 'datetime',
-                                    tickAmount: 7,
+                                xaxis: { type: 'datetime', tickAmount: 7 },
+                                tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
+                                legend: { position: 'top', horizontalAlign: 'center' }
+                            }).render();
+
+                            // === Suhu ===
+                            new ApexCharts(document.querySelector("#chartTemperature"), {
+                                series: [{
+                                    name: 'Suhu (°C)',
+                                    data: result.temp
+                                }],
+                                chart: {
+                                    type: 'area',
+                                    height: 300,
+                                    zoom: { enabled: true }
                                 },
-                                tooltip: {
-                                    x: {
-                                        format: 'dd/MM/yy HH:mm'
+                                stroke: { curve: 'smooth', width: 2 },
+                                markers: { size: 3 },
+                                colors: ['#FF0000'],
+                                dataLabels: { enabled: false },
+                                fill: {
+                                    type: "gradient",
+                                    gradient: {
+                                        shadeIntensity: 1,
+                                        opacityFrom: 0.3,
+                                        opacityTo: 0.4,
+                                        stops: [0, 90, 100]
                                     }
                                 },
-                                legend: {
-                                    position: 'top',
-                                    horizontalAlign: 'center'
-                                }
+                                xaxis: { type: 'datetime', tickAmount: 7 },
+                                tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
+                                legend: { position: 'top', horizontalAlign: 'center' }
+                            }).render();
+
+                            // === Kelembapan ===
+                            new ApexCharts(document.querySelector("#chartHumidity"), {
+                                series: [{
+                                    name: 'Kelembapan (%)',
+                                    data: result.humidity
+                                }],
+                                chart: {
+                                    type: 'area',
+                                    height: 300,
+                                    zoom: { enabled: true }
+                                },
+                                stroke: { curve: 'smooth', width: 2 },
+                                markers: { size: 3 },
+                                colors: ['#2eca6a'],
+                                dataLabels: { enabled: false },
+                                fill: {
+                                    type: "gradient",
+                                    gradient: {
+                                        shadeIntensity: 1,
+                                        opacityFrom: 0.3,
+                                        opacityTo: 0.4,
+                                        stops: [0, 90, 100]
+                                    }
+                                },
+                                xaxis: { type: 'datetime', tickAmount: 7 },
+                                tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
+                                legend: { position: 'top', horizontalAlign: 'center' }
                             }).render();
 
                         } catch (e) {
@@ -368,6 +413,7 @@
                 </script>
             </div>
         </div>
+
 
         <script>
             function updateUtcClock() {
