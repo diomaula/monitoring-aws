@@ -302,7 +302,6 @@
       });
     </script> --}}
 
-
   </main><!-- End #main -->
 
   @include('layouts.footer')
