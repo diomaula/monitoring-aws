@@ -44,7 +44,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/report', [ReportController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
 
-    // Route::get('/report', [ReportController::class, 'index']);
-
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
