@@ -119,7 +119,7 @@ class ReportController extends Controller
             'arahAngin' => 'Timur Laut',
         ];
 
-        $pdf = Pdf::loadView('report.laporanPDF', $data);
+        $pdf = Pdf::loadView('report.pdf', $data);
         return $pdf->stream('laporan-bulanan.pdf'); 
     }
 
