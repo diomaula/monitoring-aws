@@ -48,6 +48,8 @@ class AuthController extends Controller
             return back()->with('error', 'username atau password salah!');
         }
     }
+
+
     public function logout(Request $request)
     {
         Auth::logout();
