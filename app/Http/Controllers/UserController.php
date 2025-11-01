@@ -72,7 +72,10 @@ class UserController extends Controller
         $validated = $request->validate([
             'name' => 'required',
             'username' => 'required|unique:users,username,' . $user->id,
+            'password' => 'nullable|min:5',
             'role' => 'required',
+        ], [
+            'password.min' => 'Password tidak boleh kurang dari 5 karakter.',
         ]);
 
         if ($request->filled('password')) {

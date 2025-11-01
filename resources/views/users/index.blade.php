@@ -79,66 +79,70 @@
                                         </div>
                                     </td>
                                 </tr>
-
-                                <!-- Modal Edit (di dalam loop) -->
-                                <div class="modal fade" id="editUserModal{{ $user->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <form action="{{ route('users.update', $user->id) }}" method="POST"
-                                            class="modal-content">
-                                            @csrf
-                                            @method('PUT')
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Edit User</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="mb-3">
-                                                    <label>Nama</label>
-                                                    <input type="text" name="name" class="form-control"
-                                                        value="{{ $user->name }}" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label>Username</label>
-                                                    <input type="text" name="username" class="form-control"
-                                                        value="{{ $user->username }}" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label>Password (Kosongkan jika tidak diubah)</label>
-                                                    <input type="password" name="password" class="form-control">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label>Role</label>
-                                                    <select name="role" class="form-select" required>
-                                                        <option value="superadmin"
-                                                            {{ $user->role == 'superadmin' ? 'selected' : '' }}>Superadmin
-                                                        </option>
-                                                        <option value="teknisi"
-                                                            {{ $user->role == 'teknisi' ? 'selected' : '' }}>Teknisi
-                                                        </option>
-                                                        <option value="forecast"
-                                                            {{ $user->role == 'forecast' ? 'selected' : '' }}>Forecast
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn btn-primary">Update</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center text-muted">Belum ada pengguna.</td>
                                 </tr>
                             @endforelse
-                        </tbody>
+                        </tbody>                      
                     </table>
                 </div>
             </div>
         </div>
+
+        <!-- Modal Edit -->
+        @foreach ($users as $user)
+            <div class="modal fade" id="editUserModal{{ $user->id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <form action="{{ route('users.update', $user->id) }}" method="POST" class="modal-content">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit User</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label>Nama</label>
+                                <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label>Username</label>
+                                <input type="text" name="username" class="form-control" value="{{ $user->username }}" required>
+                            </div>
+                            <div class="mb-3 position-relative">
+                                <label>Password (Kosongkan jika tidak diubah)</label>
+                                <div class="input-group">
+                                    <input type="password" 
+                                        name="password" 
+                                        class="form-control" 
+                                        id="passwordInput{{ $user->id }}">
+                                    <button type="button" class="btn btn-outline-secondary"
+                                        onclick="togglePassword('passwordInput{{ $user->id }}', this)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                <small id="passwordError{{ $user->id }}" class="text-danger d-none">
+                                    Password tidak boleh kurang dari 5 karakter.
+                                </small>
+                            </div>
+                            <div class="mb-3">
+                                <label>Role</label>
+                                <select name="role" class="form-select" required>
+                                    <option value="superadmin" {{ $user->role == 'superadmin' ? 'selected' : '' }}>Superadmin</option>
+                                    <option value="teknisi" {{ $user->role == 'teknisi' ? 'selected' : '' }}>Teknisi</option>
+                                    <option value="forecast" {{ $user->role == 'forecast' ? 'selected' : '' }}>Forecast</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary" id="updateBtn{{ $user->id }}">Update</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endforeach
 
         <!-- Modal Tambah User -->
         <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel">
@@ -166,7 +170,6 @@
                             <label>Role</label>
                             <select name="role" class="form-select" required>
                                 <option value="">-- Pilih Role --</option>
-                                <option value="superadmin">Superadmin</option>
                                 <option value="teknisi">Teknisi</option>
                                 <option value="forecast">Forecast</option>
                             </select>
@@ -186,6 +189,48 @@
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
         <i class="bi bi-arrow-up-short"></i>
     </a>
+
+    <script>
+        function togglePassword(id, btn) {
+            const input = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+
+        // Validasi real-time panjang password
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[id^="passwordInput"]').forEach(input => {
+                const id = input.id.replace('passwordInput', '');
+                const errorText = document.getElementById('passwordError' + id);
+                const updateBtn = document.getElementById('updateBtn' + id);
+
+                if (!errorText || !updateBtn) return;
+
+                input.addEventListener('input', () => {
+                    const value = input.value.trim();
+
+                    // Hanya validasi jika field tidak kosong
+                    if (value.length > 0 && value.length < 5) {
+                        errorText.classList.remove('d-none');
+                        updateBtn.disabled = true;
+                    } else {
+                        errorText.classList.add('d-none');
+                        updateBtn.disabled = false;
+                    }
+                });
+            });
+        });
+    </script>
+
+
     @include('layouts.script')
 </body>
 

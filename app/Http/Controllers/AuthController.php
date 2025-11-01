@@ -43,10 +43,17 @@ class AuthController extends Controller
         $data = $request->only('username', 'password');
 
         if (Auth::attempt($data)) {
+            $user = Auth::user();
+
+            if ($user->role === 'superadmin') {
+                return redirect()->route('users.index');
+            }
+
             return redirect()->route('dashboard');
         } else {
-            return back()->with('error', 'username atau password salah!');
+            return back()->with('error', 'Username atau password salah!');
         }
+
     }
 
 
