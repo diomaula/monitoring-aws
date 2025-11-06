@@ -295,6 +295,10 @@
             <!-- Chart -->
             <div class="card">
                 <div class="card-body">
+                    <!-- Tambahkan setelah grafik kelembapan -->
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-windrose@3"></script>
+
                     <h5 class="card-title mb-4">Grafik AWS (Curah Hujan, Suhu & Kelembapan)</h5>
 
                     <div class="mb-4">
@@ -307,10 +311,13 @@
                         <div id="chartTemperature"></div>
                     </div>
 
-                    <div>
+                    <div class="mb-4">
                         <h6 class="fw-bold">Kelembapan</h6>
                         <div id="chartHumidity"></div>
                     </div>
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Diagram Arah & Kecepatan Angin (Windrose)</h6>
+                    <div id="chartWindrose"></div>
 
                     <script>
                         document.addEventListener("DOMContentLoaded", async () => {
@@ -405,6 +412,50 @@
                                     tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
                                     legend: { position: 'top', horizontalAlign: 'center' }
                                 }).render();
+
+                                // === Windrose (RADAR CHART) ===
+                                if (result.windrose) {
+                                    new ApexCharts(document.querySelector("#chartWindrose"), {
+                                        series: [{
+                                            name: 'Kecepatan Angin (m/s)',
+                                            data: [
+                                                { x: 'N', y: result.windrose.N ?? 0 },
+                                                { x: 'NE', y: result.windrose.NE ?? 0 },
+                                                { x: 'E', y: result.windrose.E ?? 0 },
+                                                { x: 'SE', y: result.windrose.SE ?? 0 },
+                                                { x: 'S', y: result.windrose.S ?? 0 },
+                                                { x: 'SW', y: result.windrose.SW ?? 0 },
+                                                { x: 'W', y: result.windrose.W ?? 0 },
+                                                { x: 'NW', y: result.windrose.NW ?? 0 },
+                                            ]
+                                        }],
+                                        chart: {
+                                            type: 'radar',
+                                            height: 400,
+                                            toolbar: { show: false }
+                                        },
+                                        title: {
+                                            text: 'Diagram Arah & Kecepatan Angin (Windrose)',
+                                            align: 'center'
+                                        },
+                                        xaxis: {
+                                            categories: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+                                            labels: { style: { colors: '#333', fontWeight: 600 } }
+                                        },
+                                        yaxis: {
+                                            show: true,
+                                            labels: {
+                                                formatter: val => val.toFixed(1) + " m/s"
+                                            }
+                                        },
+                                        stroke: { width: 2 },
+                                        fill: { opacity: 0.4, colors: ['#008FFB'] },
+                                        markers: { size: 4 },
+                                        colors: ['#008FFB']
+                                    }).render();
+                                } else {
+                                    console.warn("Data windrose tidak tersedia.");
+                                }
 
                             } catch (e) {
                                 console.error("Gagal memuat data chart:", e);

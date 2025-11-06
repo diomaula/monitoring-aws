@@ -134,6 +134,26 @@ class AwsController extends Controller
         $rainfall = [];
         $temp = [];
         $humidity = [];
+        $wind_data = [];
+
+        // Arah utama untuk windrose
+        $directions = [
+            'N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'
+        ];
+
+        // Siapkan array untuk menghitung total dan jumlah
+        $windrose_data = [];
+        foreach ($directions as $dir) {
+            $windrose_data[$dir] = ['total_speed' => 0, 'count' => 0];
+        }
+
+        // Mapping arah teks ke derajat
+        $direction_map = [
+            'N' => 0, 'NNE' => 22.5, 'NE' => 45, 'ENE' => 67.5,
+            'E' => 90, 'ESE' => 112.5, 'SE' => 135, 'SSE' => 157.5,
+            'S' => 180, 'SSW' => 202.5, 'SW' => 225, 'WSW' => 247.5,
+            'W' => 270, 'WNW' => 292.5, 'NW' => 315, 'NNW' => 337.5,
+        ];
 
         foreach ($data as $row) {
             $rainfall[] = [
@@ -148,12 +168,50 @@ class AwsController extends Controller
                 "x" => $row->timestamp->toIso8601String(),
                 "y" => (float) $row->humidity,
             ];
+
+            // Konversi arah angin
+            $dirValue = null;
+            if (is_numeric($row->wind_direction)) {
+                $dirValue = (float)$row->wind_direction;
+            } else {
+                $dirValue = $direction_map[strtoupper(trim($row->wind_direction))] ?? null;
+            }
+
+            $wind_data[] = [
+                "time"  => $row->timestamp->toIso8601String(),
+                "dir"   => $dirValue,
+                "speed" => (float)$row->wind_speed,
+            ];
+            // Kelompokkan ke 8 arah utama
+            if ($dirValue !== null) {
+                if ($dirValue >= 337.5 || $dirValue < 22.5) $sector = 'N';
+                elseif ($dirValue < 67.5) $sector = 'NE';
+                elseif ($dirValue < 112.5) $sector = 'E';
+                elseif ($dirValue < 157.5) $sector = 'SE';
+                elseif ($dirValue < 202.5) $sector = 'S';
+                elseif ($dirValue < 247.5) $sector = 'SW';
+                elseif ($dirValue < 292.5) $sector = 'W';
+                else $sector = 'NW';
+
+                $windrose_data[$sector]['total_speed'] += (float)$row->wind_speed;
+                $windrose_data[$sector]['count']++;
+            }
+        }
+
+        // Hitung rata-rata kecepatan tiap arah
+        $windrose = [];
+        foreach ($windrose_data as $dir => $values) {
+            $windrose[$dir] = $values['count'] > 0
+                ? round($values['total_speed'] / $values['count'], 2)
+                : 0;
         }
 
         return response()->json([
             'rainfall' => $rainfall,
             'temp'     => $temp,
             'humidity' => $humidity,
+            'wind_data' => $wind_data,
+            'windrose' =>$windrose,
         ]);
     }
 }
