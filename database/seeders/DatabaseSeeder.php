@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AwsSeeder::class,
             DataAwsSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

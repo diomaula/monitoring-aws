@@ -302,12 +302,12 @@
                     <h5 class="card-title mb-4">Grafik AWS (Curah Hujan, Suhu & Kelembapan)</h5>
 
                     <div class="mb-4">
-                        <h6 class="fw-bold">Curah Hujan</h6>
+                        {{-- <h6 class="fw-bold">Curah Hujan</h6> --}}
                         <div id="chartRainfall"></div>
                     </div>
 
                     <div class="mb-4">
-                        <h6 class="fw-bold">Suhu</h6>
+                        {{-- <h6 class="fw-bold">Suhu</h6> --}}
                         <div id="chartTemperature"></div>
                     </div>
 
@@ -350,9 +350,25 @@
                                             stops: [0, 90, 100]
                                         }
                                     },
-                                    xaxis: { type: 'datetime', tickAmount: 7 },
-                                    tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
-                                    legend: { position: 'top', horizontalAlign: 'center' }
+                                    xaxis: { 
+                                        type: 'datetime', 
+                                        tickAmount: 7 
+                                    },
+                                    yaxis: {
+                                        title: {
+                                            text: 'Curah Hujan (mm)',
+                                            style: {
+                                                fontSize: '12px'
+                                            }
+                                        }
+                                    },
+                                    tooltip: { 
+                                        x: { format: 'dd/MM/yy HH:mm' } 
+                                    },
+                                    legend: { 
+                                        position: 'top', 
+                                        horizontalAlign: 'center' 
+                                    }
                                 }).render();
 
                                 // === Suhu ===
@@ -380,6 +396,14 @@
                                         }
                                     },
                                     xaxis: { type: 'datetime', tickAmount: 7 },
+                                    yaxis: {
+                                        title: {
+                                            text: 'Suhu (°C)',
+                                            style: {
+                                                fontSize: '12px'
+                                            }
+                                        }
+                                    },
                                     tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
                                     legend: { position: 'top', horizontalAlign: 'center' }
                                 }).render();
@@ -409,6 +433,14 @@
                                         }
                                     },
                                     xaxis: { type: 'datetime', tickAmount: 7 },
+                                    yaxis: {
+                                        title: {
+                                            text: 'Kelembapan (%)',
+                                            style: {
+                                                fontSize: '12px'
+                                            }
+                                        }
+                                    },
                                     tooltip: { x: { format: 'dd/MM/yy HH:mm' } },
                                     legend: { position: 'top', horizontalAlign: 'center' }
                                 }).render();
