@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class FetchAwsData extends Command
 {
     protected $signature = 'aws:fetch';
-    protected $description = 'Ambil data dari API AWS dan simpan ke database setiap 3 jam UTC';
+    protected $description = 'Ambil data dari API AWS dan simpan ke database setiap 1 jam UTC';
 
     public function handle()
     {
@@ -24,8 +24,8 @@ class FetchAwsData extends Command
         $hour = (int) $nowUtc->format('H');
 
         // hanya jalan kalau jam UTC kelipatan 3 (00, 03, 06, dst.)
-        if ($hour % 3 !== 0) {
-            $this->info("Bukan jam kelipatan 3 UTC. Sekarang: " . $nowUtc);
+        if ($hour % 1 !== 0) {
+            $this->info("Menjalankan fetch AWS pada " . now('UTC'));
             return 0;
         }
 
