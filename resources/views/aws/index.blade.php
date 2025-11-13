@@ -315,6 +315,7 @@
                         {{-- <h6 class="fw-bold">Kelembapan</h6> --}}
                         <div id="chartHumidity"></div>
                     </div>
+                    
                     <div class="mb-4">
                         <h6 class="fw-bold">Diagram Arah & Kecepatan Angin (Windrose)</h6>
                     <div id="chartWindrose"></div>
