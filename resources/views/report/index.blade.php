@@ -8,189 +8,151 @@
   @include('layouts.navbar')
   @include('layouts.sidebar')
 
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      vertical-align: middle !important;
+      text-align: center !important;
+    }
+
+    thead th {
+      background-color: #e9f3ff;
+      font-weight: 600;
+    }
+
+    tbody tr:hover {
+      background-color: #f5faff;
+    }
+  </style>
+
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Laporan Bulanan</h1>
+      <h1>Laporan AWS</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
-          <li class="breadcrumb-item active">Laporan</li>
+          <li class="breadcrumb-item active">Laporan AWS</li>
         </ol>
       </nav>
-    </div><!-- End Page Title -->
+    </div>
 
     <section class="section dashboard">
-      <div class="row">
-        <div class="col-lg-12">
-
-          {{-- Card Filter --}}
-          <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">
-                <i class="text-primary"></i> Filter Laporan
-              </h5>
-              <form action="{{ route('laporan.index') }}" method="GET" class="row g-2 align-items-end">
-                @php
-                $selectedBulan = $bulan ?? \Carbon\Carbon::now()->subMonth()->month;
-                $selectedTahun = $tahun ?? \Carbon\Carbon::now()->year;
-                @endphp
-
-                <div class="col-md-4">
-                  <label for="bulan" class="form-label">Pilih Bulan</label>
-                  <select name="bulan" id="bulan" class="form-select">
-                    @for ($i = 1; $i <= 12; $i++)
-                      <option value="{{ $i }}" {{ $i == $selectedBulan ? 'selected' : '' }}>
-                      {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
-                      </option>
-                      @endfor
-                  </select>
-                </div>
-
-                <div class="col-md-4">
-                  <label for="tahun" class="form-label">Pilih Tahun</label>
-                  <input
-                    type="number"
-                    name="tahun"
-                    id="tahun"
-                    value="{{ $selectedTahun }}"
-                    class="form-control"
-                    min="2000"
-                    max="{{ now()->year }}">
-                </div>
-
-                <div class="col-md-4 d-grid">
-                  <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i> Tampilkan
-                  </button>
-                </div>
-              </form>
+      <div class="card">
+        <div class="card-body">
+          <form method="GET" action="{{ route('laporan.index') }}" class="row g-3 mt-2 mb-4">
+            <div class="col-md-3">
+              <label for="month" class="form-label">Bulan</label>
+              <select name="month" id="month" class="form-select">
+                @for ($m = 1; $m <= 12; $m++)
+                  <option value="{{ $m }}" {{ $m == $month ? 'selected' : '' }}>
+                  {{ \Carbon\Carbon::create()->month($m)->translatedFormat('F') }}
+                  </option>
+                  @endfor
+              </select>
             </div>
-          </div>
-          {{-- End Card Filter --}}
 
-          {{-- Card Laporan --}}
-          <div class="card shadow-sm">
-            <div class="card-body">
+            <div class="col-md-3">
+              <label for="year" class="form-label">Tahun</label>
+              <select name="year" id="year" class="form-select">
+                @for ($y = now()->year; $y >= 2020; $y--)
+                <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>
+                  {{ $y }}
+                </option>
+                @endfor
+              </select>
+            </div>
 
-              {{-- Info laporan --}}
-              @if($laporanAda)
-              <div class="alert alert-info d-flex align-items-center mt-4">
-                <i class="fas fa-info-circle me-2"></i>
-                <div>
-                  <strong>Laporan Bulan {{ $bulanNama }} {{ $tahun }}</strong>
-                  (Dikeluarkan tanggal {{ $tanggalRilis }})
-                </div>
-              </div>
-              @else
-              <div class="alert alert-warning d-flex align-items-center">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <div>
-                  Laporan untuk bulan {{ $bulanNama }} {{ $tahun }} belum tersedia.
-                </div>
-              </div>
-              @endif
+            <div class="col-md-2 align-self-end">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-search"></i> Tampilkan
+              </button>
+            </div>
 
-              {{-- Tampilkan hanya jika laporan ada --}}
-              @if($laporanAda)
-
-              {{-- Tombol cetak PDF --}}
-              <a href="{{ route('laporan.pdf', ['bulan' => $bulan, 'tahun' => $tahun]) }}"
-                class="btn btn-danger mb-3" target="_blank">
-                <i class="fas fa-print"></i> Cetak PDF
+            <div class="col-md-2 align-self-end">
+              <a href="{{ route('laporan.cetak', ['month' => $month, 'year' => $year]) }}" target="_blank" class="btn btn-danger w-100">
+                <i class="fas fa-file-pdf"></i> Cetak PDF
               </a>
-
-              {{-- Tabel laporan --}}
-              <table class="table table-bordered table-striped table-hover">
-                <thead class="table-primary">
-                  <tr>
-                    <th>Parameter</th>
-                    <th>Nilai</th>
-                    <th>Satuan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Suhu Minimum</td>
-                    <td>{{ $suhuMin }}</td>
-                    <td>°C</td>
-                  </tr>
-                  <tr>
-                    <td>Suhu Maksimum</td>
-                    <td>{{ $suhuMax }}</td>
-                    <td>°C</td>
-                  </tr>
-                  <tr>
-                    <td>Suhu Rata-rata</td>
-                    <td>{{ $suhuAvg }}</td>
-                    <td>°C</td>
-                  </tr>
-                  <tr>
-                    <td>Kelembapan Minimum</td>
-                    <td>{{ $kelembapanMin }}</td>
-                    <td>%</td>
-                  </tr>
-                  <tr>
-                    <td>Kelembapan Maksimum</td>
-                    <td>{{ $kelembapanMax }}</td>
-                    <td>%</td>
-                  </tr>
-                  <tr>
-                    <td>Kelembapan Rata-rata</td>
-                    <td>{{ $kelembapanAvg }}</td>
-                    <td>%</td>
-                  </tr>
-                  <tr>
-                    <td>Tekanan Minimum</td>
-                    <td>{{ $tekananMin }}</td>
-                    <td>hPa</td>
-                  </tr>
-                  <tr>
-                    <td>Tekanan Maksimum</td>
-                    <td>{{ $tekananMax }}</td>
-                    <td>hPa</td>
-                  </tr>
-                  <tr>
-                    <td>Tekanan Rata-rata</td>
-                    <td>{{ $tekananAvg }}</td>
-                    <td>hPa</td>
-                  </tr>
-                  <tr>
-                    <td>Total Curah Hujan</td>
-                    <td>{{ $curahHujan }}</td>
-                    <td>mm</td>
-                  </tr>
-                  <tr>
-                    <td>Kecepatan Angin Rata-rata</td>
-                    <td>{{ $kecepatanAngin }}</td>
-                    <td>m/s</td>
-                  </tr>
-                  <tr>
-                    <td>Arah Angin Dominan</td>
-                    <td>{{ $arahAngin }}</td>
-                    <td>-</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              @endif
-
             </div>
-          </div>
-          {{-- End Card Laporan --}}
+          </form>
 
+          {{-- =================== TABEL LAPORAN =================== --}}
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover text-center align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th rowspan="2">Nama AWS</th>
+                  <th rowspan="2">Lokasi</th>
+                  <th colspan="3">Suhu (°C)</th>
+                  <th colspan="3">Kelembapan (%)</th>
+                  <th colspan="4">Curah Hujan (mm)</th>
+                  <th colspan="3">Kecepatan Angin (m/s)</th>
+                  <th rowspan="2">Arah Angin Dominan</th>
+                </tr>
+                <tr class="table-info">
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th>Rata-rata</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th>Rata-rata</th>
+                  <th>Tertinggi</th>
+                  <th>Tanggal</th>
+                  <th>Total</th>
+                  <th>Hari Hujan</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th>Rata-rata</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                @forelse ($reports as $r)
+                <tr>
+                  <td>{{ $r['name'] }}</td>
+                  <td>{{ $r['location'] }}</td>
+
+                  {{-- SUHU --}}
+                  <td>{{ $r['temperature_min'] }}</td>
+                  <td>{{ $r['temperature_max'] }}</td>
+                  <td>{{ $r['temperature_avg'] }}</td>
+
+                  {{-- KELEMBAPAN --}}
+                  <td>{{ $r['humidity_min'] }}</td>
+                  <td>{{ $r['humidity_max'] }}</td>
+                  <td>{{ $r['humidity_avg'] }}</td>
+
+                  {{-- CURAH HUJAN --}}
+                  <td>{{ $r['rainfall_max'] }}</td>
+                  <td>{{ $r['rainfall_max_date'] }}</td>
+                  <td>{{ $r['rainfall_sum'] }}</td>
+                  <td>{{ $r['rainy_days'] }}</td>
+
+                  {{-- ANGIN --}}
+                  <td>{{ $r['wind_speed_min'] }}</td>
+                  <td>{{ $r['wind_speed_max'] }}</td>
+                  <td>{{ $r['wind_speed_avg'] }}</td>
+                  <td>{{ $r['dominant_wind'] }}</td>
+                </tr>
+                @empty
+                <tr>
+                  <td colspan="16" class="text-center text-muted">Tidak ada data untuk bulan ini.</td>
+                </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
-
-  </main><!-- End #main -->
+  </main>
 
   @include('layouts.footer')
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center">
-    <i class="fas fa-arrow-up"></i>
-  </a>
-
   @include('layouts.script')
 </body>
 
