@@ -77,11 +77,11 @@ class AwsController extends Controller
                 'pancitemp'   => formatNumber($jsonData['pancitemp'] ?? 0,),
                 'pancilevel'  => formatNumber($jsonData['pancilevel'] ?? 0),
                 'temp'        => formatNumber($jsonData['temp'] ?? 0, true),
-                'solrad'      => formatNumber($jsonData['solrad'] ?? 0, true), 
+                'solrad'      => formatNumber($jsonData['solrad'] ?? 0, true),
                 'rh'          => formatNumber($jsonData['rh'] ?? 0),
                 'rain'        => formatNumber($jsonData['rain'] ?? 0),
                 'watertemp'   => formatNumber($jsonData['watertemp'] ?? 0),
-                'pressure'    => formatNumber($jsonData['pressure'] ?? 0, true), 
+                'pressure'    => formatNumber($jsonData['pressure'] ?? 0, true),
                 'windspeed'   => formatNumber($jsonData['windspeed'] ?? 0, true),
                 'windspeed_knot' => formatNumber(($jsonData['windspeed'] ?? 0) * 1.94384, true),
                 'winddir'     => formatNumber($jsonData['winddir'] ?? 0),
@@ -112,7 +112,7 @@ class AwsController extends Controller
 
     private function getStatus($data)
     {
-        $values = collect($data)->except(['idaws','waktu'])->map(fn($v) => floatval($v));
+        $values = collect($data)->except(['idaws', 'waktu'])->map(fn($v) => floatval($v));
         return $values->every(fn($v) => $v == 0) ? 'MERAH' : 'HIJAU';
     }
 
@@ -125,9 +125,10 @@ class AwsController extends Controller
             return response()->json(['error' => 'Wilayah tidak ditemukan'], 404);
         }
 
-        // Ambil data berdasarkan aws_id
+        // Ambil data berdasarkan aws_id (hanya tiap 3 jam)
         $data = DataAws::where('aws_id', $aws->id)
             ->where('timestamp', '>=', Carbon::now()->subDays(7))
+            ->whereRaw('HOUR(`timestamp`) % 3 = 0')
             ->orderBy('timestamp', 'asc')
             ->get();
 
@@ -158,15 +159,15 @@ class AwsController extends Controller
         foreach ($data as $row) {
             $rainfall[] = [
                 "x" => $row->timestamp->toIso8601String(),
-                "y" => (float) $row->rainfall,
+                "y" => round((float) $row->rainfall, 2), 
             ];
             $temp[] = [
                 "x" => $row->timestamp->toIso8601String(),
-                "y" => (float) $row->temperature,
+                "y" => round((float) $row->temperature, 2),
             ];
             $humidity[] = [
                 "x" => $row->timestamp->toIso8601String(),
-                "y" => (float) $row->humidity,
+                "y" => round((float) $row->humidity, 2), 
             ];
 
             // Konversi arah angin

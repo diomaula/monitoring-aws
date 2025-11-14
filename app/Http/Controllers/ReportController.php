@@ -2,125 +2,190 @@
 
 namespace App\Http\Controllers;
 
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class ReportController extends Controller
 {
-    //
-    // public function index()
-    // {
-    //     // Misal ambil bulan lalu
-    //     $bulanLalu = now()->subMonth();
-    //     $bulanNama = $bulanLalu->translatedFormat('F'); // contoh: Juli
-    //     $tahun = $bulanLalu->year;
-    //     $tanggalRilis = now()->format('d F Y'); // contoh: 01 Agustus 2025
-
-    //     // Dummy data contoh, nanti bisa diambil dari DB
-    //     $suhuMin = 24.5;
-    //     $suhuMax = 34.2;
-    //     $suhuAvg = 28.7;
-    //     $kelembapanAvg = 75;
-    //     $curahHujan = 120;
-
-    //     return view('report.index', compact(
-    //         'bulanNama',
-    //         'tahun',
-    //         'tanggalRilis',
-    //         'suhuMin',
-    //         'suhuMax',
-    //         'suhuAvg',
-    //         'kelembapanAvg',
-    //         'curahHujan'
-    //     ));
-    // }
-
     public function index(Request $request)
     {
-        // Ambil input dari query string, default = bulan lalu dan tahun sekarang
-        $bulan = intval($request->input('bulan', Carbon::now()->subMonth()->month));
-        $tahun = intval($request->input('tahun', Carbon::now()->year));
+        $month = $request->input('month', now()->month);
+        $year = $request->input('year', now()->year);
 
-        // Nama bulan 
-        $bulanNama = Carbon::create()->month($bulan)->locale('id')->translatedFormat('F');
+        $awsList = DB::table('aws')->get();
+        $reports = [];
 
-        // Tanggal rilis
-        $tanggalRilis = Carbon::now()->translatedFormat('d F Y');
+        foreach ($awsList as $aws) {
+            $data = DB::table('data_aws')
+                ->where('aws_id', $aws->id)
+                ->whereMonth('timestamp', $month) 
+                ->whereYear('timestamp', $year)
+                ->select('temperature', 'humidity', 'rainfall', 'wind_speed', 'wind_direction', 'timestamp')
+                ->get();
 
-        // jika bulan yang dipilih > bulan sekarang (atau tahun lebih besar)
-        $now = Carbon::now();
-        if ($tahun > $now->year || ($tahun == $now->year && $bulan > $now->month)) {
-            return view('report.index', [
-                'bulan' => $bulan,
-                'bulanNama' => $bulanNama,
-                'tahun' => $tahun,
-                'tanggalRilis' => $tanggalRilis,
-                'laporanAda' => false, // laporan tidak ada
-            ]);
+            if ($data->isEmpty()) {
+                $reports[] = [
+                    'name' => $aws->name,
+                    'location' => $aws->location,
+                    'temperature_min' => '-',
+                    'temperature_max' => '-',
+                    'temperature_avg' => '-',
+                    'humidity_min' => '-',
+                    'humidity_max' => '-',
+                    'humidity_avg' => '-',
+                    'rainfall_sum' => '-',
+                    'wind_speed_min' => '-',
+                    'wind_speed_max' => '-',
+                    'wind_speed_avg' => '-',
+                    'dominant_wind' => '-',
+                ];
+            } else {
+                $reports[] = [
+                    'name' => $aws->name,
+                    'location' => $aws->location,
+                    ...$this->hitungSuhu($data),
+                    ...$this->hitungKelembapan($data),
+                    ...$this->hitungCurahHujan($data),
+                    ...$this->hitungKecepatanAngin($data),
+                    'dominant_wind' => $this->hitungArahAnginDominan($data),
+                ];
+            }
         }
 
-        // Dummy data 
-        $suhuMin = 24.5;
-        $suhuMax = 34.2;
-        $suhuAvg = 28.7;
-
-        $kelembapanMin = 60;
-        $kelembapanMax = 90;
-        $kelembapanAvg = 75;
-
-        $tekananMin = 1005.2;
-        $tekananMax = 1015.8;
-        $tekananAvg = 1010.5;
-
-        $curahHujan = 120.5;
-
-        $kecepatanAngin = 3.5;
-        $arahAngin = "Timur Laut";
-
-        return view('report.index', compact(
-            'bulan',
-            'bulanNama',
-            'tahun',
-            'tanggalRilis',
-            'suhuMin',
-            'suhuMax',
-            'suhuAvg',
-            'kelembapanMin',
-            'kelembapanMax',
-            'kelembapanAvg',
-            'tekananMin',
-            'tekananMax',
-            'tekananAvg',
-            'curahHujan',
-            'kecepatanAngin',
-            'arahAngin',
-        ) + ['laporanAda' => true]);
+        return view('report.index', compact('reports', 'month', 'year'));
     }
 
-    public function cetakPdf()
+    public function cetakPdf(Request $request)
     {
-        // data dummy 
-        $data = [
-            'bulanNama' => now()->subMonth()->translatedFormat('F'),
-            'tahun' => now()->subMonth()->year,
-            'tanggalRilis' => now()->format('d F Y'),
-            'suhuMin' => 22,
-            'suhuMax' => 32,
-            'suhuAvg' => 27,
-            'kelembapanMin' => 65,
-            'kelembapanMax' => 92,
-            'kelembapanAvg' => 78,
-            'tekananMin' => 1005,
-            'tekananMax' => 1013,
-            'tekananAvg' => 1009,
-            'curahHujan' => 220,
-            'kecepatanAngin' => 3.5,
-            'arahAngin' => 'Timur Laut',
+        $month = $request->input('month');
+        $year = $request->input('year');
+
+        $awsList = DB::table('aws')->get();
+        $reports = [];
+
+        foreach ($awsList as $aws) {
+            $data = DB::table('data_aws')
+                ->where('aws_id', $aws->id)
+                ->whereMonth('timestamp', $month)
+                ->whereYear('timestamp', $year)
+                ->select('temperature', 'humidity', 'rainfall', 'wind_speed', 'wind_direction', 'timestamp')
+                ->get();
+
+            $reports[] = [
+                'name' => $aws->name,
+                'location' => $aws->location,
+                ...$this->hitungSuhu($data),
+                ...$this->hitungKelembapan($data),
+                ...$this->hitungCurahHujan($data),
+                ...$this->hitungKecepatanAngin($data),
+                'dominant_wind' => $this->hitungArahAnginDominan($data),
+            ];
+        }
+
+        $pdf = PDF::loadView('report.pdf', compact('reports', 'month', 'year'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->stream("Laporan_AWS_{$month}_{$year}.pdf");
+    }
+
+    private function hitungSuhu($data)
+    {
+        return [
+            'temperature_min' => round($data->min('temperature'), 1),
+            'temperature_max' => round($data->max('temperature'), 1),
+            'temperature_avg' => round($data->avg('temperature'), 1),
+        ];
+    }
+
+    private function hitungKelembapan($data)
+    {
+        return [
+            'humidity_min' => round($data->min('humidity'), 1),
+            'humidity_max' => round($data->max('humidity'), 1),
+            'humidity_avg' => round($data->avg('humidity'), 1),
+        ];
+    }
+
+    private function hitungCurahHujan($data)
+    {
+        if ($data->isEmpty()) {
+            return [
+                'rainfall_sum' => '-',
+                'rainfall_max' => '-',
+                'rainfall_max_date' => '-',
+                'rainy_days' => '-',
+            ];
+        }
+
+        $total = round($data->sum('rainfall'), 1);
+        $max = $data->max('rainfall');
+        $maxData = $data->where('rainfall', $max)->first();
+
+        // ✅ ganti created_at → timestamp
+        $rainyDays = $data->filter(fn($row) => $row->rainfall > 0)
+            ->groupBy(fn($row) => Carbon::parse($row->timestamp)->toDateString())
+            ->count();
+
+        return [
+            'rainfall_sum' => $total,
+            'rainfall_max' => round($max, 1),
+            'rainfall_max_date' => $maxData
+                ? Carbon::parse($maxData->timestamp)->translatedFormat('d F Y')
+                : '-',
+            'rainy_days' => $rainyDays,
+        ];
+    }
+
+    private function hitungKecepatanAngin($data)
+    {
+        return [
+            'wind_speed_min' => round($data->min('wind_speed'), 1),
+            'wind_speed_max' => round($data->max('wind_speed'), 1),
+            'wind_speed_avg' => round($data->avg('wind_speed'), 1),
+        ];
+    }
+
+    private function hitungArahAnginDominan($data)
+    {
+        if ($data->isEmpty()) return '-';
+
+        $counts = [];
+        foreach ($data as $row) {
+            $dir = round($row->wind_direction / 22.5) * 22.5;
+            $counts[$dir] = ($counts[$dir] ?? 0) + 1;
+        }
+
+        $dominant = array_search(max($counts), $counts);
+
+        $directions = [
+            0 => 'Utara',
+            22.5 => 'Utara-Timur Laut',
+            45 => 'Timur Laut',
+            67.5 => 'Timur-Timur Laut',
+            90 => 'Timur',
+            112.5 => 'Timur-Tenggara',
+            135 => 'Tenggara',
+            157.5 => 'Selatan-Tenggara',
+            180 => 'Selatan',
+            202.5 => 'Selatan-Barat Daya',
+            225 => 'Barat Daya',
+            247.5 => 'Barat-Barat Daya',
+            270 => 'Barat',
+            292.5 => 'Barat-Barat Laut',
+            315 => 'Barat Laut',
+            337.5 => 'Utara-Barat Laut',
+            360 => 'Utara'
         ];
 
-        $pdf = Pdf::loadView('report.pdf', $data);
-        return $pdf->stream('laporan-bulanan.pdf'); 
-    }
+        $closest = 0;
+        foreach ($directions as $deg => $name) {
+            if (abs($dominant - $deg) < abs($dominant - $closest)) {
+                $closest = $deg;
+            }
+        }
 
+        return 'Bertiup dari ' . $directions[$closest];
+    }
 }
