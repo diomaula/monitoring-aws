@@ -300,10 +300,8 @@
                     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-windrose@3"></script>
 
                     <h5 class="card-title mb-4">Grafik AWS (Curah Hujan, Suhu & Kelembapan)</h5>
-        <!-- Chart -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title mb-4">Grafik AWS (Curah Hujan, Suhu & Kelembapan)</h5>
+
+
 
                 <div class="mb-4">
                     {{-- <h6 class="fw-bold">Curah Hujan</h6> --}}
@@ -553,11 +551,6 @@
                         });
                     </script>
                 </div>
-                        } catch (e) {
-                            console.error("Gagal memuat data chart:", e);
-                        }
-                    });
-                </script>
             </div>
         </div>
 

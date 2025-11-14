@@ -443,7 +443,6 @@
   </head>
 
   <body>
-=======
 </head>
 
 <body>
