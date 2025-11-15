@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Aws;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
@@ -12,45 +12,34 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $month = $request->input('month', now()->month);
-        $year = $request->input('year', now()->year);
+        $year  = $request->input('year', now()->year);
 
-        $awsList = DB::table('aws')->get();
+        $awsList = Aws::all();
         $reports = [];
 
         foreach ($awsList as $aws) {
-            $data = DB::table('data_aws')
-                ->where('aws_id', $aws->id)
-                ->whereMonth('timestamp', $month) 
+            $data = $aws->data()
+                ->whereMonth('timestamp', $month)
                 ->whereYear('timestamp', $year)
                 ->select('temperature', 'humidity', 'rainfall', 'wind_speed', 'wind_direction', 'timestamp')
                 ->get();
 
             if ($data->isEmpty()) {
-                $reports[] = [
-                    'name' => $aws->name,
-                    'location' => $aws->location,
-                    'temperature_min' => '-',
-                    'temperature_max' => '-',
-                    'temperature_avg' => '-',
-                    'humidity_min' => '-',
-                    'humidity_max' => '-',
-                    'humidity_avg' => '-',
-                    'rainfall_sum' => '-',
-                    'wind_speed_min' => '-',
-                    'wind_speed_max' => '-',
-                    'wind_speed_avg' => '-',
-                    'dominant_wind' => '-',
-                ];
+                $reports[] = $this->emptyReport($aws);
             } else {
-                $reports[] = [
-                    'name' => $aws->name,
-                    'location' => $aws->location,
-                    ...$this->hitungSuhu($data),
-                    ...$this->hitungKelembapan($data),
-                    ...$this->hitungCurahHujan($data),
-                    ...$this->hitungKecepatanAngin($data),
-                    'dominant_wind' => $this->hitungArahAnginDominan($data),
-                ];
+                $reports[] = array_merge(
+                    [
+                        'name' => $aws->name,
+                        'location' => $aws->location,
+                    ],
+                    $this->hitungSuhu($data),
+                    $this->hitungKelembapan($data),
+                    $this->hitungCurahHujan($data),
+                    $this->hitungKecepatanAngin($data),
+                    [
+                        'dominant_wind' => $this->hitungArahAnginDominan($data)
+                    ]
+                );
             }
         }
 
@@ -60,101 +49,134 @@ class ReportController extends Controller
     public function cetakPdf(Request $request)
     {
         $month = $request->input('month');
-        $year = $request->input('year');
+        $year  = $request->input('year');
 
-        $awsList = DB::table('aws')->get();
+        $awsList = Aws::all();
         $reports = [];
 
         foreach ($awsList as $aws) {
-            $data = DB::table('data_aws')
-                ->where('aws_id', $aws->id)
+            $data = $aws->data()
                 ->whereMonth('timestamp', $month)
                 ->whereYear('timestamp', $year)
                 ->select('temperature', 'humidity', 'rainfall', 'wind_speed', 'wind_direction', 'timestamp')
                 ->get();
 
-            $reports[] = [
-                'name' => $aws->name,
-                'location' => $aws->location,
-                ...$this->hitungSuhu($data),
-                ...$this->hitungKelembapan($data),
-                ...$this->hitungCurahHujan($data),
-                ...$this->hitungKecepatanAngin($data),
-                'dominant_wind' => $this->hitungArahAnginDominan($data),
-            ];
+            if ($data->isEmpty()) {
+                $reports[] = $this->emptyReport($aws);
+            } else {
+                $reports[] = array_merge(
+                    [
+                        'name' => $aws->name,
+                        'location' => $aws->location,
+                    ],
+                    $this->hitungSuhu($data),
+                    $this->hitungKelembapan($data),
+                    $this->hitungCurahHujan($data),
+                    $this->hitungKecepatanAngin($data),
+                    [
+                        'dominant_wind' => $this->hitungArahAnginDominan($data)
+                    ]
+                );
+            }
         }
 
-        $pdf = PDF::loadView('report.pdf', compact('reports', 'month', 'year'))
+        $pdf = Pdf::loadView('report.pdf', compact('reports', 'month', 'year'))
             ->setPaper('a4', 'landscape');
 
         return $pdf->stream("Laporan_AWS_{$month}_{$year}.pdf");
     }
 
-    private function hitungSuhu($data)
+    private function emptyReport($aws)
     {
         return [
-            'temperature_min' => round($data->min('temperature'), 1),
-            'temperature_max' => round($data->max('temperature'), 1),
-            'temperature_avg' => round($data->avg('temperature'), 1),
+            'name' => $aws->name,
+            'location' => $aws->location,
+            'temperature_min' => '-',
+            'temperature_max' => '-',
+            'temperature_avg' => '-',
+            'humidity_min' => '-',
+            'humidity_max' => '-',
+            'humidity_avg' => '-',
+            'rainfall_sum' => '-',
+            'rainfall_max' => '-',
+            'rainfall_max_date' => '-',
+            'rainy_days' => '-',
+            'wind_speed_min' => '-',
+            'wind_speed_max' => '-',
+            'wind_speed_avg' => '-',
+            'dominant_wind' => '-',
+        ];
+    }
+
+    private function hitungSuhu($data)
+    {
+        $min = $data->min('temperature');
+        $max = $data->max('temperature');
+        $avg = $data->avg('temperature');
+
+        return [
+            'temperature_min' => is_numeric($min) ? round($min, 1) : '-',
+            'temperature_max' => is_numeric($max) ? round($max, 1) : '-',
+            'temperature_avg' => is_numeric($avg) ? round($avg, 1) : '-',
         ];
     }
 
     private function hitungKelembapan($data)
     {
+        $min = $data->min('humidity');
+        $max = $data->max('humidity');
+        $avg = $data->avg('humidity');
+
         return [
-            'humidity_min' => round($data->min('humidity'), 1),
-            'humidity_max' => round($data->max('humidity'), 1),
-            'humidity_avg' => round($data->avg('humidity'), 1),
+            'humidity_min' => is_numeric($min) ? round($min, 1) : '-',
+            'humidity_max' => is_numeric($max) ? round($max, 1) : '-',
+            'humidity_avg' => is_numeric($avg) ? round($avg, 1) : '-',
         ];
     }
 
     private function hitungCurahHujan($data)
     {
-        if ($data->isEmpty()) {
-            return [
-                'rainfall_sum' => '-',
-                'rainfall_max' => '-',
-                'rainfall_max_date' => '-',
-                'rainy_days' => '-',
-            ];
-        }
-
-        $total = round($data->sum('rainfall'), 1);
         $max = $data->max('rainfall');
         $maxData = $data->where('rainfall', $max)->first();
 
-        // ✅ ganti created_at → timestamp
-        $rainyDays = $data->filter(fn($row) => $row->rainfall > 0)
-            ->groupBy(fn($row) => Carbon::parse($row->timestamp)->toDateString())
-            ->count();
-
         return [
-            'rainfall_sum' => $total,
-            'rainfall_max' => round($max, 1),
+            'rainfall_sum' => round($data->sum('rainfall'), 1),
+            'rainfall_max' => is_numeric($max) ? round($max, 1) : '-',
             'rainfall_max_date' => $maxData
                 ? Carbon::parse($maxData->timestamp)->translatedFormat('d F Y')
                 : '-',
-            'rainy_days' => $rainyDays,
+            'rainy_days' => $data->filter(fn($row) => is_numeric($row->rainfall) && $row->rainfall > 0)
+                ->groupBy(fn($row) => Carbon::parse($row->timestamp)->toDateString())
+                ->count(),
         ];
     }
 
     private function hitungKecepatanAngin($data)
     {
+        $min = $data->min('wind_speed');
+        $max = $data->max('wind_speed');
+        $avg = $data->avg('wind_speed');
+
         return [
-            'wind_speed_min' => round($data->min('wind_speed'), 1),
-            'wind_speed_max' => round($data->max('wind_speed'), 1),
-            'wind_speed_avg' => round($data->avg('wind_speed'), 1),
+            'wind_speed_min' => is_numeric($min) ? round($min, 1) : '-',
+            'wind_speed_max' => is_numeric($max) ? round($max, 1) : '-',
+            'wind_speed_avg' => is_numeric($avg) ? round($avg, 1) : '-',
         ];
     }
 
     private function hitungArahAnginDominan($data)
     {
-        if ($data->isEmpty()) return '-';
-
         $counts = [];
+
         foreach ($data as $row) {
+            if (!is_numeric($row->wind_direction)) continue;
+
             $dir = round($row->wind_direction / 22.5) * 22.5;
             $counts[$dir] = ($counts[$dir] ?? 0) + 1;
+        }
+
+        if (empty($counts)) {
+            return '-';
         }
 
         $dominant = array_search(max($counts), $counts);
@@ -179,13 +201,14 @@ class ReportController extends Controller
             360 => 'Utara'
         ];
 
-        $closest = 0;
-        foreach ($directions as $deg => $name) {
-            if (abs($dominant - $deg) < abs($dominant - $closest)) {
-                $closest = $deg;
-            }
-        }
+        // FIX: closure biasa + type cast agar editor tidak error
+        $closest = collect($directions)
+            ->keys()
+            ->sortBy(function ($value) use ($dominant) {
+                return abs($dominant - (float)$value);
+            })
+            ->first();
 
-        return 'Bertiup dari ' . $directions[$closest];
+        return "Bertiup dari " . $directions[$closest];
     }
 }
