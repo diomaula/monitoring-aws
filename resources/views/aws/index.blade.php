@@ -95,77 +95,81 @@
         }
 
         .compass {
-            width: 200px;
-            height: 200px;
+            width: 100%;
+            max-width: 350px; 
+            height: 350px;
             position: relative;
-            display: inline-block;
+            display: block;
+            margin: auto; 
         }
 
         .compass-circle {
             width: 100%;
             height: 100%;
-            border: 8px solid #ccc;
+            border: 10px solid #ccc;
             border-radius: 50%;
             background: #1e3a8a;
             position: relative;
         }
 
+
         .compass-circle span {
             color: white;
             font-weight: bold;
             position: absolute;
-            font-size: 14px;
+            font-size: 16px;
         }
 
         /* Arah utama */
         .compass-circle .north {
-            top: 5px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .compass-circle .south {
-            bottom: 5px;
+            bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
         }
 
         .compass-circle .west {
             top: 50%;
-            left: 5px;
+            left: 10px;
             transform: translateY(-50%);
         }
 
         .compass-circle .east {
             top: 50%;
-            right: 5px;
+            right: 10px;
             transform: translateY(-50%);
         }
 
-        /* Arah tambahan */
+        /* Diagonal */
         .compass-circle .ne {
-            top: 25px;
-            right: 25px;
-            font-size: 12px;
+            top: 50px;
+            right: 40px;
+            font-size: 14px;
         }
 
         .compass-circle .nw {
-            top: 25px;
-            left: 25px;
-            font-size: 12px;
+            top: 50px;
+            left: 40px;
+            font-size: 14px;
         }
 
         .compass-circle .se {
-            bottom: 25px;
-            right: 25px;
-            font-size: 12px;
+            bottom: 50px;
+            right: 40px;
+            font-size: 14px;
         }
 
         .compass-circle .sw {
-            bottom: 25px;
-            left: 25px;
-            font-size: 12px;
+            bottom: 50px;
+            left: 40px;
+            font-size: 14px;
         }
+
 
         /* Jarum kompas */
         .compass-arrow {
@@ -209,7 +213,7 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Dashboard</li>
+                    <li class="breadcrumb-item active">AWS</li>
                 </ol>
             </nav>
             <div class="header-section">
@@ -264,44 +268,52 @@
             </div>
         </div>
 
-        <div class="col-md-12 col-sm-6 mb-3">
-            <div class="card info-card">
-                <div class="card-body text-center">
-                    <h6 class="card-title">Arah Angin (°)</h6>
+        <div class="row mb-3">
+            <!-- Kompas -->
+            <div class="col-md-6 mb-3">
+                <div class="card info-card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Arah Angin</h6>
 
-                    <!-- Kompas -->
-                    <div class="compass">
-                        <div class="compass-circle">
-                            <div class="compass-arrow" id="compass-arrow"></div>
-                            <div class="compass-center"></div>
-
-                            <!-- Label arah -->
-                            <span class="north">N</span>
-                            <span class="south">S</span>
-                            <span class="west">W</span>
-                            <span class="east">E</span>
-                            <span class="ne">NE</span>
-                            <span class="nw">NW</span>
-                            <span class="se">SE</span>
-                            <span class="sw">SW</span>
+                        <div class="compass">
+                            <div class="compass-circle">
+                                <div class="compass-arrow" id="compass-arrow"></div>
+                                <div class="compass-center"></div>
+                                <span class="north">N</span>
+                                <span class="south">S</span>
+                                <span class="west">W</span>
+                                <span class="east">E</span>
+                                <span class="ne">NE</span>
+                                <span class="nw">NW</span>
+                                <span class="se">SE</span>
+                                <span class="sw">SW</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <h5 id="winddir" class="mt-3">{{ $data['winddir'] }}°</h5>
+                        <h5 id="winddir" class="mt-3">{{ $data['winddir'] }}°</h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Windrose -->
+            <div class="col-md-6 mb-3">
+                <div class="card info-card">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">Diagram Arah & Kecepatan Angin</h6>
+                        <div id="chartWindrose" style="height: 350px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-            <!-- Chart -->
-            <div class="card">
-                <div class="card-body">
-                    <!-- Tambahkan setelah grafik kelembapan -->
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-windrose@3"></script>
+        <!-- Chart -->
+        <div class="card">
+            <div class="card-body">
+                <!-- Tambahkan setelah grafik kelembapan -->
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-windrose@3"></script>
 
-                    <h5 class="card-title mb-4">Grafik AWS (Curah Hujan, Suhu & Kelembapan)</h5>
-
-
+                <h5 class="card-title mb-4">Grafik AWS (Curah Hujan, Suhu & Kelembapan)</h5>
 
                 <div class="mb-4">
                     {{-- <h6 class="fw-bold">Curah Hujan</h6> --}}
@@ -313,247 +325,234 @@
                     <div id="chartTemperature"></div>
                 </div>
 
-                    <div>
-                        {{-- <h6 class="fw-bold">Kelembapan</h6> --}}
-                        <div id="chartHumidity"></div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <h6 class="fw-bold">Diagram Arah & Kecepatan Angin (Windrose)</h6>
-                    <div id="chartWindrose"></div>
                 <div>
-                    {{-- <h6 class="fw-bold">Kelembapan</h6> --}}
-                    <div id="chartHumidity"></div>
-                </div>
+                {{-- <h6 class="fw-bold">Kelembapan</h6> --}}
+                <div id="chartHumidity"></div>
+            </div>
+                
+            <script>
+                document.addEventListener("DOMContentLoaded", async () => {
+                    try {
+                        let code = "{{ $id }}";
+                        let response = await fetch(`/chart-data/${code}`);
+                        let result = await response.json();
 
-                <script>
-                    document.addEventListener("DOMContentLoaded", async () => {
-                        try {
-                            let code = "{{ $id }}";
-                            let response = await fetch(`/chart-data/${code}`);
-                            let result = await response.json();
-
-                            // === Curah Hujan ===
-                            new ApexCharts(document.querySelector("#chartRainfall"), {
-                                series: [{
-                                    name: 'Curah Hujan (mm)',
-                                    data: result.rainfall
-                                }],
-                                chart: {
-                                    type: 'area',
-                                    height: 300,
-                                    zoom: {
-                                        enabled: true
-                                    }
-                                },
-                                stroke: {
-                                    curve: 'smooth',
-                                    width: 2
-                                },
-                                markers: {
-                                    size: 3
-                                },
-                                colors: ['#4154f1'],
-                                dataLabels: {
-                                    enabled: false
-                                },
-                                fill: {
-                                    type: "gradient",
-                                    gradient: {
-                                        shadeIntensity: 1,
-                                        opacityFrom: 0.3,
-                                        opacityTo: 0.4,
-                                        stops: [0, 90, 100]
-                                    }
-                                },
-                                xaxis: {
-                                    type: 'datetime',
-                                    tickAmount: 7
-                                },
-                                yaxis: {
-                                    title: {
-                                        text: 'Curah Hujan (mm)',
-                                        style: {
-                                            fontSize: '12px'
-                                        }
-                                    }
-                                },
-                                tooltip: {
-                                    x: {
-                                        format: 'dd/MM/yy HH:mm'
-                                    }
-                                },
-                                legend: {
-                                    position: 'top',
-                                    horizontalAlign: 'center'
+                        // === Curah Hujan ===
+                        new ApexCharts(document.querySelector("#chartRainfall"), {
+                            series: [{
+                                name: 'Curah Hujan (mm)',
+                                data: result.rainfall
+                            }],
+                            chart: {
+                                type: 'area',
+                                height: 300,
+                                zoom: {
+                                    enabled: true
                                 }
-                            }).render();
-
-                            // === Suhu ===
-                            new ApexCharts(document.querySelector("#chartTemperature"), {
-                                series: [{
-                                    name: 'Suhu (°C)',
-                                    data: result.temp
-                                }],
-                                chart: {
-                                    type: 'area',
-                                    height: 300,
-                                    zoom: {
-                                        enabled: true
-                                    }
-                                },
-                                stroke: {
-                                    curve: 'smooth',
-                                    width: 2
-                                },
-                                markers: {
-                                    size: 3
-                                },
-                                colors: ['#FF0000'],
-                                dataLabels: {
-                                    enabled: false
-                                },
-                                fill: {
-                                    type: "gradient",
-                                    gradient: {
-                                        shadeIntensity: 1,
-                                        opacityFrom: 0.3,
-                                        opacityTo: 0.4,
-                                        stops: [0, 90, 100]
-                                    }
-                                },
-                                xaxis: {
-                                    type: 'datetime',
-                                    tickAmount: 7
-                                },
-                                yaxis: {
-                                    title: {
-                                        text: 'Suhu (°C)',
-                                        style: {
-                                            fontSize: '12px'
-                                        }
-                                    }
-                                },
-                                tooltip: {
-                                    x: {
-                                        format: 'dd/MM/yy HH:mm'
-                                    }
-                                },
-                                legend: {
-                                    position: 'top',
-                                    horizontalAlign: 'center'
+                            },
+                            stroke: {
+                                curve: 'smooth',
+                                width: 2
+                            },
+                            markers: {
+                                size: 3
+                            },
+                            colors: ['#4154f1'],
+                            dataLabels: {
+                                enabled: false
+                            },
+                            fill: {
+                                type: "gradient",
+                                gradient: {
+                                    shadeIntensity: 1,
+                                    opacityFrom: 0.3,
+                                    opacityTo: 0.4,
+                                    stops: [0, 90, 100]
                                 }
-                            }).render();
-
-                            // === Kelembapan ===
-                            new ApexCharts(document.querySelector("#chartHumidity"), {
-                                series: [{
-                                    name: 'Kelembapan (%)',
-                                    data: result.humidity
-                                }],
-                                chart: {
-                                    type: 'area',
-                                    height: 300,
-                                    zoom: {
-                                        enabled: true
+                            },
+                            xaxis: {
+                                type: 'datetime',
+                                tickAmount: 7
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Curah Hujan (mm)',
+                                    style: {
+                                        fontSize: '12px'
                                     }
-                                },
-                                stroke: {
-                                    curve: 'smooth',
-                                    width: 2
-                                },
-                                markers: {
-                                    size: 3
-                                },
-                                colors: ['#2eca6a'],
-                                dataLabels: {
-                                    enabled: false
-                                },
-                                fill: {
-                                    type: "gradient",
-                                    gradient: {
-                                        shadeIntensity: 1,
-                                        opacityFrom: 0.3,
-                                        opacityTo: 0.4,
-                                        stops: [0, 90, 100]
-                                    }
-                                },
-                                xaxis: {
-                                    type: 'datetime',
-                                    tickAmount: 7
-                                },
-                                yaxis: {
-                                    title: {
-                                        text: 'Kelembapan (%)',
-                                        style: {
-                                            fontSize: '12px'
-                                        }
-                                    }
-                                },
-                                tooltip: {
-                                    x: {
-                                        format: 'dd/MM/yy HH:mm'
-                                    }
-                                },
-                                legend: {
-                                    position: 'top',
-                                    horizontalAlign: 'center'
                                 }
-                            }).render();
-
-                                // === Windrose (RADAR CHART) ===
-                                if (result.windrose) {
-                                    new ApexCharts(document.querySelector("#chartWindrose"), {
-                                        series: [{
-                                            name: 'Kecepatan Angin (m/s)',
-                                            data: [
-                                                { x: 'N', y: result.windrose.N ?? 0 },
-                                                { x: 'NE', y: result.windrose.NE ?? 0 },
-                                                { x: 'E', y: result.windrose.E ?? 0 },
-                                                { x: 'SE', y: result.windrose.SE ?? 0 },
-                                                { x: 'S', y: result.windrose.S ?? 0 },
-                                                { x: 'SW', y: result.windrose.SW ?? 0 },
-                                                { x: 'W', y: result.windrose.W ?? 0 },
-                                                { x: 'NW', y: result.windrose.NW ?? 0 },
-                                            ]
-                                        }],
-                                        chart: {
-                                            type: 'radar',
-                                            height: 400,
-                                            toolbar: { show: false }
-                                        },
-                                        title: {
-                                            text: 'Diagram Arah & Kecepatan Angin (Windrose)',
-                                            align: 'center'
-                                        },
-                                        xaxis: {
-                                            categories: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
-                                            labels: { style: { colors: '#333', fontWeight: 600 } }
-                                        },
-                                        yaxis: {
-                                            show: true,
-                                            labels: {
-                                                formatter: val => val.toFixed(1) + " m/s"
-                                            }
-                                        },
-                                        stroke: { width: 2 },
-                                        fill: { opacity: 0.4, colors: ['#008FFB'] },
-                                        markers: { size: 4 },
-                                        colors: ['#008FFB']
-                                    }).render();
-                                } else {
-                                    console.warn("Data windrose tidak tersedia.");
+                            },
+                            tooltip: {
+                                x: {
+                                    format: 'dd/MM/yy HH:mm'
                                 }
-
-                            } catch (e) {
-                                console.error("Gagal memuat data chart:", e);
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'center'
                             }
-                        });
-                    </script>
-                </div>
+                        }).render();
+
+                        // === Suhu ===
+                        new ApexCharts(document.querySelector("#chartTemperature"), {
+                            series: [{
+                                name: 'Suhu (°C)',
+                                data: result.temp
+                            }],
+                            chart: {
+                                type: 'area',
+                                height: 300,
+                                zoom: {
+                                    enabled: true
+                                }
+                            },
+                            stroke: {
+                                curve: 'smooth',
+                                width: 2
+                            },
+                            markers: {
+                                size: 3
+                            },
+                            colors: ['#FF0000'],
+                            dataLabels: {
+                                enabled: false
+                            },
+                            fill: {
+                                type: "gradient",
+                                gradient: {
+                                    shadeIntensity: 1,
+                                    opacityFrom: 0.3,
+                                    opacityTo: 0.4,
+                                    stops: [0, 90, 100]
+                                }
+                            },
+                            xaxis: {
+                                type: 'datetime',
+                                tickAmount: 7
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Suhu (°C)',
+                                    style: {
+                                        fontSize: '12px'
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                x: {
+                                    format: 'dd/MM/yy HH:mm'
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'center'
+                            }
+                        }).render();
+
+                        // === Kelembapan ===
+                        new ApexCharts(document.querySelector("#chartHumidity"), {
+                            series: [{
+                                name: 'Kelembapan (%)',
+                                data: result.humidity
+                            }],
+                            chart: {
+                                type: 'area',
+                                height: 300,
+                                zoom: {
+                                    enabled: true
+                                }
+                            },
+                            stroke: {
+                                curve: 'smooth',
+                                width: 2
+                            },
+                            markers: {
+                                size: 3
+                            },
+                            colors: ['#2eca6a'],
+                            dataLabels: {
+                                enabled: false
+                            },
+                            fill: {
+                                type: "gradient",
+                                gradient: {
+                                    shadeIntensity: 1,
+                                    opacityFrom: 0.3,
+                                    opacityTo: 0.4,
+                                    stops: [0, 90, 100]
+                                }
+                            },
+                            xaxis: {
+                                type: 'datetime',
+                                tickAmount: 7
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Kelembapan (%)',
+                                    style: {
+                                        fontSize: '12px'
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                x: {
+                                    format: 'dd/MM/yy HH:mm'
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'center'
+                            }
+                        }).render();
+
+                            // === Windrose (RADAR CHART) ===
+                            if (result.windrose) {
+                                new ApexCharts(document.querySelector("#chartWindrose"), {
+                                    series: [{
+                                        name: 'Kecepatan Angin (m/s)',
+                                        data: [
+                                            { x: 'N', y: result.windrose.N ?? 0 },
+                                            { x: 'NE', y: result.windrose.NE ?? 0 },
+                                            { x: 'E', y: result.windrose.E ?? 0 },
+                                            { x: 'SE', y: result.windrose.SE ?? 0 },
+                                            { x: 'S', y: result.windrose.S ?? 0 },
+                                            { x: 'SW', y: result.windrose.SW ?? 0 },
+                                            { x: 'W', y: result.windrose.W ?? 0 },
+                                            { x: 'NW', y: result.windrose.NW ?? 0 },
+                                        ]
+                                    }],
+                                    chart: {
+                                        type: 'radar',
+                                        height: 400,
+                                        toolbar: { show: false }
+                                    },
+                                    xaxis: {
+                                        categories: ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'],
+                                        labels: { style: { colors: '#333', fontWeight: 600 } }
+                                    },
+                                    yaxis: {
+                                        show: true,
+                                        labels: {
+                                            formatter: val => val.toFixed(1) + " m/s"
+                                        }
+                                    },
+                                    stroke: { width: 2 },
+                                    fill: { opacity: 0.4, colors: ['#008FFB'] },
+                                    markers: { size: 4 },
+                                    colors: ['#008FFB']
+                                }).render();
+                            } else {
+                                console.warn("Data windrose tidak tersedia.");
+                            }
+
+                        } catch (e) {
+                            console.error("Gagal memuat data chart:", e);
+                        }
+                    });
+                </script>
+            </div>
             </div>
         </div>
-
 
         <script>
             function updateUtcClock() {

@@ -517,15 +517,15 @@
 
         <div class="panels-container">
             <div class="panel left-panel">
-                {{-- <div class="content">
+                <div class="content">
                     <h3>Baru di sini?</h3>
                     <p>
-                        Jika Anda belum memiliki akun, silakan daftar terlebih dahulu untuk mulai menggunakan semua fitur yang tersedia
+                        Jika anda belum memiliki akun, silahkan hubungi admin terlebih dahulu untuk mulai menggunakan semua fitur yang tersedia
                     </p>
-                    <button class="btn transparent" id="sign-up-btn">
+                    {{-- <button class="btn transparent" id="sign-up-btn">
                         Sign up
-                    </button>
-                </div> --}}
+                    </button> --}}
+                </div>
                 <img src="{{ asset('assets/img/login.svg') }}" class="image" alt="" />
             </div>
             <div class="panel right-panel">
