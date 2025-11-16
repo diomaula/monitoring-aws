@@ -12,7 +12,18 @@ class DataAws extends Model
     protected $table = 'data_aws';
 
     protected $casts = [
-        'timestamp' => 'datetime',
+        'timestamp'       => 'datetime',
+        'temperature'     => 'float',
+        'humidity'        => 'float',
+        'pressure'        => 'float',
+        'rainfall'        => 'float',
+        'wind_speed'      => 'float',
+        'wind_direction'  => 'float',
+        'pancitemp'       => 'float',
+        'pancilevel'      => 'float',
+        'solrad'          => 'float',
+        'watertemp'       => 'float',
+        'waterlevel'      => 'float',
     ];
 
     protected $fillable = [
@@ -31,11 +42,10 @@ class DataAws extends Model
         'waterlevel',
     ];
 
-    public $timestamps = true; 
+    public $timestamps = true;
 
     public function aws()
     {
         return $this->belongsTo(Aws::class, 'aws_id');
     }
-
 }
