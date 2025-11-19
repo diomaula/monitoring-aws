@@ -19,22 +19,28 @@ class DataAwsSeeder extends Seeder
             $date = $startDate->copy();
 
             while ($date <= $endDate) {
-                DataAws::updateOrCreate(
-                    [
-                        'aws_id'    => $awsId,
-                        'timestamp' => $date,
-                    ],
-                    [
-                        'rainfall'    => $this->generateRainfall($awsId),
-                        'temperature' => $this->generateTemperature($awsId),
-                        'humidity'    => $this->generateHumidity($awsId),
-                    ]
-                );
+                if ($date->hour % 3 === 0) { // hanya isi jam 0, 3, 6, 9, dst
+                    // ✅ Cek dulu apakah data sudah ada
+                    $exists = DataAws::where('aws_id', $awsId)
+                        ->where('timestamp', $date)
+                        ->exists();
 
-                $date->addHours(3); // interval 3 jam
+                    if (!$exists) {
+                        DataAws::create([
+                            'aws_id'      => $awsId,
+                            'timestamp'   => $date,
+                            'rainfall'    => $this->generateRainfall($awsId),
+                            'temperature' => $this->generateTemperature($awsId),
+                            'humidity'    => $this->generateHumidity($awsId),
+                        ]);
+                    }
+                }
+
+                $date->addHour();
             }
         }
     }
+
 
     private function generateRainfall($awsId)
     {

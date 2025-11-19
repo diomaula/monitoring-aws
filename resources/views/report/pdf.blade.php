@@ -1,291 +1,112 @@
 <!DOCTYPE html>
 <html lang="id">
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Laporan Bulanan PDF</title>
-        <style>
-            body {
-                font-family: DejaVu Sans, sans-serif;
-                font-size: 12px;
-            }
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Bulanan AWS</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+            margin: 20px;
+        }
 
-            /* --- Kop Surat --- */
-            .kop-surat {
-                width: 100%;
-                text-align: center;
-            }
+        h3 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
 
-            .kop-table {
-                border: none;
-            }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
 
-            .kop-table td {
-                border: none;
-                padding: 0;
-                /* opsional supaya rapat */
-            }
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+            vertical-align: middle;
+        }
 
-            .kop-left {
-                width: 120px;
-                text-align: center;
-                vertical-align: middle;
-            }
+        thead th {
+            background-color: #d9e8ff;
+            font-weight: bold;
+        }
 
-            .kop-left img {
-                width: 170px;
-                height: auto;
-            }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
-            .kop-right {
-                text-align: center;
-                vertical-align: middle;
-            }
+        .sub-header th {
+            background-color: #edf5ff;
+            font-weight: normal;
+        }
+    </style>
+</head>
 
-            .kop-right .judul-utama {
-                font-size: 13px;
-                font-weight: bold;
-            }
+<body>
+    <h3>Laporan Bulanan AWS - {{ \Carbon\Carbon::create($year, $month)->translatedFormat('F Y') }}</h3>
 
-            .kop-right .judul-sub {
-                font-size: 18px;
-                font-weight: bold;
-            }
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2">Nama AWS</th>
+                <th rowspan="2">Lokasi</th>
+                <th colspan="3">Suhu (°C)</th>
+                <th colspan="3">Kelembapan (%)</th>
+                <th colspan="4">Curah Hujan (mm)</th>
+                <th colspan="3">Kecepatan Angin (m/s)</th>
+                <th rowspan="2">Arah Angin Dominan</th>
+            </tr>
+            <tr class="sub-header">
+                <th>Min</th>
+                <th>Max</th>
+                <th>Rata-rata</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th>Rata-rata</th>
+                <th>Tertinggi</th>
+                <th>Tanggal</th>
+                <th>Total</th>
+                <th>Hari Hujan</th>
+                <th>Min</th>
+                <th>Max</th>
+                <th>Rata-rata</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($reports as $r)
+            <tr>
+                <td>{{ $r['name'] }}</td>
+                <td>{{ $r['location'] }}</td>
 
-            .kop-right p {
-                margin: 2px 0;
-                line-height: 1.3;
-                font-size: 12px;
-            }
+                <td>{{ $r['temperature_min'] }}</td>
+                <td>{{ $r['temperature_max'] }}</td>
+                <td>{{ $r['temperature_avg'] }}</td>
 
-            .garis {
-                border-bottom: 3px solid #000;
-                margin-top: 5px;
-            }
+                <td>{{ $r['humidity_min'] }}</td>
+                <td>{{ $r['humidity_max'] }}</td>
+                <td>{{ $r['humidity_avg'] }}</td>
 
-            .garis-tipis {
-                border-bottom: 1px solid #000;
-                margin-top: 1px;
-                margin-bottom: 20px;
-            }
+                <td>{{ $r['rainfall_max'] }}</td>
+                <td>{{ $r['rainfall_max_date'] }}</td>
+                <td>{{ $r['rainfall_sum'] }}</td>
+                <td>{{ $r['rainy_days'] }}</td>
 
-            /* --- Judul Laporan --- */
-            .laporan-title {
-                text-align: center;
-                margin: 15px 0 3px 0;
-                font-size: 16px;
-                font-weight: 600;
-                text-transform: uppercase;
-                font-family: "Times New Roman", serif;
-                letter-spacing: 0.5px;
-            }
-
-            .laporan-subtitle {
-                text-align: center;
-                font-size: 12px;
-                font-style: italic;
-                color: #666;
-                margin-bottom: 8px;
-                font-family: "Times New Roman", serif;
-            }
-
-            .laporan-line {
-                width: 65%;
-                margin: 0 auto 20px auto;
-                border-bottom: 2px solid #000;
-                position: relative;
-            }
-
-            .laporan-line::after {
-                content: "";
-                position: absolute;
-                left: 10%;
-                right: 10%;
-                bottom: -3px;
-                border-bottom: 1px solid #000;
-            }
-
-            /* --- Tabel Data --- */
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                margin-top: 10px;
-                font-size: 12px;
-            }
-
-            table,
-            th,
-            td {
-                border: 1px solid black;
-            }
-
-            th,
-            td {
-                padding: 6px;
-            }
-
-            th {
-                background-color: #cfe2ff;
-                font-weight: bold;
-                text-align: center;
-            }
-
-            td {
-                text-align: center;
-            }
-
-            td.parameter {
-                text-align: left;
-                padding-left: 8px;
-            }
-
-            tbody tr:nth-child(odd) {
-                background-color: #f9f9f9;
-            }
-
-            /* --- TTD --- */
-            .ttd {
-                margin-top: 30px;
-                width: 100%;
-                display: flex;
-                justify-content: flex-end;
-            }
-
-            .ttd .blok {
-                text-align: right;
-            }
-
-            .ttd img {
-                width: 100px;
-                margin: 5px 0;
-            }
-        </style>
-    </head>
-
-    <body>
-        {{-- HEADER --}}
-        <div class="kop-surat">
-            <table class="kop-table">
-                <tr>
-                    <td class="kop-left">
-                        <img src="{{ public_path('assets/img/bmkg1.png') }}" alt="Logo BMKG"><br>
-                    </td>
-                    <td class="kop-right">
-                        <div class="judul-utama">BADAN METEOROLOGI, KLIMATOLOGI, DAN GEOFISIKA</div>
-                        <div class="judul-sub">STASIUN METEOROLOGI KELAS III BANYUWANGI</div>
-                        <p>
-                            Jl. Jaksa Agung Suprapto No. 152 Banyuwangi, Kode Pos: 68425,
-                            Telp: (0333) 421888 / 410088,
-                            E-mail: stamet.banyuwangi436911@gmail.com; met_987@yahoo.com; stamet.banyuwangi@bmkg.go.id,
-                            Website: www.stamet-banyuwangi.bmkg.go.id
-                        </p>
-                    </td>
-                </tr>
-            </table>
-            <div class="garis"></div>
-            <div class="garis-tipis"></div>
-        </div>
-
-        {{-- ISI LAPORAN --}}
-        <h3 class="laporan-title">Laporan Bulanan AWS (Automatic Weather Station)</h3>
-        <p class="laporan-subtitle">Per {{ $bulanNama }} {{ $tahun }}</p>
-        <div class="laporan-line"></div>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Parameter</th>
-                    <th>Nilai</th>
-                    <th>Satuan</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>1</td>
-                    <td class="parameter">Suhu Minimum</td>
-                    <td>{{ $suhuMin }}</td>
-                    <td>°C</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td class="parameter">Suhu Maksimum</td>
-                    <td>{{ $suhuMax }}</td>
-                    <td>°C</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td class="parameter">Suhu Rata-rata</td>
-                    <td>{{ $suhuAvg }}</td>
-                    <td>°C</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td class="parameter">Kelembapan Minimum</td>
-                    <td>{{ $kelembapanMin }}</td>
-                    <td>%</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td class="parameter">Kelembapan Maksimum</td>
-                    <td>{{ $kelembapanMax }}</td>
-                    <td>%</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td class="parameter">Kelembapan Rata-rata</td>
-                    <td>{{ $kelembapanAvg }}</td>
-                    <td>%</td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td class="parameter">Tekanan Minimum</td>
-                    <td>{{ $tekananMin }}</td>
-                    <td>hPa</td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td class="parameter">Tekanan Maksimum</td>
-                    <td>{{ $tekananMax }}</td>
-                    <td>hPa</td>
-                </tr>
-                <tr>
-                    <td>9</td>
-                    <td class="parameter">Tekanan Rata-rata</td>
-                    <td>{{ $tekananAvg }}</td>
-                    <td>hPa</td>
-                </tr>
-                <tr>
-                    <td>10</td>
-                    <td class="parameter">Total Curah Hujan</td>
-                    <td>{{ $curahHujan }}</td>
-                    <td>mm</td>
-                </tr>
-                <tr>
-                    <td>11</td>
-                    <td class="parameter">Kecepatan Angin Rata-rata</td>
-                    <td>{{ $kecepatanAngin }}</td>
-                    <td>m/s</td>
-                </tr>
-                <tr>
-                    <td>12</td>
-                    <td class="parameter">Arah Angin Dominan</td>
-                    <td>{{ $arahAngin }}</td>
-                    <td>-</td>
-                </tr>
-            </tbody>
-        </table>
-
-        {{-- TTD --}}
-        <div class="ttd">
-            <div class="blok">
-                <p>Banyuwangi, {{ $tanggalRilis }}</p>
-                <p>Kepala Stasiun,</p>
-                <!-- <img src="{{ public_path('assets/img/qr-bmkg.png') }}" alt="QR Code"> -->
-                <br><br>
-                <p><strong>Teguh Tri Susanto</strong></p>
-            </div>
-        </div>
-    </body>
+                <td>{{ $r['wind_speed_min'] }}</td>
+                <td>{{ $r['wind_speed_max'] }}</td>
+                <td>{{ $r['wind_speed_avg'] }}</td>
+                <td>{{ $r['dominant_wind'] }}</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="16" style="text-align:center; color:#666;">Tidak ada data untuk bulan ini.</td>
+            </tr>
+            @endforelse
+        </tbody>
+    </table>
+</body>
 
 </html>

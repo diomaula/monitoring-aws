@@ -33,9 +33,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
     Route::get('/aws/{id}', [AwsController::class, 'index']);
     Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
-    Route::get('/report', [ReportController::class, 'index']);
-    Route::get('/report', [ReportController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
+    // Route::get('/report', [ReportController::class, 'index']);
+    // Route::get('/report', [ReportController::class, 'index'])->name('laporan.index');
+    // Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
+
+    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
+    
 
     Route::middleware('can:superadmin')->group(function () {
         Route::resource('/users', UserController::class);
