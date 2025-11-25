@@ -45,6 +45,15 @@
     <section class="section dashboard">
       <div class="card">
         <div class="card-body">
+          {{-- ALERT ERROR --}}
+          @if($errorMessage)
+          <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+            <strong>Peringatan!</strong> {{ $errorMessage }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          @endif
+
+          {{-- FORM FILTER --}}
           <form method="GET" action="{{ route('laporan.index') }}" class="row g-3 mt-2 mb-4">
             <div class="col-md-3">
               <label for="month" class="form-label">Bulan</label>
@@ -75,13 +84,15 @@
             </div>
 
             <div class="col-md-2 align-self-end">
-              <a href="{{ route('laporan.cetak', ['month' => $month, 'year' => $year]) }}" target="_blank" class="btn btn-danger w-100">
+              <a href="{{ route('laporan.cetak', ['month' => $month, 'year' => $year]) }}" target="_blank"
+                class="btn btn-danger w-100">
                 <i class="fas fa-file-pdf"></i> Cetak PDF
               </a>
             </div>
           </form>
 
           {{-- =================== TABEL LAPORAN =================== --}}
+          @if(!$errorMessage)
           <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover text-center align-middle">
               <thead class="table-primary">
@@ -90,21 +101,24 @@
                   <th rowspan="2">Lokasi</th>
                   <th colspan="3">Suhu (°C)</th>
                   <th colspan="3">Kelembapan (%)</th>
-                  <th colspan="4">Curah Hujan (mm)</th>
+                  <th colspan="3">Curah Hujan (mm)</th>
                   <th colspan="3">Kecepatan Angin (m/s)</th>
                   <th rowspan="2">Arah Angin Dominan</th>
                 </tr>
+
                 <tr class="table-info">
                   <th>Min</th>
                   <th>Max</th>
                   <th>Rata-rata</th>
+
                   <th>Min</th>
                   <th>Max</th>
                   <th>Rata-rata</th>
+
                   <th>Tertinggi</th>
-                  <th>Tanggal</th>
                   <th>Total</th>
                   <th>Hari Hujan</th>
+
                   <th>Min</th>
                   <th>Max</th>
                   <th>Rata-rata</th>
@@ -114,30 +128,26 @@
               <tbody>
                 @forelse ($reports as $r)
                 <tr>
-                  <td>{{ $r['name'] }}</td>
-                  <td>{{ $r['location'] }}</td>
+                  <td>{{ $r['name'] ?? '-' }}</td>
+                  <td>{{ $r['location'] ?? '-' }}</td>
 
-                  {{-- SUHU --}}
-                  <td>{{ $r['temperature_min'] }}</td>
-                  <td>{{ $r['temperature_max'] }}</td>
-                  <td>{{ $r['temperature_avg'] }}</td>
+                  <td>{{ $r['temperature_min'] ?? '-' }}</td>
+                  <td>{{ $r['temperature_max'] ?? '-' }}</td>
+                  <td>{{ $r['temperature_avg'] ?? '-' }}</td>
 
-                  {{-- KELEMBAPAN --}}
-                  <td>{{ $r['humidity_min'] }}</td>
-                  <td>{{ $r['humidity_max'] }}</td>
-                  <td>{{ $r['humidity_avg'] }}</td>
+                  <td>{{ $r['humidity_min'] ?? '-' }}</td>
+                  <td>{{ $r['humidity_max'] ?? '-' }}</td>
+                  <td>{{ $r['humidity_avg'] ?? '-' }}</td>
 
-                  {{-- CURAH HUJAN --}}
-                  <td>{{ $r['rainfall_max'] }}</td>
-                  <td>{{ $r['rainfall_max_date'] }}</td>
-                  <td>{{ $r['rainfall_sum'] }}</td>
-                  <td>{{ $r['rainy_days'] }}</td>
+                  <td>{{ $r['rainfall_max'] ?? '-' }}</td>
+                  <td>{{ $r['rainfall_sum'] ?? '-' }}</td>
+                  <td>{{ $r['rainy_days'] ?? '-' }}</td>
 
-                  {{-- ANGIN --}}
-                  <td>{{ $r['wind_speed_min'] }}</td>
-                  <td>{{ $r['wind_speed_max'] }}</td>
-                  <td>{{ $r['wind_speed_avg'] }}</td>
-                  <td>{{ $r['dominant_wind'] }}</td>
+                  <td>{{ $r['wind_speed_min'] ?? '-' }}</td>
+                  <td>{{ $r['wind_speed_max'] ?? '-' }}</td>
+                  <td>{{ $r['wind_speed_avg'] ?? '-' }}</td>
+
+                  <td>{{ $r['dominant_wind'] ?? '-' }}</td>
                 </tr>
                 @empty
                 <tr>
@@ -147,6 +157,7 @@
               </tbody>
             </table>
           </div>
+          @endif
         </div>
       </div>
     </section>
