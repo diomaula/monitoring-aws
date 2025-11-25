@@ -37,13 +37,19 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/report', [ReportController::class, 'index'])->name('laporan.index');
     // Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
 
-    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
-    Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
+    // Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+    // Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
     
 
     Route::middleware('can:superadmin')->group(function () {
         Route::resource('/users', UserController::class);
     });
+
+    Route::middleware(['auth', 'can:forecast'])->group(function () {
+        Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
+    });
+
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
