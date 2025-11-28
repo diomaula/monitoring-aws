@@ -32,10 +32,33 @@ class AwsLaporanSeeder extends Seeder
             ->whereBetween('timestamp', [$startDate, $endDate])
             ->delete();
 
+        // Tentukan hari yang AWS-nya mati
+        $specialOffDays = [
+            Carbon::today()->format('Y-m-d'),            // hari ini
+            Carbon::yesterday()->format('Y-m-d'),        // kemarin
+            Carbon::now()->subDays(5)->format('Y-m-d'),  // 5 hari lalu
+        ];
+
         foreach ($awsList as $awsId) {
+
+            // Tentukan jam mati untuk tiap hari
+            $offHoursMap = [];
+            foreach ($specialOffDays as $day) {
+                $totalHoursOff = rand(2, 4); // 2–4 jam mati
+                $hours = [];
+
+                for ($i = 0; $i < $totalHoursOff; $i++) {
+                    $hours[] = rand(0, 23); // jam acak
+                }
+
+                $offHoursMap[$day] = $hours;
+            }
+
+            // Loop isi data
             $date = $startDate->copy();
 
             while ($date <= $endDate) {
+
 
                 DataAws::create([
                     'aws_id'         => $awsId,

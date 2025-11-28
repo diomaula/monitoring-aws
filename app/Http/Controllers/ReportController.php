@@ -24,20 +24,20 @@ class ReportController extends Controller
         $errorMessage = null;
         $reports = [];
 
-        // BLOKIR BULAN DEPAN / BELUM TERJADI
+        // Belum terjadi
         if ($reqTanggal->gt($awalBulanIni)) {
             $errorMessage = "Laporan bulan $namaBulan $year belum tersedia.";
             return view('report.index', compact('reports', 'month', 'year', 'errorMessage'));
         }
-
-        // BLOKIR BULAN INI SEBELUM RILIS
+  
+        // Bulan ini belum keluar datanya
         if ($reqTanggal->eq($awalBulanIni) && now()->lt($awalBulanDepan)) {
             $errorMessage = "Laporan bulan $namaBulan $year baru dapat diakses pada "
                 . $awalBulanDepan->translatedFormat('d F Y') . ".";
             return view('report.index', compact('reports', 'month', 'year', 'errorMessage'));
         }
 
-        // 🔥 HITUNG ARAH ANGIN DOMINAN MENGGUNAKAN MODE
+        // Hitung arah angin dominan menggunakan mode(data yg sering muncul)
         $dominantWind = DB::table('laporan_harian')
             ->whereMonth('date', $month)
             ->whereYear('date', $year)
@@ -52,7 +52,7 @@ class ReportController extends Controller
             ->map(fn($g) => $g->first()->dominant_wind_direction);
 
 
-        // 🔥 QUERY UTAMA — NILAI 0 DIABAIKAN MENGGUNAKAN NULLIF
+        // Data bulanan (nilai 0 diabaikan NULLIF)
         $laporan = DB::table('laporan_harian')
             ->whereMonth('date', $month)
             ->whereYear('date', $year)

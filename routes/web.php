@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AwsController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\LaporanHarianController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -37,8 +38,11 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/report', [ReportController::class, 'index'])->name('laporan.index');
     // Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
 
-    // Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
-    // Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
+    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
+
+    Route::get('laporanHarian', [LaporanHarianController::class, 'index'])->name('laporanHarian.index');
+    Route::get('/laporanHarian/pdf', [LaporanHarianController::class, 'cetakPdf'])->name('laporanHarian.cetak');
     
 
     Route::middleware('can:superadmin')->group(function () {
