@@ -4,80 +4,74 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Aws;
+use App\Models\AwsStatusLog;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanHarianController extends Controller
 {
+
     public function index(Request $request)
     {
         $tglMulai = $request->tglMulai ?: Carbon::now()->format('Y-m-d');
         $tglAkhir = $request->tglAkhir ?: Carbon::now()->format('Y-m-d');
 
-        $awsList = Aws::all();
+        // Ambil semua log terurut untuk range tanggal
+        $data = AwsStatusLog::whereBetween('waktu', [
+                $tglMulai . ' 00:00:00',
+                $tglAkhir . ' 23:59:59'
+            ])
+            ->orderBy('station_id')
+            ->orderBy('waktu')
+            ->get();
+
+        // Group hanya berdasarkan station
+        $stations = $data->groupBy('station_id');
+
         $laporan = [];
 
-        foreach ($awsList as $aws) {
+        foreach ($stations as $stationId => $logs) {
 
-            $data = $aws->data()
-                ->whereBetween('timestamp', [$tglMulai . ' 00:00:00', $tglAkhir . ' 23:59:59'])
-                ->orderBy('timestamp', 'asc')
-                ->get();
+            $namaAws = $logs->first()->name;
+            $waktuMati = null;
 
-            if ($data->isEmpty()) continue;
-
-            $grouped = $data->groupBy(function ($item) {
-                return Carbon::parse($item->timestamp)->format('Y-m-d');
-            });
-
-            foreach ($grouped as $tanggal => $rows) {
-
-                $waktuMatiPertama = null;
-                $waktuHidupPertama = null;
-
-                $isMati = false;
-                $pernahMati = false;
-
-                foreach ($rows as $row) {
-
-                    $mati = (
-                        $row->rain == 0 &&
-                        $row->ws == 0 &&
-                        $row->wd == 0 &&
-                        $row->humidity == 0 &&
-                        $row->temperature == 0
-                    );
-
-                    if ($mati && !$isMati) {
-                        $waktuMatiPertama = $row->timestamp;
-                        $isMati = true;
-                        $pernahMati = true;
-                    }
-
-                    if (!$mati && $isMati && !$waktuHidupPertama) {
-                        $waktuHidupPertama = $row->timestamp;
-                    }
+            foreach ($logs as $log)
+            {
+                // Jika status mati → tunggu sampai ada status hidup berikutnya
+                if ($log->status == 'mati' && !$waktuMati) {
+                    $waktuMati = $log->waktu;
                 }
 
-                if (!$pernahMati) continue;
+                // Jika status hidup dan sebelumnya mati → simpan 1 periode
+                else if ($log->status == 'hidup' && $waktuMati) {
 
-                $durasi = '-';
-                if ($waktuMatiPertama && $waktuHidupPertama) {
-                    $durasi = Carbon::parse($waktuMatiPertama)
-                        ->diff(Carbon::parse($waktuHidupPertama))
-                        ->format('%H jam %I menit');
+                    $waktuHidup = $log->waktu;
+
+                    // Hitung durasi
+                    $durasi = Carbon::parse($waktuMati)
+                            ->diff(Carbon::parse($waktuHidup))
+                            ->format('%H jam %I menit %S detik');
+
+                    // Tambahkan ke laporan
+                    $laporan[] = [
+                        'name'    => $namaAws,
+                        'tanggal' => Carbon::parse($waktuMati)->format('d-m-Y'),
+                        'mati'    => Carbon::parse($waktuMati)->format('H:i:s'),
+                        'hidup'   => Carbon::parse($waktuHidup)->format('H:i:s'),
+                        'durasi'  => $durasi,
+                    ];
+
+                    // reset
+                    $waktuMati = null;
                 }
-
-                $laporan[] = [
-                    'name' => $aws->name,
-                    'tanggal' => Carbon::parse($tanggal)->format('d-m-Y'),
-                    'mati' => $waktuMatiPertama,
-                    'hidup' => $waktuHidupPertama,
-                    'durasi' => $durasi,
-                ];
             }
         }
-        $laporan = collect($laporan)->sortByDesc('tanggal')->values()->all();
+
+        // Urutkan terbaru
+        $laporan = collect($laporan)
+                    ->sortByDesc('tanggal')
+                    ->values()
+                    ->all();
 
         return view('report.laporanHarian', compact('laporan', 'tglMulai', 'tglAkhir'));
     }
@@ -87,75 +81,95 @@ class LaporanHarianController extends Controller
         $tglMulai = $request->tglMulai ?: Carbon::now()->format('Y-m-d');
         $tglAkhir = $request->tglAkhir ?: Carbon::now()->format('Y-m-d');
 
-        $awsList = Aws::all();
+        // Ambil data sesuai filter
+        $data = AwsStatusLog::whereBetween('waktu', [
+                $tglMulai . ' 00:00:00',
+                $tglAkhir . ' 23:59:59'
+            ])
+            ->orderBy('station_id')
+            ->orderBy('waktu', 'asc')
+            ->get();
+
+        // Group berdasarkan station
+        $grouped = $data->groupBy('station_id');
+
         $laporan = [];
 
-        foreach ($awsList as $aws) {
+        foreach ($grouped as $stationId => $logs) {
 
-            $data = $aws->data()
-                ->whereBetween('timestamp', [$tglMulai . ' 00:00:00', $tglAkhir . ' 23:59:59'])
-                ->orderBy('timestamp', 'asc')
-                ->get();
+            $namaAws = $logs->first()->name;
+            // $tanggal = Carbon::parse($entries->first()->waktu)->format('d-m-Y');
+            $waktuMati = null;
 
-            if ($data->isEmpty()) continue;
+            // $waktuMatiPertama = null;
+            // $waktuHidupPertama = null;
 
-            $grouped = $data->groupBy(function ($item) {
-                return Carbon::parse($item->timestamp)->format('Y-m-d');
-            });
+            foreach ($logs as $log) {
 
-            foreach ($grouped as $tanggal => $rows) {
-
-                $waktuMatiPertama = null;
-                $waktuHidupPertama = null;
-
-                $isMati = false;
-                $pernahMati = false;
-
-                foreach ($rows as $row) {
-
-                    $mati = (
-                        $row->rain == 0 &&
-                        $row->ws == 0 &&
-                        $row->wd == 0 &&
-                        $row->humidity == 0 &&
-                        $row->temperature == 0
-                    );
-
-                    if ($mati && !$isMati) {
-                        $waktuMatiPertama = $row->timestamp;
-                        $isMati = true;
-                        $pernahMati = true;
-                    }
-
-                    if (!$mati && $isMati && !$waktuHidupPertama) {
-                        $waktuHidupPertama = $row->timestamp;
-                    }
+                // Cari waktu mati pertama
+                // if ($log->status == 'mati' && !$waktuMatiPertama) {
+                //     $waktuMatiPertama = $log->waktu;
+                // }
+                if ($log->status == 'mati' && !$waktuMati) {
+                    $waktuMati = $log->waktu;
                 }
 
-                if (!$pernahMati) continue;
+                // Cari waktu hidup pertama setelah mati
+                // if ($waktuMatiPertama && !$waktuHidupPertama && $log->status == 'hidup') {
+                //     $waktuHidupPertama = $log->waktu;
+                // }
+                else if ($log->status == 'hidup' && $waktuMati) {
 
-                $durasi = '-';
-                if ($waktuMatiPertama && $waktuHidupPertama) {
-                    $durasi = Carbon::parse($waktuMatiPertama)
-                        ->diff(Carbon::parse($waktuHidupPertama))
-                        ->format('%H jam %I menit');
+                    $waktuHidup = $log->waktu;
+
+                    // Hitung durasi
+                    $durasi = Carbon::parse($waktuMati)
+                            ->diff(Carbon::parse($waktuHidup))
+                            ->format('%H jam %I menit %S detik');
+
+                    // Tambahkan ke laporan
+                    $laporan[] = [
+                        'name'    => $namaAws,
+                        'tanggal' => Carbon::parse($waktuMati)->format('d-m-Y'),
+                        'mati'    => Carbon::parse($waktuMati)->format('H:i:s'),
+                        'hidup'   => Carbon::parse($waktuHidup)->format('H:i:s'),
+                        'durasi'  => $durasi,
+                    ];
+
+                    // reset
+                    $waktuMati = null;
                 }
-
-                $laporan[] = [
-                    'name' => $aws->name,
-                    'tanggal' => Carbon::parse($tanggal)->format('d-m-Y'),
-                    'mati' => $waktuMatiPertama,
-                    'hidup' => $waktuHidupPertama,
-                    'durasi' => $durasi,
-                ];
             }
+
+            // Hitung durasi
+            // $durasi = '-';
+            // if ($waktuMatiPertama && $waktuHidupPertama) {
+            //     $durasi = Carbon::parse($waktuMatiPertama)
+            //                 ->diff(Carbon::parse($waktuHidupPertama))
+            //                 ->format('%H jam %I menit %S detik');
+            // }
+
+            // $laporan[] = [
+            //     'station_id' => $stationId,
+            //     'name'       => $namaAws,
+            //     'tanggal'    => $tanggal,
+            //     'mati'       => $waktuMatiPertama ? Carbon::parse($waktuMatiPertama)->format('H:i:s') : '-',
+            //     'hidup'      => $waktuHidupPertama ? Carbon::parse($waktuHidupPertama)->format('H:i:s') : '-',
+            //     'durasi'     => $durasi,
+            // ];
         }
-        $laporan = collect($laporan)->sortByDesc('tanggal')->values()->all();
+
+        // Urutkan laporan paling baru di atas
+        // $laporan = collect($laporan)->sortByDesc('tanggal')->values()->all();
+        $laporan = collect($laporan)
+                    ->sortByDesc('tanggal')
+                    ->values()
+                    ->all();
 
         $pdf = Pdf::loadView('report.pdfHarian', [
             'laporan' => $laporan,
             'tglMulai' => $tglMulai,
-            'tglAkhir' => $tglAkhir,
+            'tglAkhir' => $tglAkhir
         ])->setPaper('A4', 'potrait');
 
         return $pdf->stream('Laporan-Harian-AWS.pdf');

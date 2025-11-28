@@ -198,6 +198,10 @@
         }
     </style>
 </head>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/windbarb.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
 
 <body>
     @include('layouts.loading')
@@ -330,9 +334,9 @@
                         <div id="chartHumidity"></div>
                     </div>
                     
-                    <div class="mb-4">
+                    {{--<div class="mb-4">
                         <h6 class="fw-bold">Diagram Arah & Kecepatan Angin (Windrose)</h6>
-                    <div id="chartWindrose"></div>
+                    <div id="chartWindrose"></div>--}}
 
                     <script>
                         document.addEventListener("DOMContentLoaded", async () => {

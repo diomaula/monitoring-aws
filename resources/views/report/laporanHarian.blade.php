@@ -48,47 +48,37 @@
           <form method="GET" action="{{ route('laporanHarian.index') }}" class="row g-3 mt-2 mb-4">
             <div class="col-md-3">
               <label class="form-label">Tanggal Mulai</label>
-                <select name="tglMulai" class="form-select">
-                    @php
-                        $today = now();
-                        $endDate = now()->subYears(2);
+              <select name="tglMulai" class="form-select">
 
-                        $dates = [];
+                  @php
+                      $today = now();
+                      $endDate = now()->subYears(2);
+                      $dates = [];
 
-                        for ($date = $today; $date->greaterThanOrEqualTo($endDate); $date->subDay()) {
-                            $dates[] = $date->format('Y-m-d');
-                        }
-                    @endphp
-                    
-                    @foreach ($dates as $date)
-                            <option value="{{ $date }}"
-                                {{ request('tglMulai', now()->format('Y-m-d')) == $date ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::parse($date)->translatedFormat('d-m-Y') }}
-                            </option>
-                    @endforeach
-                </select>
+                      for ($date = $today->copy(); $date->greaterThanOrEqualTo($endDate); $date->subDay()) {
+                          $dates[] = $date->format('Y-m-d');
+                      }
+                  @endphp
+
+                  @foreach ($dates as $date)
+        <option value="{{ $date }}"
+            {{ $tglMulai == $date ? 'selected' : '' }}>
+            {{ \Carbon\Carbon::parse($date)->translatedFormat('d-m-Y') }}
+        </option>
+    @endforeach
+              </select>
             </div>
 
             <div class="col-md-3">
-              <label class="form-label">Tanggal Akhir</label>
+                <label class="form-label">Tanggal Akhir</label>
                 <select name="tglAkhir" class="form-select">
-                    @php
-                        $today = now();
-                        $endDate = now()->subYears(2);
 
-                        $dates = [];
-
-                        for ($date = $today; $date->greaterThanOrEqualTo($endDate); $date->subDay()) {
-                            $dates[] = $date->format('Y-m-d');
-                        }
-                    @endphp
-                    
                     @foreach ($dates as $date)
-                            <option value="{{ $date }}"
-                                {{ request('tglAkhir', now()->format('Y-m-d')) == $date ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::parse($date)->translatedFormat('d-m-Y') }}
-                            </option>
-                    @endforeach
+        <option value="{{ $date }}"
+            {{ $tglAkhir == $date ? 'selected' : '' }}>
+            {{ \Carbon\Carbon::parse($date)->translatedFormat('d-m-Y') }}
+        </option>
+    @endforeach
                 </select>
             </div>
 
@@ -99,10 +89,13 @@
             </div>
 
             <div class="col-md-2 align-self-end">
-              <a href="{{ route('laporanHarian.cetak', ['tglMulai' => $tglMulai, 'tglAkhir' => $tglAkhir]) }}" target="_blank" class="btn btn-danger w-100">
-                <i class="fas fa-file-pdf"></i> Cetak PDF
+              <a href="{{ route('laporanHarian.cetak', [
+                      'tglMulai' => $tglMulai,
+                      'tglAkhir' => $tglAkhir
+                  ]) }}" target="_blank" class="btn btn-danger w-100">
+                  <i class="fas fa-file-pdf"></i> Cetak PDF
               </a>
-              </div>
+            </div>
           </form>
 
           {{-- =================== TABEL LAPORAN =================== --}}
@@ -122,8 +115,13 @@
                         <tr>
                             <td>{{ $item['name'] }}</td>
                             <td>{{ $item['tanggal'] }}</td>
-                            <td class="text-danger">{{ $item['mati'] }}</td>
-                            <td class="text-success">{{ $item['hidup'] }}</td>
+                            <td class="text-danger">
+                              {{ $item['mati'] }}
+                          </td>
+
+                          <td class="text-success">
+                              {{ $item['hidup'] }}
+                          </td>
                             <td>{{ $item['durasi'] }}</td>
                         </tr>
                     @empty

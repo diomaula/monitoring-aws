@@ -20,6 +20,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('aws:export')->monthlyOn(1, '0:10');
         $schedule->command('report:daily')->dailyAt('00:10');
 
+        $schedule->command('app:check-aws-status')->everyMinute();
+
     }
 
     /**
