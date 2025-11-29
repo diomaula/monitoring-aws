@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('/users', UserController::class);
     });
 
-    Route::middleware(['auth', 'can:forecast'])->group(function () {
+    Route::middleware(['can:forecast'])->group(function () {
         Route::get('/laporan/bulanan', [ReportController::class, 'lapBulanan'])->name('laporan.bulanan');
         Route::get('/laporan/bulanan/pdf', [ReportController::class, 'cetakBulanan'])->name('laporan.bulananPdf');
         Route::get('/laporan/harian', [ReportController::class, 'lapHarian'])->name('laporan.harian');
