@@ -198,6 +198,10 @@
         }
     </style>
 </head>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/windbarb.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
 
 <body>
     @include('layouts.loading')
@@ -325,17 +329,21 @@
                     <div id="chartTemperature"></div>
                 </div>
 
-                <div>
-                {{-- <h6 class="fw-bold">Kelembapan</h6> --}}
-                <div id="chartHumidity"></div>
-            </div>
-                
-            <script>
-                document.addEventListener("DOMContentLoaded", async () => {
-                    try {
-                        let code = "{{ $id }}";
-                        let response = await fetch(`/chart-data/${code}`);
-                        let result = await response.json();
+                    <div>
+                        {{-- <h6 class="fw-bold">Kelembapan</h6> --}}
+                        <div id="chartHumidity"></div>
+                    </div>
+                    
+                    {{--<div class="mb-4">
+                        <h6 class="fw-bold">Diagram Arah & Kecepatan Angin (Windrose)</h6>
+                    <div id="chartWindrose"></div>--}}
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", async () => {
+                            try {
+                                let code = "{{ $id }}";
+                                let response = await fetch(`/chart-data/${code}`);
+                                let result = await response.json();
 
                         // === Curah Hujan ===
                         new ApexCharts(document.querySelector("#chartRainfall"), {
