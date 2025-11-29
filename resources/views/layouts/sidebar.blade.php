@@ -49,14 +49,37 @@
 
     <li class="nav-item">
       <a class="nav-link collapsed" data-bs-target="#laporan-nav" data-bs-toggle="collapse" href="#">
-        <i class="bi bi-journal-text"></i><span>Laporan</span><i class="bi bi-chevron-down ms-auto"></i>
+        <i class="bi bi-journal-text"></i>
+        <span>Laporan</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
       </a>
+
       <ul id="laporan-nav" class="nav-content collapse">
+
         <li>
-          <a href="{{ url('laporan') }}" class="{{ request()->is('laporan') ? 'active' : '' }}">
-            <i class="bi bi-circle"></i><span>Laporan Bulanan</span>
+          <a href="{{ route('laporan.jam') }}"
+            class="{{ request()->routeIs('laporan.jam') ? 'active' : '' }}">
+            <i class="bi bi-circle"></i>
+            <span>Laporan Data Mentah</span>
           </a>
         </li>
+
+        <li>
+          <a href="{{ route('laporan.harian') }}"
+            class="{{ request()->routeIs('laporan.harian') ? 'active' : '' }}">
+            <i class="bi bi-circle"></i>
+            <span>Laporan Harian</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="{{ route('laporan.bulanan') }}"
+            class="{{ request()->routeIs('laporan.bulanan') ? 'active' : '' }}">
+            <i class="bi bi-circle"></i>
+            <span>Laporan Bulanan</span>
+          </a>
+        </li>
+
       </ul>
     </li>
     @endcanany

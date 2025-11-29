@@ -33,12 +33,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/aws/weekly-multi', [AwsController::class, 'weeklyMultiParameter']);
     Route::get('/aws/{id}', [AwsController::class, 'index']);
     Route::get('chart-data/{code}', [AwsController::class, 'getChartData']);
-    // Route::get('/report', [ReportController::class, 'index']);
-    // Route::get('/report', [ReportController::class, 'index'])->name('laporan.index');
-    // Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.pdf');
-
-    // Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
-    // Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
     
 
     Route::middleware('can:superadmin')->group(function () {
@@ -46,9 +40,16 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['auth', 'can:forecast'])->group(function () {
-        Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
-        Route::get('/laporan/pdf', [ReportController::class, 'cetakPdf'])->name('laporan.cetak');
+        Route::get('/laporan/bulanan', [ReportController::class, 'lapBulanan'])->name('laporan.bulanan');
+        Route::get('/laporan/bulanan/pdf', [ReportController::class, 'cetakBulanan'])->name('laporan.bulananPdf');
+        Route::get('/laporan/harian', [ReportController::class, 'lapHarian'])->name('laporan.harian');
+        Route::get('/laporan/harian/pdf', [ReportController::class, 'cetakHarian'])->name('laporan.harianPdf');
+        Route::get('/laporan/perjam', [ReportController::class, 'lapJam'])->name('laporan.jam');
+        Route::get('/laporan/jamExcel', [ReportController::class, 'exportLapJam'])->name('laporan.jamExcel');
+        
     });
+
+
 
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
