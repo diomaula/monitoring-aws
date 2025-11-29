@@ -9,7 +9,6 @@ use App\Models\DataAws;
 
 class AwsLaporanSeeder extends Seeder
 {
-
     public function run(): void
     {
         $awsList = [1, 2, 3];
@@ -24,10 +23,8 @@ class AwsLaporanSeeder extends Seeder
         $this->generateDataForRange($awsList, $currentMonthStart, $currentMonthEnd);
     }
 
-
     private function generateDataForRange($awsList, $startDate, $endDate)
     {
-        // Hapus data biar tidak dobel
         DB::table('data_aws')
             ->whereBetween('timestamp', [$startDate, $endDate])
             ->delete();
@@ -59,20 +56,22 @@ class AwsLaporanSeeder extends Seeder
 
             while ($date <= $endDate) {
 
+                $rainfall = rand(0, 200) / 10;       // 0-20 mm
+                $windDirection = rand(0, 360);       // 0-360 derajat
 
                 DataAws::create([
                     'aws_id'         => $awsId,
                     'timestamp'      => $date,
-                    'temperature'    => rand(24, 34) + mt_rand(0, 99) / 100,
-                    'humidity'       => rand(60, 95) + mt_rand(0, 99) / 100,
-                    'pressure'       => rand(995, 1015) + mt_rand(0, 99) / 100,
-                    'rainfall'       => rand(0, 30) + mt_rand(0, 99) / 100,
-                    'wind_speed'     => rand(1, 15) + mt_rand(0, 99) / 100,
-                    'wind_direction' => rand(0, 359),
-                    'pancitemp'      => rand(25, 35) + mt_rand(0, 99) / 100,
-                    'pancilevel'     => rand(10, 100) + mt_rand(0, 99) / 100,
-                    'solrad'         => rand(100, 1000) + mt_rand(0, 99) / 100,
-                    'watertemp'      => rand(24, 30) + mt_rand(0, 99) / 100,
+                    'temperature'    => rand(250, 330) / 10,
+                    'humidity'       => rand(650, 950) / 10,
+                    'pressure'       => rand(9950, 10150) / 10,
+                    'rainfall'       => $rainfall,
+                    'wind_speed'     => rand(5, 150) / 10,
+                    'wind_direction' => $windDirection,
+                    'pancitemp'      => rand(250, 350) / 10,
+                    'pancilevel'     => rand(100, 1000) / 10,
+                    'solrad'         => rand(100, 1200),
+                    'watertemp'      => rand(240, 300) / 10,
                     'waterlevel'     => rand(50, 200) / 10,
                 ]);
 

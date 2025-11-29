@@ -54,8 +54,8 @@
           @endif
 
           {{-- FORM FILTER --}}
-          <form method="GET" action="{{ route('laporan.index') }}" class="row g-3 mt-2 mb-4">
-            <div class="col-md-3">
+          <form method="GET" action="{{ route('laporan.bulanan') }}" class="row g-3 mt-2 mb-4">
+            <div class="col-md-2">
               <label for="month" class="form-label">Bulan</label>
               <select name="month" id="month" class="form-select">
                 @for ($m = 1; $m <= 12; $m++)
@@ -66,7 +66,7 @@
               </select>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
               <label for="year" class="form-label">Tahun</label>
               <select name="year" id="year" class="form-select">
                 @for ($y = now()->year; $y >= 2020; $y--)
@@ -84,14 +84,13 @@
             </div>
 
             <div class="col-md-2 align-self-end">
-              <a href="{{ route('laporan.cetak', ['month' => $month, 'year' => $year]) }}" target="_blank"
+              <a href="{{ route('laporan.bulananPdf', ['month' => $month, 'year' => $year]) }}" target="_blank"
                 class="btn btn-danger w-100">
                 <i class="fas fa-file-pdf"></i> Cetak PDF
               </a>
             </div>
           </form>
 
-          {{-- =================== TABEL LAPORAN =================== --}}
           @if(!$errorMessage)
           <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover text-center align-middle">

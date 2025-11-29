@@ -50,27 +50,30 @@
     <h3>Laporan Bulanan AWS - {{ \Carbon\Carbon::create($year, $month)->translatedFormat('F Y') }}</h3>
 
     <table>
-        <thead>
+        <thead class="table-primary">
             <tr>
                 <th rowspan="2">Nama AWS</th>
                 <th rowspan="2">Lokasi</th>
                 <th colspan="3">Suhu (°C)</th>
                 <th colspan="3">Kelembapan (%)</th>
-                <th colspan="4">Curah Hujan (mm)</th>
+                <th colspan="3">Curah Hujan (mm)</th>
                 <th colspan="3">Kecepatan Angin (m/s)</th>
                 <th rowspan="2">Arah Angin Dominan</th>
             </tr>
-            <tr class="sub-header">
+
+            <tr class="table-info">
                 <th>Min</th>
                 <th>Max</th>
                 <th>Rata-rata</th>
+
                 <th>Min</th>
                 <th>Max</th>
                 <th>Rata-rata</th>
+
                 <th>Tertinggi</th>
-                <th>Tanggal</th>
                 <th>Total</th>
                 <th>Hari Hujan</th>
+
                 <th>Min</th>
                 <th>Max</th>
                 <th>Rata-rata</th>
@@ -91,7 +94,6 @@
                 <td>{{ $r['humidity_avg'] }}</td>
 
                 <td>{{ $r['rainfall_max'] }}</td>
-                <td>{{ $r['rainfall_max_date'] }}</td>
                 <td>{{ $r['rainfall_sum'] }}</td>
                 <td>{{ $r['rainy_days'] }}</td>
 
