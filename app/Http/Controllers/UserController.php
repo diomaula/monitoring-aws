@@ -34,11 +34,37 @@ class UserController extends Controller
     {
         //
         $validated = $request->validate([
-            'name' => 'required',
-            'username' => 'required|unique:users',
+            'name' => 'required|string|max:100',
+            'username' => [
+                'required',
+                'string',
+                'min:4',
+                'max:20',
+                'regex:/^[a-zA-Z0-9._-]+$/',
+                'unique:users,username'
+            ],
             'password' => 'required|min:5',
             'role' => 'required'
+        ],[
+            // name
+            'name.required' => 'Nama wajib diisi.',
+            'name.max' => 'Nama maksimal 100 karakter.',
+
+            // username
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah terdaftar, silahkan gunakan username lain.',
+            'username.min' => 'Username minimal 4 karakter.',
+            'username.max' => 'Username maksimal 20 karakter.',
+            'username.regex' => 'Username hanya boleh huruf, angka, titik, underscore (_) atau dash (-).',
+
+            // password
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 5 karakter.',
+
+            // role
+            'role.required' => 'Role wajib dipilih.',
         ]);
+
 
         $validated['password'] = Hash::make($validated['password']);
         User::create($validated);
@@ -70,16 +96,40 @@ class UserController extends Controller
     {
         //
         $validated = $request->validate([
-            'name' => 'required',
-            'username' => 'required|unique:users,username,' . $user->id,
+            'name' => 'required|string|max:100',
+            'username' => [
+                'required',
+                'string',
+                'min:4',
+                'max:20',
+                'regex:/^[a-zA-Z0-9._-]+$/',
+                'unique:users,username,' . $user->id, 
+            ],
             'password' => 'nullable|min:5',
             'role' => 'required',
         ], [
+            //name
+            'name.required' => 'Nama wajib diisi.',
+            'name.max' => 'Nama maksimal 100 karakter.',
+
+            //username
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan user lain.',
+            'username.min' => 'Username minimal 4 karakter.',
+            'username.max' => 'Username maksimal 20 karakter.',
+            'username.regex' => 'Username tidak boleh menggunakan spasi.',
+
+            //password
             'password.min' => 'Password tidak boleh kurang dari 5 karakter.',
+
+            //role
+            'role.required' => 'Role wajib dipilih.',
         ]);
 
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']); // ← ini yang membuat password tidak ikut update saat kosong
         }
 
         $user->update($validated);
