@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Harian AWS</title>
+    <title>Laporan Kondisi Alat AWS</title>
     <style>
         body {
             font-family: DejaVu Sans, sans-serif;

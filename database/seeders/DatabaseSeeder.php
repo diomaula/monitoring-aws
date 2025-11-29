@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             AwsLaporanSeeder::class, // jalankan dulu
             // DataAwsSeeder::class,    // menimpa data di jam tertentu (0,3,6,9,...)
             UserSeeder::class,
+            AwsStatusLogSeeder::class,
         ]);
     }
 }
