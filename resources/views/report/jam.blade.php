@@ -160,7 +160,10 @@
                             </tbody>
                         </table>
                     </div>
-
+                    {{-- Pagination --}}
+                    <div class="mt-3">
+                        {{ $laporan->links('pagination::bootstrap-5') }}
+                    </div>
                 </div>
             </div>
         </section>

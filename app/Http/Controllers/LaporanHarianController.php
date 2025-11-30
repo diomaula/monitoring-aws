@@ -7,6 +7,8 @@ use App\Models\Aws;
 use App\Models\AwsStatusLog;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class LaporanHarianController extends Controller
 {
@@ -69,11 +71,28 @@ class LaporanHarianController extends Controller
 
         // Urutkan terbaru
         $laporan = collect($laporan)
-                    ->sortByDesc('tanggal')
-                    ->values()
-                    ->all();
+                    ->sortBy('tanggal')
+                    ->values();
 
-        return view('report.laporanHarian', compact('laporan', 'tglMulai', 'tglAkhir'));
+        // === PAGINATE MANUAL ===
+        $page = request()->get('page', 1);
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $paginatedLaporan = new LengthAwarePaginator(
+            $laporan->slice($offset, $perPage)->values(),
+            $laporan->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        // Kirim ke view
+        return view('report.laporanHarian', [
+            'laporan' => $paginatedLaporan,
+            'tglMulai' => $tglMulai,
+            'tglAkhir' => $tglAkhir,
+        ]);
     }
 
     public function cetakPdf(Request $request)
@@ -98,26 +117,12 @@ class LaporanHarianController extends Controller
         foreach ($grouped as $stationId => $logs) {
 
             $namaAws = $logs->first()->name;
-            // $tanggal = Carbon::parse($entries->first()->waktu)->format('d-m-Y');
             $waktuMati = null;
 
-            // $waktuMatiPertama = null;
-            // $waktuHidupPertama = null;
-
             foreach ($logs as $log) {
-
-                // Cari waktu mati pertama
-                // if ($log->status == 'mati' && !$waktuMatiPertama) {
-                //     $waktuMatiPertama = $log->waktu;
-                // }
                 if ($log->status == 'mati' && !$waktuMati) {
                     $waktuMati = $log->waktu;
                 }
-
-                // Cari waktu hidup pertama setelah mati
-                // if ($waktuMatiPertama && !$waktuHidupPertama && $log->status == 'hidup') {
-                //     $waktuHidupPertama = $log->waktu;
-                // }
                 else if ($log->status == 'hidup' && $waktuMati) {
 
                     $waktuHidup = $log->waktu;
@@ -140,29 +145,10 @@ class LaporanHarianController extends Controller
                     $waktuMati = null;
                 }
             }
-
-            // Hitung durasi
-            // $durasi = '-';
-            // if ($waktuMatiPertama && $waktuHidupPertama) {
-            //     $durasi = Carbon::parse($waktuMatiPertama)
-            //                 ->diff(Carbon::parse($waktuHidupPertama))
-            //                 ->format('%H jam %I menit %S detik');
-            // }
-
-            // $laporan[] = [
-            //     'station_id' => $stationId,
-            //     'name'       => $namaAws,
-            //     'tanggal'    => $tanggal,
-            //     'mati'       => $waktuMatiPertama ? Carbon::parse($waktuMatiPertama)->format('H:i:s') : '-',
-            //     'hidup'      => $waktuHidupPertama ? Carbon::parse($waktuHidupPertama)->format('H:i:s') : '-',
-            //     'durasi'     => $durasi,
-            // ];
         }
 
-        // Urutkan laporan paling baru di atas
-        // $laporan = collect($laporan)->sortByDesc('tanggal')->values()->all();
         $laporan = collect($laporan)
-                    ->sortByDesc('tanggal')
+                    ->sortBy('tanggal')
                     ->values()
                     ->all();
 
