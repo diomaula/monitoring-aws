@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LapJamExport;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ReportController extends Controller
 {
@@ -194,7 +195,13 @@ class ReportController extends Controller
             ->whereBetween('date', [$tglMulai, $tglAkhir])
             ->orderBy('date', 'desc')
             ->orderBy('aws_id')
-            ->get();
+            ->paginate(10)
+            ->appends([
+                'tglMulai' => $tglMulai,
+                'tglAkhir' => $tglAkhir,
+                'aws_id'   => $pilih_aws
+            ]);
+
 
         return view('report.harian', [
             'data' => $data,
@@ -335,24 +342,24 @@ class ReportController extends Controller
                 ->first() ?? '-';
 
             $reports[] = [
-                'name' => $aws->name,
-                'location' => $aws->location,
+                'name'            => $aws->name,
+                'location'        => $aws->location,
                 'temperature_min' => round($rows->min('min_temperature'), 1),
                 'temperature_max' => round($rows->max('max_temperature'), 1),
                 'temperature_avg' => round($rows->avg('avg_temperature'), 1),
-                'humidity_min' => round($rows->min('min_humidity'), 1),
-                'humidity_max' => round($rows->max('max_humidity'), 1),
-                'humidity_avg' => round($rows->avg('avg_humidity'), 1),
-                'pressure_min' => round($rows->min('min_pressure'), 1),
-                'pressure_max' => round($rows->max('max_pressure'), 1),
-                'pressure_avg' => round($rows->avg('avg_pressure'), 1),
-                'rainfall_sum' => round($rows->sum('total_rainfall'), 1),
-                'rainfall_max' => round($rows->max('rainfall_max'), 1),
-                'rainy_days'   => $rows->sum('rainy_days'),
-                'wind_speed_min' => round($rows->min('wind_speed_min'), 1),
-                'wind_speed_max' => round($rows->max('wind_speed_max'), 1),
-                'wind_speed_avg' => round($rows->avg('wind_speed_avg'), 1),
-                'dominant_wind' => $dominantDir,
+                'humidity_min'    => round($rows->min('min_humidity'), 1),
+                'humidity_max'    => round($rows->max('max_humidity'), 1),
+                'humidity_avg'    => round($rows->avg('avg_humidity'), 1),
+                'pressure_min'    => round($rows->min('min_pressure'), 1),
+                'pressure_max'    => round($rows->max('max_pressure'), 1),
+                'pressure_avg'    => round($rows->avg('avg_pressure'), 1),
+                'rainfall_sum'    => round($rows->sum('total_rainfall'), 1),
+                'rainfall_max'    => round($rows->max('rainfall_max'), 1),
+                'rainy_days'      => $rows->sum('rainy_days'),
+                'wind_speed_min'  => round($rows->min('wind_speed_min'), 1),
+                'wind_speed_max'  => round($rows->max('wind_speed_max'), 1),
+                'wind_speed_avg'  => round($rows->avg('wind_speed_avg'), 1),
+                'dominant_wind'   => $dominantDir,
             ];
         }
 
@@ -378,23 +385,31 @@ class ReportController extends Controller
         // validasi tgl
         if ($tglMulai > $tglAkhir) {
             return view('report.jam', [
-                'laporan' => collect(), // kosongkan data
-                'aws_list' => $aws_list,
-                'tglMulai' => $tglMulai,
-                'tglAkhir' => $tglAkhir,
-                'pilih_aws' => $pilih_aws,
-                'errorMessage' => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.',
+                'laporan'       => collect(),
+                'aws_list'      => $aws_list,
+                'tglMulai'      => $tglMulai,
+                'tglAkhir'      => $tglAkhir,
+                'pilih_aws'     => $pilih_aws,
+                'errorMessage'  => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.',
             ]);
         }
 
+        // query dengan paginate
         $laporan = DB::table('data_aws')
             ->when($pilih_aws, fn($q) => $q->where('aws_id', $pilih_aws))
             ->whereDate('timestamp', '>=', $tglMulai)
             ->whereDate('timestamp', '<=', $tglAkhir)
             ->orderBy('aws_id')
             ->orderBy('timestamp')
-            ->get();
+            ->paginate(10)
+            ->appends([
+                'tglMulai' => $tglMulai,
+                'tglAkhir' => $tglAkhir,
+                'aws_id'   => $pilih_aws
+            ]);          
 
+
+        // tambahkan info AWS ke setiap row
         foreach ($laporan as $row) {
             $aws = DB::table('aws')->where('id', $row->aws_id)->first();
             $row->aws_name = $aws->name ?? '-';
@@ -403,6 +418,7 @@ class ReportController extends Controller
 
         return view('report.jam', compact('laporan', 'tglMulai', 'tglAkhir', 'pilih_aws', 'aws_list'));
     }
+
 
     public function exportLapJam(Request $request)
     {
@@ -424,9 +440,9 @@ class ReportController extends Controller
         $fileName = "laporan_data_mentah{$namaAws}_{$tglMulaiFormat}_sampai_{$tglAkhirFormat}.xlsx";
 
         return Excel::download(new \App\Exports\LapJamExport([
-            'tglMulai' => $tglMulai,
-            'tglAkhir' => $tglAkhir,
-            'aws_id' => $pilih_aws
+            'tglMulai'  => $tglMulai,
+            'tglAkhir'  => $tglAkhir,
+            'aws_id'    => $pilih_aws
         ]), $fileName);
     }
 }

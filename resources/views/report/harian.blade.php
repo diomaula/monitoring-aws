@@ -78,7 +78,7 @@
 
                             <div class="col-md-2">
                                 <label for="tglAkhir" class="form-label">Tanggal Akhir</label>
-                                <input type="date" id="tglAKhir" name="tglAKhir" class="form-control" value="{{ $tglAkhir }}">
+                                <input type="date" id="tglAkhir" name="tglAkhir" class="form-control" value="{{ $tglAkhir }}">
                             </div>
 
                             <div class="col-md-3">
@@ -176,6 +176,10 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+                    {{-- Pagination --}}
+                    <div class="mt-3">
+                        {{ $data->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>
