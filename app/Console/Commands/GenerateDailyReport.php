@@ -15,10 +15,8 @@ class GenerateDailyReport extends Command
 
     public function handle()
     {
-        // Ambil tanggal kemarin (supaya data sudah lengkap)
         $date = Carbon::yesterday()->toDateString();
 
-        // Ambil per AWS
         $awsList = DataAws::select('aws_id')->distinct()->pluck('aws_id');
 
         foreach ($awsList as $awsId) {
@@ -54,7 +52,6 @@ class GenerateDailyReport extends Command
 
                     'avg_wind_speed' => $data->avg('wind_speed'),
 
-                    // Ambil arah angin dominan (paling sering muncul)
                     'dominant_wind_direction' => $data->groupBy('wind_direction')
                         ->sortByDesc(fn ($group) => count($group))
                         ->keys()

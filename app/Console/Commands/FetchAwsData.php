@@ -23,7 +23,6 @@ class FetchAwsData extends Command
         $nowUtc = Carbon::now('UTC');
         $hour = (int) $nowUtc->format('H');
 
-        // hanya jalan kalau jam UTC kelipatan 3 (00, 03, 06, dst.)
         if ($hour % 1 !== 0) {
             $this->info("Menjalankan fetch AWS pada " . now('UTC'));
             return 0;
@@ -38,7 +37,7 @@ class FetchAwsData extends Command
 
                 DataAws::create([
                     'aws_id'        => $awsId,
-                    'timestamp'     => $json['waktu'] ?? $nowUtc, // fallback ke sekarang
+                    'timestamp'     => $json['waktu'] ?? $nowUtc, 
                     'temperature'   => $json['temp'] ?? null,
                     'humidity'      => $json['rh'] ?? null,
                     'pressure'      => $json['pressure'] ?? null,
