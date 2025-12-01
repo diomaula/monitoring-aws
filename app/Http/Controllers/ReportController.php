@@ -176,6 +176,7 @@ class ReportController extends Controller
                 'tglAkhir' => $tglAkhir,
                 'pilih_aws' => $pilih_aws,
                 'errorMessage' => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.',
+                'title' => 'Laporan Harian',
             ]);
         }
 
@@ -210,6 +211,7 @@ class ReportController extends Controller
             'tglAkhir' => $tglAkhir,
             'pilih_aws' => $pilih_aws,
             'errorMessage' => null,
+            'title' => 'Laporan Harian',
         ]);
     }
 
@@ -254,13 +256,25 @@ class ReportController extends Controller
         // Validasi tanggal
         if ($reqTanggal->gt($awalBulanIni)) {
             $errorMessage = "Laporan bulan $namaBulan $year belum tersedia.";
-            return view('report.bulanan', compact('reports', 'month', 'year', 'errorMessage'));
+            return view('report.bulanan', [
+                'reports'      => $reports,
+                'month'        => $month,
+                'year'         => $year,
+                'errorMessage' => $errorMessage,
+                'title'        => 'Laporan Bulanan', 
+            ]);
         }
 
         if ($reqTanggal->eq($awalBulanIni) && now()->lt($awalBulanDepan)) {
             $errorMessage = "Laporan bulan $namaBulan $year baru dapat diakses pada "
                 . $awalBulanDepan->translatedFormat('d F Y') . ".";
-            return view('report.bulanan', compact('reports', 'month', 'year', 'errorMessage'));
+            return view('report.bulanan', [
+                'reports'      => $reports,
+                'month'        => $month,
+                'year'         => $year,
+                'errorMessage' => $errorMessage,
+                'title'        => 'Laporan Bulanan', 
+            ]);
         }
 
         $startOfMonth = Carbon::create($year, $month, 1);
@@ -305,7 +319,13 @@ class ReportController extends Controller
             ];
         }
 
-        return view('report.bulanan', compact('reports', 'month', 'year', 'errorMessage'));
+        return view('report.bulanan', [
+            'reports'      => $reports,
+            'month'        => $month,
+            'year'         => $year,
+            'errorMessage' => $errorMessage,
+            'title'        => 'Laporan Bulanan', 
+        ]);
     }
 
     //  Cetak Bulanan 
@@ -391,6 +411,7 @@ class ReportController extends Controller
                 'tglAkhir'      => $tglAkhir,
                 'pilih_aws'     => $pilih_aws,
                 'errorMessage'  => 'Tanggal mulai tidak boleh lebih besar dari tanggal akhir.',
+                'title' => 'Laporan Data Mentah',
             ]);
         }
 
@@ -416,7 +437,14 @@ class ReportController extends Controller
             $row->location = $aws->location ?? '-';
         }
 
-        return view('report.jam', compact('laporan', 'tglMulai', 'tglAkhir', 'pilih_aws', 'aws_list'));
+        return view('report.jam', [
+            'laporan'   => $laporan,
+            'tglMulai'  => $tglMulai,
+            'tglAkhir'  => $tglAkhir,
+            'pilih_aws' => $pilih_aws,
+            'aws_list'  => $aws_list,
+            'title'     => 'Laporan Data Mentah', 
+        ]);
     }
 
 

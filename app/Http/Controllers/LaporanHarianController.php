@@ -92,6 +92,7 @@ class LaporanHarianController extends Controller
             'laporan' => $paginatedLaporan,
             'tglMulai' => $tglMulai,
             'tglAkhir' => $tglAkhir,
+            'title' => 'Laporan Alat',
         ]);
     }
 

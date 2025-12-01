@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class AwsController extends Controller
 {
+    // Dashboard
     public function stations(Request $request)
     {
         $stationsMeta = [
@@ -36,16 +37,9 @@ class AwsController extends Controller
                 $json['region'] = $meta['region'];
                 $data[] = $json;
 
-                // Simpan ke database (curah hujan = ambil field sesuai API, misal 'rainfall')
-                // AwsLog::create([
-                //     'station_id' => $id,
-                //     'name' => $meta['name'],
-                //     'rainfall' => floatval($json['rainfall'] ?? 0)
-                // ]);
             }
         }
 
-        // Filter by region jika ada parameter ?region=
         if ($request->has('region')) {
             $data = array_values(array_filter($data, fn($s) => $s['region'] === $request->region));
         }
@@ -106,9 +100,9 @@ class AwsController extends Controller
             'name'   => $names[$id],
             'data'   => $data,
             'online' => $isOnline,
+            'title' => $names[$id],
         ]);
     }
-
 
     private function getStatus($data)
     {

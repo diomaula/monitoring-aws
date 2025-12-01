@@ -15,7 +15,10 @@ class UserController extends Controller
     {
         //
         $users = User::orderBy('id')->get();
-        return view('users.index', compact('users'));
+        return view('users.index', [
+            'users' => $users,
+            'title' => 'Users', 
+        ]);
     }
 
     /**
