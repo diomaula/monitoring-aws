@@ -3,58 +3,49 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Aws;
 use App\Models\AwsStatusLog;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
 class LaporanHarianController extends Controller
 {
-
     public function index(Request $request)
     {
         $tglMulai = $request->tglMulai ?: Carbon::now()->format('Y-m-d');
         $tglAkhir = $request->tglAkhir ?: Carbon::now()->format('Y-m-d');
 
-        // Ambil semua log terurut untuk range tanggal
-        $data = AwsStatusLog::whereBetween('waktu', [
+        $data = AwsStatusLog::with('aws')
+            ->whereBetween('waktu', [
                 $tglMulai . ' 00:00:00',
                 $tglAkhir . ' 23:59:59'
             ])
-            ->orderBy('station_id')
+            ->orderBy('aws_id')
             ->orderBy('waktu')
             ->get();
 
-        // Group hanya berdasarkan station
-        $stations = $data->groupBy('station_id');
+        $stations = $data->groupBy('aws_id');
 
         $laporan = [];
 
-        foreach ($stations as $stationId => $logs) {
+        foreach ($stations as $awsId => $logs) {
 
-            $namaAws = $logs->first()->name;
+            $namaAws = $logs->first()->aws->name ?? '-';
             $waktuMati = null;
 
-            foreach ($logs as $log)
-            {
-                // Jika status mati → tunggu sampai ada status hidup berikutnya
+            foreach ($logs as $log) {
+
                 if ($log->status == 'mati' && !$waktuMati) {
                     $waktuMati = $log->waktu;
                 }
-
-                // Jika status hidup dan sebelumnya mati → simpan 1 periode
                 else if ($log->status == 'hidup' && $waktuMati) {
 
                     $waktuHidup = $log->waktu;
 
-                    // Hitung durasi
                     $durasi = Carbon::parse($waktuMati)
-                            ->diff(Carbon::parse($waktuHidup))
-                            ->format('%H jam %I menit %S detik');
+                        ->diff(Carbon::parse($waktuHidup))
+                        ->format('%H jam %I menit %S detik');
 
-                    // Tambahkan ke laporan
                     $laporan[] = [
                         'name'    => $namaAws,
                         'tanggal' => Carbon::parse($waktuMati)->format('d-m-Y'),
@@ -63,18 +54,15 @@ class LaporanHarianController extends Controller
                         'durasi'  => $durasi,
                     ];
 
-                    // reset
                     $waktuMati = null;
                 }
             }
         }
 
-        // Urutkan terbaru
         $laporan = collect($laporan)
-                    ->sortBy('tanggal')
-                    ->values();
+            ->sortBy('tanggal')
+            ->values();
 
-        // === PAGINATE MANUAL ===
         $page = request()->get('page', 1);
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
@@ -87,7 +75,6 @@ class LaporanHarianController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        // Kirim ke view
         return view('report.laporanHarian', [
             'laporan' => $paginatedLaporan,
             'tglMulai' => $tglMulai,
@@ -101,23 +88,22 @@ class LaporanHarianController extends Controller
         $tglMulai = $request->tglMulai ?: Carbon::now()->format('Y-m-d');
         $tglAkhir = $request->tglAkhir ?: Carbon::now()->format('Y-m-d');
 
-        // Ambil data sesuai filter
-        $data = AwsStatusLog::whereBetween('waktu', [
+        $data = AwsStatusLog::with('aws')
+            ->whereBetween('waktu', [
                 $tglMulai . ' 00:00:00',
                 $tglAkhir . ' 23:59:59'
             ])
-            ->orderBy('station_id')
-            ->orderBy('waktu', 'asc')
+            ->orderBy('aws_id')
+            ->orderBy('waktu')
             ->get();
 
-        // Group berdasarkan station
-        $grouped = $data->groupBy('station_id');
+        $grouped = $data->groupBy('aws_id');
 
         $laporan = [];
 
-        foreach ($grouped as $stationId => $logs) {
+        foreach ($grouped as $awsId => $logs) {
 
-            $namaAws = $logs->first()->name;
+            $namaAws = $logs->first()->aws->name ?? '-';
             $waktuMati = null;
 
             foreach ($logs as $log) {
@@ -128,12 +114,10 @@ class LaporanHarianController extends Controller
 
                     $waktuHidup = $log->waktu;
 
-                    // Hitung durasi
                     $durasi = Carbon::parse($waktuMati)
-                            ->diff(Carbon::parse($waktuHidup))
-                            ->format('%H jam %I menit %S detik');
+                        ->diff(Carbon::parse($waktuHidup))
+                        ->format('%H jam %I menit %S detik');
 
-                    // Tambahkan ke laporan
                     $laporan[] = [
                         'name'    => $namaAws,
                         'tanggal' => Carbon::parse($waktuMati)->format('d-m-Y'),
@@ -142,22 +126,21 @@ class LaporanHarianController extends Controller
                         'durasi'  => $durasi,
                     ];
 
-                    // reset
                     $waktuMati = null;
                 }
             }
         }
 
         $laporan = collect($laporan)
-                    ->sortBy('tanggal')
-                    ->values()
-                    ->all();
+            ->sortBy('tanggal')
+            ->values()
+            ->all();
 
         $pdf = Pdf::loadView('report.pdfHarian', [
             'laporan' => $laporan,
             'tglMulai' => $tglMulai,
             'tglAkhir' => $tglAkhir
-        ])->setPaper('A4', 'potrait');
+        ])->setPaper('A4', 'portrait');
 
         return $pdf->stream('Laporan-Harian-AWS.pdf');
     }

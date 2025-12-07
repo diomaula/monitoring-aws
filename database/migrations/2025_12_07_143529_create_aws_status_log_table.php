@@ -6,25 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
-        Schema::create('aws_status_log', function (Blueprint $table){
+        Schema::create('aws_status_log', function (Blueprint $table) {
             $table->id();
-            $table->string('station_id');
-            $table->string('name');
+
+            $table->unsignedBigInteger('aws_id');
             $table->enum('status', ['mati', 'hidup']);
             $table->timestamp('waktu');
             $table->timestamps();
+
+            // Foreign key
+            $table->foreign('aws_id')
+                  ->references('id')
+                  ->on('aws')
+                  ->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('aws_status_log');
     }

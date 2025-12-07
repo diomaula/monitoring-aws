@@ -2,22 +2,19 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 use App\Models\AwsStatusLog;
+use Illuminate\Support\Facades\DB;
 
 class AwsStatusLogSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $stations = [
-            ['id' => '5000000031', 'name' => 'AWS Digi Banyuwangi'],
-            ['id' => '3000000007', 'name' => 'AWS Maritim Ketapang'],
-            ['id' => '3000000046', 'name' => 'AWS Maritim Gilimanuk'],
+            ['code' => '5000000031', 'name' => 'AWS Digi Banyuwangi'],
+            ['code' => '3000000007', 'name' => 'AWS Maritim Ketapang'],
+            ['code' => '3000000046', 'name' => 'AWS Maritim Gilimanuk'],
         ];
 
         $endDate = Carbon::now('Asia/Jakarta');
@@ -25,17 +22,21 @@ class AwsStatusLogSeeder extends Seeder
 
         foreach ($stations as $station) {
 
+            $aws = DB::table('aws')->where('code', $station['code'])->first();
+
+            if (!$aws) {
+                continue;
+            }
+
             for ($i = 0; $i <= 7; $i++) {
-                // Tentukan tanggal
+
                 $day = $startDate->copy()->addDays($i);
 
-                // ==== Pagi ====
-                $pagiMati = $day->copy()->setTime(8, 0, 0); // jam 08:00:00
-                $pagiHidup = $pagiMati->copy()->addMinutes(2); // durasi 2 menit
+                $pagiMati = $day->copy()->setTime(8, 0, 0);
+                $pagiHidup = $pagiMati->copy()->addMinutes(2);
 
                 AwsStatusLog::create([
-                    'station_id' => $station['id'],
-                    'name' => $station['name'],
+                    'aws_id' => $aws->id,
                     'status' => 'mati',
                     'waktu' => $pagiMati,
                     'created_at' => $pagiMati,
@@ -43,21 +44,18 @@ class AwsStatusLogSeeder extends Seeder
                 ]);
 
                 AwsStatusLog::create([
-                    'station_id' => $station['id'],
-                    'name' => $station['name'],
+                    'aws_id' => $aws->id,
                     'status' => 'hidup',
                     'waktu' => $pagiHidup,
                     'created_at' => $pagiHidup,
                     'updated_at' => $pagiHidup,
                 ]);
 
-                // ==== Sore ====
-                $soreMati = $day->copy()->setTime(16, 0, 0); // jam 16:00:00
-                $soreHidup = $soreMati->copy()->addMinutes(1)->addSeconds(7); // durasi 1 menit 7 detik
+                $soreMati = $day->copy()->setTime(16, 0, 0);
+                $soreHidup = $soreMati->copy()->addMinutes(1)->addSeconds(7);
 
                 AwsStatusLog::create([
-                    'station_id' => $station['id'],
-                    'name' => $station['name'],
+                    'aws_id' => $aws->id,
                     'status' => 'mati',
                     'waktu' => $soreMati,
                     'created_at' => $soreMati,
@@ -65,8 +63,7 @@ class AwsStatusLogSeeder extends Seeder
                 ]);
 
                 AwsStatusLog::create([
-                    'station_id' => $station['id'],
-                    'name' => $station['name'],
+                    'aws_id' => $aws->id,
                     'status' => 'hidup',
                     'waktu' => $soreHidup,
                     'created_at' => $soreHidup,

@@ -27,4 +27,9 @@ class Aws extends Model
     {
         return $this->hasMany(LaporanHarian::class, 'aws_id', 'id');
     }
+
+     public function statusLogs()
+    {
+        return $this->hasMany(AwsStatusLog::class, 'aws_id');
+    }
 }
