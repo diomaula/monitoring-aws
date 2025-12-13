@@ -12,17 +12,43 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->command('aws:fetch')->hourly();
-        // $schedule->command('aws:fetch')->everyThreeHours();
-        // $schedule->command('aws:fetch')->everyMinute();
+        /**
+         * 1️⃣ Fetch RAW data AWS
+         * Jalan setiap menit
+         * Data disimpan hanya pada menit 55–59 (logika di command)
+         */
+        $schedule->command('aws:fetch-raw')
+            ->everyMinute()
+            ->timezone('UTC')
+            ->withoutOverlapping()
+            ->runInBackground();
 
-        $schedule->command('aws:export')->monthlyOn(1, '0:10');
-        $schedule->command('report:daily')->dailyAt('00:10');
+        /**
+         * 2️⃣ Generate laporan harian
+         * Ambil data kemarin (UTC)
+         */
+        $schedule->command('report:daily')
+            ->dailyAt('00:10')
+            ->timezone('UTC')
+            ->withoutOverlapping();
 
-        $schedule->command('app:check-aws-status')->everyMinute();
+        /**
+         * 3️⃣ Export bulanan (tidak diubah)
+         */
+        $schedule->command('aws:export')
+            ->monthlyOn(1, '00:10')
+            ->timezone('UTC')
+            ->withoutOverlapping();
 
+        /**
+         * 4️⃣ Cek status AWS (monitoring real-time)
+         */
+        $schedule->command('app:check-aws-status')
+            ->everyMinute()
+            ->timezone('UTC')
+            ->withoutOverlapping();
     }
+
 
     /**
      * Register the commands for the application.
