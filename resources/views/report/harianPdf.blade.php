@@ -62,7 +62,6 @@
                 <th rowspan="2">Tanggal</th>
                 <th colspan="3">Suhu (°C)</th>
                 <th colspan="3">Kelembapan (%)</th>
-                <th colspan="3">Tekanan Udara (hPa)</th>
                 <th colspan="3">Curah Hujan (mm)</th>
                 <th colspan="3">Kecepatan Angin (m/s)</th>
                 <th rowspan="2">Arah Angin Dominan</th>
@@ -80,9 +79,6 @@
                 <th>Tertinggi</th>
                 <th>Total</th>
                 <th>Hari Hujan</th>
-                <th>Min</th>
-                <th>Max</th>
-                <th>Avg</th>
             </tr>
         </thead>
         <tbody>
@@ -99,9 +95,6 @@
                 <td>{{ $row->min_humidity }}</td>
                 <td>{{ $row->max_humidity }}</td>
                 <td>{{ $row->avg_humidity }}</td>
-                <td>{{ $row->min_pressure }}</td>
-                <td>{{ $row->max_pressure }}</td>
-                <td>{{ $row->avg_pressure }}</td>
                 <td>{{ $row->rainfall_max }}</td>
                 <td>{{ $row->total_rainfall }}</td>
                 <td>{{ $row->rainy_days }}</td>

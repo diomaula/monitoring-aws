@@ -9,16 +9,15 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\LapJamExport;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ReportController extends Controller
 {
     private function derajatKeArah($degree)
     {
         if ($degree === null) return null;
+        $degree = fmod(($degree + 360), 360); //dinormasilasi sebelum di koversi
         $dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-        $idx = round($degree / 45) % 8;
+        $idx = floor(($degree + 22.5) / 45) % 8; // menghasilkan pembagian sektor yang konsisten
         return $dirs[$idx];
     }
 
@@ -58,7 +57,6 @@ class ReportController extends Controller
             // Ambil data valid
             $temps     = $records->pluck('temperature')->filter(fn($v) => $v !== null)->toArray();
             $humidity  = $records->pluck('humidity')->filter(fn($v) => $v !== null)->toArray();
-            $pressure  = $records->pluck('pressure')->filter(fn($v) => $v !== null)->toArray();
             $rainfall  = $records->pluck('rainfall')->map(fn($v) => $v ?? 0)->toArray();
             $windSpeed = $records->pluck('wind_speed')->filter(fn($v) => $v !== null)->toArray();
 
@@ -76,10 +74,6 @@ class ReportController extends Controller
             $minHum = !empty($humidity) ? min($humidity) : 0;
             $maxHum = !empty($humidity) ? max($humidity) : 0;
             $avgHum = !empty($humidity) ? round(array_sum($humidity) / count($humidity), 2) : 0;
-
-            $minPress = !empty($pressure) ? min($pressure) : 0;
-            $maxPress = !empty($pressure) ? max($pressure) : 0;
-            $avgPress = !empty($pressure) ? round(array_sum($pressure) / count($pressure), 2) : 0;
 
             $totalRain = array_sum($rainfall);
             $maxRain   = !empty($rainfall) ? max($rainfall) : 0;
@@ -120,9 +114,6 @@ class ReportController extends Controller
                     'min_humidity' => $minHum,
                     'max_humidity' => $maxHum,
                     'avg_humidity' => $avgHum,
-                    'min_pressure' => $minPress,
-                    'max_pressure' => $maxPress,
-                    'avg_pressure' => $avgPress,
                     'total_rainfall' => $totalRain,
                     'rainfall_max' => $maxRain,
                     'rainy_days' => $rainyDays,
@@ -142,9 +133,6 @@ class ReportController extends Controller
                 'min_humidity' => $minHum,
                 'max_humidity' => $maxHum,
                 'avg_humidity' => $avgHum,
-                'min_pressure' => $minPress,
-                'max_pressure' => $maxPress,
-                'avg_pressure' => $avgPress,
                 'total_rainfall' => $totalRain,
                 'rainfall_max' => $maxRain,
                 'rainy_days' => $rainyDays,
@@ -180,7 +168,7 @@ class ReportController extends Controller
             ]);
         }
 
-        // === GENERATE LAPORAN HARIAN TERLEBIH DAHULU ===
+        // generate laporan harian dl
         // Bisa loop per tanggal jika range lebih dari 1 hari
         $current = Carbon::parse($tglMulai);
         $end     = Carbon::parse($tglAkhir);
@@ -194,7 +182,7 @@ class ReportController extends Controller
         $data = LaporanHarian::with('aws')
             ->when($pilih_aws, fn($q) => $q->where('aws_id', $pilih_aws))
             ->whereBetween('date', [$tglMulai, $tglAkhir])
-            ->orderBy('date', 'desc')
+            ->orderBy('date')
             ->orderBy('aws_id')
             ->paginate(10)
             ->appends([
@@ -224,7 +212,7 @@ class ReportController extends Controller
         $laporan = DB::table('laporan_harian')
             ->when($pilih_aws, fn($q) => $q->where('aws_id', $pilih_aws))
             ->whereBetween('date', [$tglMulai, $tglAkhir])
-            ->orderBy('date','desc')
+            ->orderBy('date')
             ->orderBy('aws_id')
             ->get();
 
@@ -239,6 +227,7 @@ class ReportController extends Controller
 
         return $pdf->stream('laporan-harian.pdf');
     }
+    
     // Laporan Bulanan 
     public function lapBulanan(Request $request)
     {
@@ -306,9 +295,6 @@ class ReportController extends Controller
                 'humidity_min' => round($rows->min('min_humidity'), 1),
                 'humidity_max' => round($rows->max('max_humidity'), 1),
                 'humidity_avg' => round($rows->avg('avg_humidity'), 1),
-                'pressure_min' => round($rows->min('min_pressure'), 1),
-                'pressure_max' => round($rows->max('max_pressure'), 1),
-                'pressure_avg' => round($rows->avg('avg_pressure'), 1),
                 'rainfall_sum' => round($rows->sum('total_rainfall'), 1),
                 'rainfall_max' => round($rows->max('rainfall_max'), 1),
                 'rainy_days'   => $rows->sum('rainy_days'),
@@ -370,9 +356,6 @@ class ReportController extends Controller
                 'humidity_min'    => round($rows->min('min_humidity'), 1),
                 'humidity_max'    => round($rows->max('max_humidity'), 1),
                 'humidity_avg'    => round($rows->avg('avg_humidity'), 1),
-                'pressure_min'    => round($rows->min('min_pressure'), 1),
-                'pressure_max'    => round($rows->max('max_pressure'), 1),
-                'pressure_avg'    => round($rows->avg('avg_pressure'), 1),
                 'rainfall_sum'    => round($rows->sum('total_rainfall'), 1),
                 'rainfall_max'    => round($rows->max('rainfall_max'), 1),
                 'rainy_days'      => $rows->sum('rainy_days'),
