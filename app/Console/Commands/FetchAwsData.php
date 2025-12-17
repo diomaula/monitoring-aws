@@ -22,7 +22,7 @@ class FetchAwsData extends Command
 
         $nowUtc = Carbon::now('UTC');
 
-        // Hanya simpan menit 55–59
+        // simpan menit 55–59
         if ($nowUtc->minute < 55) {
             return Command::SUCCESS;
         }

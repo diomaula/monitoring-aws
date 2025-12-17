@@ -55,14 +55,14 @@ foreach ($stations as $id => $name) {
     $statusSekarang = $mati ? 'mati' : 'hidup';
 
     // Ambil status terakhir dari DB
-    $last = AwsStatusLog::where('station_id', $id)
+    $last = AwsStatusLog::where('aws_id', $id)
         ->orderBy('id', 'desc')
         ->first();
 
     if ($statusSekarang === 'mati') {
         // Simpan mati pertama atau jika berubah dari hidup → mati
         AwsStatusLog::create([
-            'station_id' => $id,
+            'aws_id' => $id,
             'name' => $name,
             'status' => 'mati',
             'waktu' => Carbon::now('Asia/Jakarta'),
@@ -72,13 +72,13 @@ foreach ($stations as $id => $name) {
 
     if ($statusSekarang === 'hidup') {
         // Simpan hidup hanya jika sebelumnya sudah pernah mati
-        $pernahMati = AwsStatusLog::where('station_id', $id)
+        $pernahMati = AwsStatusLog::where('aws_id', $id)
             ->where('status', 'mati')
             ->exists();
 
         if ($pernahMati && (!$last || $last->status !== 'hidup')) {
             AwsStatusLog::create([
-                'station_id' => $id,
+                'aws_id' => $id,
                 'name' => $name,
                 'status' => 'hidup',
                 'waktu' => Carbon::now('Asia/Jakarta'),

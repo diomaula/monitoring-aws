@@ -89,12 +89,12 @@ class AwsController extends Controller
             $isOnline = false;
         }
 
-        // 🔥 Jika request API (fetch), balikan JSON
+        // Jika request API (fetch), balikan JSON
         if (request()->wantsJson()) {
             return response()->json($data);
         }
 
-        // 🔥 Jika request biasa (web), balikan view
+        // Jika request biasa (web), balikan view
         return view('aws.index', [
             'id'     => $id,
             'name'   => $names[$id],
