@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/stations/{id}', [AwsController::class, 'index']);
+Route::get('/chart-ai-data', [AwsController::class, 'getChartWithPrediction']);

@@ -209,4 +209,38 @@ class AwsController extends Controller
             'windrose' =>$windrose,
         ]);
     }
+
+    public function getChartWithPrediction()
+    {
+        // 1. Ambil 24 data terakhir (Real Data)
+        $realData = DataAws::select(
+                        DB::raw("DATE_FORMAT(created_at, '%H:%i') as date"), 
+                        'temperature', 
+                        'humidity', 
+                        'rainfall'
+                    )
+                    ->orderBy('created_at', 'desc')
+                    ->limit(24) 
+                    ->get()
+                    ->reverse()
+                    ->values();
+
+        // 2. Ambil Data Prediksi AI (Masa Depan)
+        $predictions = DB::table('predictions')
+                    ->select(
+                        'nilai_prediksi', 
+                        DB::raw("DATE_FORMAT(waktu_prediksi, '%H:%i') as date")
+                    )
+                    ->where('tipe_sensor', 'temperature')
+                    ->where('waktu_prediksi', '>', Carbon::now()) 
+                    ->orderBy('waktu_prediksi', 'asc')
+                    ->limit(1) 
+                    ->get();
+
+        // 3. Kirim response
+        return response()->json([
+            'real' => $realData,
+            'prediction' => $predictions
+        ]);
+    }
 }
