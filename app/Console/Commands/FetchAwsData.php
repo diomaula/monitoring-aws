@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Http;
 use App\Models\DataAws;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Illuminate\Support\Facades\DB;
 
 class FetchAwsData extends Command
 {
