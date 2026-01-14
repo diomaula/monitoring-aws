@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use App\Models\AwsStatusLog;
 use Carbon\Carbon;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class CheckAwsStatus extends Command
 {
@@ -14,79 +16,131 @@ class CheckAwsStatus extends Command
      *
      * @var string
      */
-    protected $signature = 'app:check-aws-status';
+    protected $signature = 'check:aws-status';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Cek Status AWS dan simpan jika mati/hidup';
+    protected $description = 'Cek Status AWS: Normal atau Anomali (Menggunakan AI + Cek Null)';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
+        // Mapping ID: 'ID_API_BMKG' => ID_DATABASE_LOKAL
         $stations = [
-            '5000000031' => 'AWS Digi Banyuwangi',
-            '3000000007' => 'AWS Maritim Ketapang',
-            '3000000046' => 'AWS Maritim Gilimanuk',
+            '5000000031' => 1, // AWS Digi Banyuwangi
+            '3000000007' => 2, // AWS Maritim Ketapang
+            '3000000046' => 3, // AWS Maritim Gilimanuk
         ];
 
-foreach ($stations as $id => $name) {
-    $response = Http::get("http://202.90.199.132/aws-new/data/station/latest/$id");
+        foreach ($stations as $apiId => $dbId) {
+            // 1. Ambil Data Nama dari Database
+            $awsLocal = \App\Models\Aws::find($dbId);
+            
+            if (!$awsLocal) {
+                $this->error("ID Database $dbId tidak ditemukan. Lewati.");
+                continue;
+            }
 
-    if (!$response->successful()) {
-        $this->error("Gagal mengambil API untuk $name");
-        continue;
-    }
+            $name = $awsLocal->name; // Simpan nama ke variabel
+            $this->info("Memproses $name...");
 
-    $json = $response->json();
+            // 2. Ambil Data API
+            try {
+                $response = Http::timeout(10)->get("http://202.90.199.132/aws-new/data/station/latest/$apiId");
+                
+                if (!$response->successful()) {
+                    $this->error("Gagal API untuk $name");
+                    continue; 
+                }
 
-    $mati = (
-        ($json['rain'] ?? 0) == 0 &&
-        ($json['windspeed'] ?? 0) == 0 &&
-        ($json['winddir'] ?? 0) == 0 &&
-        ($json['rh'] ?? 0) == 0 &&
-        ($json['temp'] ?? 0) == 0
-    );
+                $json = $response->json();
+            } catch (\Exception $e) {
+                $this->error("Koneksi Error: " . $e->getMessage());
+                continue;
+            }
 
-    $statusSekarang = $mati ? 'mati' : 'hidup';
+            // Siapkan Parameter
+            $temp  = $json['temp'] ?? 0;
+            $rh    = $json['rh'] ?? 0;
+            $press = $json['pressure'] ?? 1010;
+            $wind  = $json['windspeed'] ?? 0;
+            $rain  = $json['rain'] ?? 0;
 
-    // Ambil status terakhir dari DB
-    $last = AwsStatusLog::where('aws_id', $id)
-        ->orderBy('id', 'desc')
-        ->first();
+            // 3. Logika Penentuan Status
+            $isMati = ($temp == 0 && $rh == 0 && $wind == 0 && $rain == 0);
+            $status = 'Normal';
+            $keterangan = 'Kondisi operasional wajar.';
+            
+            // Inisialisasi variabel score agar tidak error saat save
+            $aiScore = null; 
 
-    if ($statusSekarang === 'mati') {
-        // Simpan mati pertama atau jika berubah dari hidup → mati
-        AwsStatusLog::create([
-            'aws_id' => $id,
-            'name' => $name,
-            'status' => 'mati',
-            'waktu' => Carbon::now('Asia/Jakarta'),
-        ]);
-        $this->info("AWS $name mati");
-    }
+            if ($isMati) {
+                $status = 'Anomali';
+                $aiScore = -1.0; // Berikan skor fix jika mati total (opsional)
+                $keterangan = 'Indikasi Alat Mati/Offline (Semua sensor bernilai 0).';
+            } 
+            else {
+                // Panggil Python AI
+                try {
+                    $process = new Process([
+                        'python', 
+                        base_path('python_scripts/predict.py'),
+                        $temp, $rh, $press, $wind, $rain
+                    ]);
+                    
+                    $process->run();
 
-    if ($statusSekarang === 'hidup') {
-        // Simpan hidup hanya jika sebelumnya sudah pernah mati
-        $pernahMati = AwsStatusLog::where('aws_id', $id)
-            ->where('status', 'mati')
-            ->exists();
+                    if ($process->isSuccessful()) {
+                        $output = json_decode($process->getOutput(), true);
+                        
+                        // Ambil score dari output python (jika ada)
+                        $predictionScore = $output['score'] ?? null;
 
-        if ($pernahMati && (!$last || $last->status !== 'hidup')) {
-            AwsStatusLog::create([
-                'aws_id' => $id,
-                'name' => $name,
-                'status' => 'hidup',
-                'waktu' => Carbon::now('Asia/Jakarta'),
-            ]);
-            $this->info("AWS $name hidup kembali");
+                        if (isset($output['prediction']) && $output['prediction'] === 'Anomali') {
+                            $status = 'Anomali';
+                            $aiScore = $predictionScore; // Simpan score ke variabel
+                            $keterangan = "Terdeteksi pola data menyimpang.";
+                        } else {
+                            // Jika Normal, kita tetap bisa simpan score positifnya jika mau
+                            // atau biarkan null. Di sini saya simpan jika ada.
+                            $aiScore = $predictionScore; 
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $this->warn("Gagal menjalankan Python: " . $e->getMessage());
+                }
+            }
+
+            // 4. Simpan ke Database
+            // Cek log terakhir untuk menghindari spam log jika status sama
+            $lastLog = AwsStatusLog::where('aws_id', $dbId)->orderBy('id', 'desc')->first();
+
+            $harusSimpan = false;
+            if (!$lastLog) $harusSimpan = true;
+            elseif ($lastLog->status !== $status) $harusSimpan = true;
+            elseif ($status === 'Anomali') $harusSimpan = true; // Selalu catat jika Anomali
+
+            if ($harusSimpan) {
+                AwsStatusLog::create([
+                    'aws_id'      => $dbId,
+                    'name'        => $name,        // <--- INI PENTING (Dulu belum ada)
+                    'status'      => $status,
+                    'ai_score'    => $aiScore,     // <--- INI PENTING (Dulu belum ada)
+                    'description' => $keterangan,
+                    'waktu'       => Carbon::now('Asia/Jakarta'),
+                ]);
+
+                $color = $status === 'Normal' ? 'info' : 'error';
+                $this->$color("[$name] -> Tersimpan: $status (Score: $aiScore)");
+            } else {
+                $this->line("[$name] -> Stabil ($status)");
+            }
         }
-    }
-}
 
         return 0;
     }

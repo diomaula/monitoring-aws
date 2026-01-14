@@ -9,12 +9,15 @@ class AwsStatusLog extends Model
 {
     use HasFactory;
 
-    protected $table = 'aws_status_log';
+    protected $table = 'aws_status_logs';
 
     protected $fillable = [
         'aws_id',
+        'name',       
         'status',
-        'waktu'
+        'ai_score',   
+        'description', 
+        'waktu',
     ];
 
     public $timestamps = true;

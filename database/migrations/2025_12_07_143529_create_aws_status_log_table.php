@@ -8,11 +8,18 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('aws_status_log', function (Blueprint $table) {
+        // UBAH NAMA TABEL JADI PLURAL (pake 's')
+        Schema::create('aws_status_logs', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('aws_id');
-            $table->enum('status', ['mati', 'hidup']);
+            
+            // UBAH ENUM JADI STRING (Agar bisa simpan 'Normal'/'Anomali')
+            $table->string('status'); 
+            
+            // Kolom description bisa langsung ditambahkan di sini saja agar rapi
+            $table->text('description')->nullable(); 
+
             $table->timestamp('waktu');
             $table->timestamps();
 
@@ -26,6 +33,6 @@ return new class extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('aws_status_log');
+        Schema::dropIfExists('aws_status_logs');
     }
 };
