@@ -6,15 +6,18 @@ use Illuminate\Console\Command;
 use App\Models\DataAws;
 use App\Models\LaporanHarian;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class GenerateDailyReport extends Command
 {
     protected $signature = 'report:daily';
-    protected $description = 'Generate laporan harian AWS dari data mentah';
+    protected $description = 'Generate laporan harian AWS dari data per jam';
 
     public function handle()
     {
         $date = Carbon::yesterday('UTC')->toDateString();
+
+        Log::info("GenerateDailyReport mulai untuk tanggal {$date}");
 
         $awsList = DataAws::select('aws_id')->distinct()->pluck('aws_id');
 
