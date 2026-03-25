@@ -6,10 +6,10 @@
 <head>
     <style>
         .bg-danger-light { background-color: #fcebed; }
-    .bg-success-light { background-color: #e8f5e9; }
-    .card-title { font-size: 1.1rem; line-height: 1.3; }
-    .badge { padding: 0.5em 0.8em; font-weight: 600; font-size: 0.75rem; }
-    .breadcrumb-item + .breadcrumb-item::before { content: "/"; }
+        .bg-success-light { background-color: #e8f5e9; }
+        .card-title { font-size: 1.1rem; line-height: 1.3; }
+        .badge { padding: 0.5em 0.8em; font-weight: 600; font-size: 0.75rem; }
+        .breadcrumb-item + .breadcrumb-item::before { content: "/"; }
     </style>
 </head>
 
@@ -21,15 +21,106 @@
     @include('layouts.sidebar')
 
     <main id="main" class="main">
-        <div class="pagetitle mb-4">
-            <h1>Evaluasi Kondisi</h1>
-            <nav>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item active">Evaluasi Kondisi</li>
-                </ol>
-            </nav>
-        </div><section class="section">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="pagetitle mb-0">
+                <h1>Evaluasi Kondisi</h1>
+                <nav>
+                    <ol class="breadcrumb mb-0 mt-1">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Evaluasi Kondisi</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <button type="button" class="btn btn-outline-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#contaminationModal">
+                <i class="bi bi-sliders me-1"></i> Pengaturan Sensitivitas Anomali
+            </button>
+        </div>
+
+        <div class="modal fade" id="contaminationModal" tabindex="-1" aria-labelledby="contaminationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    
+                    <!-- Header -->
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title fw-bold text-dark" id="contaminationModalLabel">
+                            <i class="bi bi-sliders text-primary me-2"></i>Pengaturan Sensitivitas Anomali
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <!-- Form -->
+                    <form action="#" method="POST">
+                        @csrf
+
+                        <!-- Body -->
+                        <div class="modal-body p-4">
+                            
+                            <!-- Deskripsi -->
+                            <p class="text-muted small mb-4">
+                                Atur tingkat sensitivitas dalam mendeteksi anomali pada data. Semakin tinggi nilai yang dipilih, semakin banyak data yang akan dikategorikan sebagai anomali.
+                            </p>
+
+                            <!-- Slider -->
+                            <div class="mb-3 px-2">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label for="contaminationSlider" class="form-label fw-bold mb-0">
+                                        Tingkat Sensitivitas
+                                    </label>
+                                    <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill" id="sliderValue">1%</span>
+                                </div>
+
+                                <input 
+                                    type="range" 
+                                    class="form-range" 
+                                    min="1" 
+                                    max="10" 
+                                    step="1" 
+                                    id="contaminationSlider" 
+                                    name="contamination_value" 
+                                    value="1"
+                                >
+
+                                <div class="d-flex justify-content-between text-muted small mt-2">
+                                    <span class="fw-semibold">Rendah</span>
+                                    <span class="fw-semibold">Tinggi</span>
+                                </div>
+
+                                <!-- Penjelasan tambahan -->
+                                <small class="text-muted d-block mt-3">
+                                    Nilai ini menentukan persentase data dengan skor anomali tertinggi yang akan diklasifikasikan sebagai anomali.
+                                </small>
+                            </div>
+
+                            <!-- Info -->
+                            {{-- <div class="alert alert-info border-0 small mt-4 mb-0 d-flex align-items-center">
+                                <i class="bi bi-info-circle-fill fs-5 me-2 text-info"></i> 
+                                <div>
+                                    Nilai yang disarankan untuk operasional adalah sekitar <strong>5%</strong> agar deteksi tetap seimbang.
+                                </div>
+                            </div> --}}
+
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="modal-footer bg-light border-top-0">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn btn-primary fw-bold px-4">
+                                Terapkan
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <section class="section">
             <div class="row">
                 <div class="col-lg-4 col-md-6">
                     <div class="card shadow-sm border-0 mb-4" style="border-left: 5px solid #dc3545 !important;">
@@ -57,7 +148,7 @@
                 </div>
 
                 <div class="col-lg-4 col-md-6">
-                    <div class="card shadow-sm border-0 mb-4" style="border-left: 5px solid #198754 !important;">
+                    <div class="card shadow-sm border-0 mb-4" style="border-left: 5px solid #2cd485 !important;">
                         <div class="card-body p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h5 class="card-title fw-bold m-0 p-0 text-dark">AWS Maritim <br>Gilimanuk</h5>
@@ -176,14 +267,20 @@
             </div>
         </section>
 
-
-    </main><!-- End #main -->
-
-    @include('layouts.footer')
+    </main>@include('layouts.footer')
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
     @include('layouts.script')
+
+    <script>
+        const slider = document.getElementById('contaminationSlider');
+        const sliderValue = document.getElementById('sliderValue');
+
+        slider.addEventListener('input', function () {
+            sliderValue.innerText = this.value + '%';
+        });
+    </script>
 
 </body>
 
