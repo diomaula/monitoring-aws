@@ -40,6 +40,8 @@ class DataAws extends Model
         'solrad',
         'watertemp',
         'waterlevel',
+        'status_anomali', 
+        'ai_score',
     ];
 
     public $timestamps = true;

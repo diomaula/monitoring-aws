@@ -5,34 +5,10 @@
 
 <head>
     <style>
-        .logo-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-section img {
-            height: 50px;
-        }
-
-        .logo-section h1 {
-            font-size: 20px;
-            color: #003366;
-            margin: 0;
-        }
-
-        .info-section {
-            text-align: right;
-        }
-
         .header-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .info-section div {
-            margin: 2px 0;
         }
 
         .status {

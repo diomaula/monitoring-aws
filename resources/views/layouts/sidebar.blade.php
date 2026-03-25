@@ -88,9 +88,9 @@
 
     @canany(['teknisi'])
       <li class="nav-item">
-        <a class="nav-link {{ request()->is('laporanHarian') ? '' : 'collapsed' }}" href="/laporanHarian">
+        <a class="nav-link {{ request()->is('evaluasi-kondisi') ? '' : 'collapsed' }}" href="/evaluasi-kondisi">
           <i class="bi bi-clipboard2-check-fill"></i>
-          <span>Laporan Alat</span>
+          <span>Evaluasi Kondisi</span>
         </a>
       </li>
     @endcanany

@@ -6,6 +6,7 @@ use App\Http\Controllers\AwsController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LaporanHarianController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EvaluasiKondisiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +45,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('laporanHarian', [LaporanHarianController::class, 'index'])->name('laporanHarian.index');
     Route::get('/laporanHarian/pdf', [LaporanHarianController::class, 'cetakPdf'])->name('laporanHarian.cetak');
     
+    Route::get('/evaluasi-kondisi', [EvaluasiKondisiController::class, 'index'])->name('evaluasi-kondisi');
+    Route::get('/evaluasi-kondisi/detail', [EvaluasiKondisiController::class, 'indexDetail'])->name('detail-evaluasi-kondisi');
 
     Route::middleware('can:superadmin')->group(function () {
         Route::resource('/users', UserController::class);
