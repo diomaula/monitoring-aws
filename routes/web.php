@@ -46,7 +46,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporanHarian/pdf', [LaporanHarianController::class, 'cetakPdf'])->name('laporanHarian.cetak');
     
     Route::get('/evaluasi-kondisi', [EvaluasiKondisiController::class, 'index'])->name('evaluasi-kondisi');
-    Route::get('/evaluasi-kondisi/detail', [EvaluasiKondisiController::class, 'indexDetail'])->name('detail-evaluasi-kondisi');
+    Route::get('/detail-evaluasi-kondisi/{aws_id}', [EvaluasiKondisiController::class, 'indexDetail'])
+    ->name('detail-evaluasi-kondisi');
 
     Route::middleware('can:superadmin')->group(function () {
         Route::resource('/users', UserController::class);
