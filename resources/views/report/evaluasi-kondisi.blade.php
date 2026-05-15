@@ -111,7 +111,7 @@
                                 Batal
                             </button>
                             <button type="submit" class="btn btn-primary fw-bold px-4">
-                                Terapkan
+                                Simpan
                             </button>
                         </div>
 
