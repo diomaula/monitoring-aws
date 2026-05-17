@@ -43,7 +43,7 @@
                 <i class="bi bi-sliders me-1"></i> Pengaturan Sensitivitas Anomali
             </button>
             <p class="small text-muted">
-                Threshold saat ini: <strong>{{ number_format($contamination, 4) }}</strong>
+                Threshold saat ini: <strong>{{ number_format($contamination, 2) }}</strong>
             </p>
         </div>
 
@@ -184,7 +184,7 @@
                                     </div>
 
                                     <span class="small fw-bold mt-1 d-block {{ $textColor }}">
-                                        {{ number_format($aws['score'], 3) }}
+                                        {{ number_format($aws['score'], 2) }}
                                     </span>
                                 </div>
 
@@ -288,7 +288,7 @@
                                     </td>
 
                                     <td class="{{ $item['status']=='ANOMALI' ? 'text-danger' : 'text-success' }} fw-bold">
-                                        {{ number_format($item['score'], 3) }}
+                                        {{ number_format($item['score'], 2) }}
                                     </td>
 
                                     <td class="text-center">

@@ -1,11 +1,13 @@
 import sys
 import json
 import numpy as np
+import pandas as pd
 import joblib
 import os
 from datetime import datetime
 
-MODEL_DIR = "models"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "models")
 
 try:
     # ============================
@@ -40,16 +42,16 @@ try:
     jam_sin = np.sin(2 * np.pi * jam / 24)
     jam_cos = np.cos(2 * np.pi * jam / 24)
 
-    features = [[
-        jam_sin,
-        jam_cos,
-        input_data['temperature'],
-        input_data['humidity'],
-        input_data['pressure'],
-        input_data['watertemp'],
-        input_data['waterlevel'],
-        input_data['solrad']
-    ]]
+    features = pd.DataFrame([{
+        'jam_sin': jam_sin,
+        'jam_cos': jam_cos,
+        'temperature': input_data['temperature'],
+        'humidity': input_data['humidity'],
+        'pressure': input_data['pressure'],
+        'watertemp': input_data['watertemp'],
+        'waterlevel': input_data['waterlevel'],
+        'solrad': input_data['solrad']
+    }])
 
     # ============================
     # SCALING

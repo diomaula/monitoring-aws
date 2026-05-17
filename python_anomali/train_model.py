@@ -8,7 +8,7 @@ import os
 # ============================
 # CONFIG
 # ============================
-FILE_PATH = "data/data_aws_januari_clean.xlsx"
+FILE_PATH = "data/data_aws_jan-feb_clean.xlsx"
 MODEL_DIR = "models"
 
 os.makedirs(MODEL_DIR, exist_ok=True)

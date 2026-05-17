@@ -69,6 +69,15 @@ class EvaluasiKondisiController extends Controller
             $index = floor($contamination * $allScores->count());
             $threshold = $allScores[$index] ?? $allScores->last();
 
+            // dd([
+            //     'total_data' => $allScores->count(),
+            //     'contamination' => $contamination,
+            //     'index' => $index,
+            //     'threshold' => $threshold,
+            //     'min_score' => $allScores->first(),
+            //     'max_score' => $allScores->last(),
+            // ]);
+
             // =============================
             // CARD (DATA TERBARU)
             // =============================
