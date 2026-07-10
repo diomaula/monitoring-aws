@@ -35,7 +35,7 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item">Evaluasi Kondisi</li>
+                    <li class="breadcrumb-item"><a href="/evaluasi-kondisi">Evaluasi Kondisi</a></li>
                     <li class="breadcrumb-item active">Detail Anomali</li>
                 </ol>
             </nav>
@@ -46,11 +46,21 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center">
                         <h4 class="fw-bold mb-0 me-3">{{ $latest->aws->name }}</h4>
-                        <span class="badge bg-danger-light text-danger border border-danger">
+                        {{-- <span class="badge bg-danger-light text-danger border border-danger">
                             <i class="bi bi-exclamation-triangle-fill me-1"></i> Status : {{ $latest->status }}
-                        </span>
+                        </span> --}}
                     </div>
-                    <p class="text-muted small mb-0 mt-2">Waktu Kejadian : {{ \Carbon\Carbon::parse($latest->timestamp)->translatedFormat('d F Y, H:i') }} WIB</p>
+                    @php
+                        $utc = \Carbon\Carbon::parse($latest->timestamp)->timezone('UTC');
+                        $wib = $utc->copy()->timezone('Asia/Jakarta');
+                    @endphp
+
+                    <p class="text-muted small mb-0 mt-2">
+                        Waktu Kejadian :
+                        {{ $utc->locale('id')->translatedFormat('d F Y, H:i') }} UTC
+                        /
+                        {{ $wib->format('H:i') }} WIB
+                    </p>
                 </div>
             </div>
 
@@ -63,8 +73,8 @@
                                 <tr><td>Suhu Udara</td><td class="text-end fw-bold">{{ $latest->temperature }}°C</td></tr>
                                 <tr><td>Kelembapan</td><td class="text-end fw-bold">{{ $latest->humidity }}%</td></tr>
                                 <tr><td>Tekanan</td><td class="text-end fw-bold">{{ $latest->pressure }} mbar</td></tr>
-                                <tr><td>Suhu Panci</td><td class="text-end fw-bold">{{ $latest->watertemp }}°C</td></tr>
-                                <tr><td>Level Panci</td><td class="text-end fw-bold">{{ $latest->waterlevel }} mm</td></tr>
+                                <tr><td>Suhu Air</td><td class="text-end fw-bold">{{ $latest->watertemp }}°C</td></tr>
+                                <tr><td>Level Air</td><td class="text-end fw-bold">{{ $latest->waterlevel }} mm</td></tr>
                                 <tr><td>Radiasi Matahari</td><td class="text-end fw-bold">{{ $latest->solrad }} W/m²</td></tr>
                             </table>
                         </div>
@@ -75,7 +85,7 @@
                         <div class="card-body p-4">
                             <h6 class="text-uppercase fw-bold small text-muted mb-3">Analisa dan Rekomendasi Tindakan</h6>
                             <p class="mb-0 lh-base">
-                                Sistem mendeteksi anomali dengan skor {{ number_format($latest->anomaly_score, 3) }} berdasarkan model <strong>Isolation Forest</strong>. Kombinasi nilai parameter sensor pada waktu kejadian teridentifikasi berada di luar pola normal. Disarankan untuk melakukan pemeriksaan lebih lanjut terhadap kondisi sensor AWS serta membandingkan hasil pengamatan dengan pengukuran manual.
+                                Sistem mendeteksi adanya indikasi anomali berdasarkan hasil evaluasi menggunakan model Isolation Forest. Hal ini menunjukkan bahwa kombinasi nilai parameter sensor pada waktu tersebut berbeda dari pola normal yang telah dipelajari oleh model. Disarankan untuk melakukan pemeriksaan lebih lanjut terhadap kondisi sensor AWS serta membandingkan hasil pengamatan dengan pengukuran manual.
                             </p>
                         </div>
                     </div>
@@ -118,24 +128,22 @@
                 <div class="col-lg-6 mb-4">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-body p-4">
-                            <h5 class="fw-bold">Suhu Panci (°C)</h5>
-                            <canvas id="chartSuhuPanci" height="200"></canvas>
+                            <h5 class="fw-bold">Suhu Air (°C)</h5>
+                            <canvas id="chartSuhuAir" height="200"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-body p-4">
-                            <h5 class="fw-bold">Level Panci (mm)</h5>
-                            <canvas id="chartLevelPanci" height="200"></canvas>
+                            <h5 class="fw-bold">Level Air (mm)</h5>
+                            <canvas id="chartLevelAir" height="200"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
-            
         </section>
-
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -153,14 +161,39 @@
         const lembap = @json($history->pluck('humidity'));
         const tekanan = @json($history->pluck('pressure'));
         const radiasi = @json($history->pluck('solrad'));
-        const suhuPanci = @json($history->pluck('watertemp'));
-        const levelPanci = @json($history->pluck('waterlevel'));
+        const suhuAir = @json($history->pluck('watertemp'));
+        const levelAir = @json($history->pluck('waterlevel'));
+        
+        const blinkingPoint = {
+            id: 'blinkingPoint',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const meta = chart.getDatasetMeta(0);
+
+                if (!meta.data.length) return;
+
+                // Ambil titik terakhir (anomali)
+                const point = meta.data[meta.data.length - 1];
+
+                // Radius berkedip
+                const radius = 6 + Math.abs(Math.sin(Date.now() / 300)) * 6;
+
+                ctx.save();
+
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+                ctx.fill();
+
+                ctx.restore();
+            }
+        };
 
         // =========================
         // FUNCTION CHART
         // =========================
         function createChart(id, label, data, color) {
-            new Chart(document.getElementById(id), {
+            const chart = new Chart(document.getElementById(id), {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -177,19 +210,34 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false } },
+                    animation: false, // agar lebih halus
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
                     scales: {
-                        y: { beginAtZero: false },
-                        x: { 
-                            title: { 
-                                display: true, 
-                                text: 'Waktu', 
-                                font: { size: 10 } 
-                            } 
+                        y: {
+                            beginAtZero: false
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Waktu',
+                                font: {
+                                    size: 10
+                                }
+                            }
                         }
                     }
-                }
+                },
+                plugins: [blinkingPoint]
             });
+
+            // refresh chart agar efek berkedip berjalan
+            setInterval(() => {
+                chart.draw();
+            }, 100);
         }
 
         // =========================
@@ -199,8 +247,8 @@
         createChart('chartLembap', 'Lembap', lembap, '#0d6efd');
         createChart('chartTekanan', 'Tekanan', tekanan, '#0d6efd');
         createChart('chartRadiasi', 'Radiasi', radiasi, '#0d6efd');
-        createChart('chartSuhuPanci', 'Suhu Panci', suhuPanci, '#0d6efd');
-        createChart('chartLevelPanci', 'Level Panci', levelPanci, '#0d6efd');
+        createChart('chartSuhuAir', 'Suhu Air', suhuAir, '#0d6efd');
+        createChart('chartLevelAir', 'Level Air', levelAir, '#0d6efd');
     </script>
 
     @include('layouts.footer')

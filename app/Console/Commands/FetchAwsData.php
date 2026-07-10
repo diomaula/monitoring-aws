@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Log;
 class FetchAwsData extends Command
 {
     protected $signature = 'aws:fetch-hourly';
-    protected $description = 'Ambil data AWS + deteksi anomali';
+
+    protected $description = 'Ambil data AWS dan deteksi anomali';
 
     public function handle()
     {
@@ -24,21 +25,26 @@ class FetchAwsData extends Command
         ];
 
         foreach ($awsStations as $code => $awsId) {
+
             try {
+
+                // Ambil data AWS
                 $response = Http::timeout(15)
                     ->retry(3, 2000)
                     ->get("http://202.90.199.132/aws-new/data/station/latest/{$code}");
 
                 if (!$response->successful()) {
-                    Log::warning("AWS {$awsId} gagal HTTP {$response->status()}");
+
+                    Log::warning(
+                        "AWS {$awsId} gagal HTTP {$response->status()}"
+                    );
+
                     continue;
                 }
 
                 $json = $response->json();
 
-                // =========================
-                // 1. DATA LENGKAP (MASUK DB)
-                // =========================
+                // Data lengkap untuk database
                 $fullData = [
                     'aws_id'         => $awsId,
                     'timestamp'      => $json['waktu'] ?? $nowUtc,
@@ -55,9 +61,7 @@ class FetchAwsData extends Command
                     'waterlevel'     => $json['waterlevel'] ?? null,
                 ];
 
-                // =========================
-                // 2. DATA KHUSUS MODEL (PYTHON)
-                // =========================
+                // Data untuk Python
                 $predictData = [
                     'aws_id'      => $awsId,
                     'timestamp'   => $fullData['timestamp'],
@@ -69,35 +73,62 @@ class FetchAwsData extends Command
                     'solrad'      => $fullData['solrad'] ?? 0,
                 ];
 
-                // =========================
-                // 3. KIRIM KE PYTHON
-                // =========================
+                // Simpan sementara untuk Python
                 $tempPath = storage_path('app/temp_predict.json');
-                file_put_contents($tempPath, json_encode($predictData));
 
+                file_put_contents(
+                    $tempPath,
+                    json_encode($predictData)
+                );
+
+                // Jalankan Python
                 $pythonPath = "python";
-                $scriptPath = base_path('python_anomali/predict.py');
 
-                $command = "\"{$pythonPath}\" \"{$scriptPath}\" < \"{$tempPath}\" 2>&1";
+                $scriptPath = base_path(
+                    'python_anomali/predict.py'
+                );
+
+                $command =
+                    "\"{$pythonPath}\" ".
+                    "\"{$scriptPath}\" ".
+                    "< \"{$tempPath}\" 2>&1";
 
                 $output = shell_exec($command);
+
                 $result = json_decode($output, true);
+
+                // Validasi hasil Python
+                if (!$result || isset($result['error'])) {
+
+                    Log::error(
+                        "Predict gagal AWS {$awsId}: " . $output
+                    );
+
+                    continue;
+                }
 
                 $score = $result['score'] ?? null;
 
-                if (!$score) {
-                    Log::error("Predict gagal AWS {$awsId}: " . $output);
-                }
+                $status = $result['status'] ?? 'NORMAL';
 
-                // =========================
-                // 4. SIMPAN KE DATABASE
-                // =========================
-                DataAws::create(array_merge($fullData, [
-                    'anomaly_score' => $score,
-                ]));
+                // Simpan ke database
+                DataAws::create(array_merge(
+                    $fullData,
+                    [
+                        'anomaly_score' => $score,
+                        'status'        => $status,
+                    ]
+                ));
+
+                Log::info(
+                    "AWS {$awsId} berhasil disimpan. Status: {$status}, Score: {$score}"
+                );
 
             } catch (\Throwable $e) {
-                Log::error("Error AWS {$awsId}: {$e->getMessage()}");
+
+                Log::error(
+                    "Error AWS {$awsId}: {$e->getMessage()}"
+                );
             }
         }
 
