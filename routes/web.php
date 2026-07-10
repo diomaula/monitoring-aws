@@ -7,6 +7,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LaporanHarianController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EvaluasiKondisiController;
+use App\Http\Controllers\TestPredictController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +47,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/laporanHarian/pdf', [LaporanHarianController::class, 'cetakPdf'])->name('laporanHarian.cetak');
     
     Route::get('/evaluasi-kondisi', [EvaluasiKondisiController::class, 'index'])->name('evaluasi-kondisi');
-    Route::get('/evaluasi-kondisi/detail', [EvaluasiKondisiController::class, 'indexDetail'])->name('detail-evaluasi-kondisi');
+    Route::get('/detail-evaluasi-kondisi/{id}', [EvaluasiKondisiController::class, 'indexDetail'])->name('detail-evaluasi-kondisi');
+    
+    Route::get('/evaluasi-kondisi/pdf', [EvaluasiKondisiController::class, 'pdf'])->name('evaluasi-kondisi.pdf');
+    
+    Route::get('/test-predict', [TestPredictController::class, 'index']);
 
     Route::middleware('can:superadmin')->group(function () {
         Route::resource('/users', UserController::class);

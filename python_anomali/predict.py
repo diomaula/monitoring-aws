@@ -1,67 +1,75 @@
 import sys
-import joblib
-import pandas as pd
 import json
+import numpy as np
+import pandas as pd
+import joblib
 import os
-import warnings
+from datetime import datetime
 
-# Matikan warning agar output JSON bersih
-warnings.filterwarnings("ignore")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "models")
 
-MODEL_FILE = 'isoforest_model.pkl'
-FEATURES = ['temperature', 'humidity', 'pressure', 'wind_speed', 'rainfall']
+try:
 
-def main():
-    # 1. Load Model
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(current_dir, MODEL_FILE)
+    input_data = json.loads(sys.stdin.read())
 
-    try:
-        clf = joblib.load(model_path)
-    except FileNotFoundError:
-        # Jika model belum dibuat, kirim error JSON
-        print(json.dumps({"status": "error", "message": "Model belum dilatih. Jalankan train_model.py dulu."}))
-        return
+    aws_id = int(input_data['aws_id'])
 
-    # 2. Tangkap Input dari Laravel (Command Line Arguments)
-    # Urutan argumen harus sesuai dengan urutan di Laravel Process
-    try:
-        if len(sys.argv) < 6:
-            raise ValueError("Input data kurang lengkap")
+    # Load model dan scaler
+    model_path = os.path.join(MODEL_DIR, f"model_aws_{aws_id}_001.pkl")
+    scaler_path = os.path.join(MODEL_DIR, f"scaler_aws_{aws_id}_001.pkl")
 
-        input_data = [
-            float(sys.argv[1]), # Temp
-            float(sys.argv[2]), # Hum
-            float(sys.argv[3]), # Press
-            float(sys.argv[4]), # Wind
-            float(sys.argv[5])  # Rain
-        ]
-        
-        # Buat DataFrame single row
-        df_new = pd.DataFrame([input_data], columns=FEATURES)
+    if not os.path.exists(model_path):
+        raise Exception(f"Model tidak ditemukan untuk AWS {aws_id}")
 
-        # 3. Lakukan Prediksi
-        # Output: 1 (Normal), -1 (Anomali)
-        prediction_label = clf.predict(df_new)[0]
-        
-        # Output: Score negatif (makin kecil makin anomali)
-        anomaly_score = clf.decision_function(df_new)[0]
+    if not os.path.exists(scaler_path):
+        raise Exception(f"Scaler tidak ditemukan untuk AWS {aws_id}")
 
-        # 4. Format Output JSON
-        status_text = "Normal" if prediction_label == 1 else "Anomali"
-        
-        result = {
-            "status": "success",
-            "prediction": status_text,
-            "score": round(anomaly_score, 4),
-            "input": input_data
-        }
-        
-        # Print JSON ke stdout (ini yang dibaca Laravel)
-        print(json.dumps(result))
+    model = joblib.load(model_path)
+    scaler = joblib.load(scaler_path)
 
-    except Exception as e:
-        print(json.dumps({"status": "error", "message": str(e)}))
+    # Preprocessing data
+    timestamp = input_data['timestamp']
+    dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+    jam = dt.hour
 
-if __name__ == "__main__":
-    main()
+    jam_sin = np.sin(2 * np.pi * jam / 24)
+    jam_cos = np.cos(2 * np.pi * jam / 24)
+
+    features = pd.DataFrame([{
+        'jam_sin': jam_sin,
+        'jam_cos': jam_cos,
+        'temperature': input_data['temperature'],
+        'humidity': input_data['humidity'],
+        'pressure': input_data['pressure'],
+        'watertemp': input_data['watertemp'],
+        'waterlevel': input_data['waterlevel'],
+        'solrad': input_data['solrad']
+    }])
+
+    # Scaling fitur
+    X_scaled = scaler.transform(features)
+
+    # Prediksi anomali
+    score = float(model.decision_function(X_scaled)[0])
+    prediction = int(model.predict(X_scaled)[0])
+
+    # Menentukan status
+    result = {
+        "score": round(score, 6),
+        "status": (
+            "ANOMALI"
+            if prediction == -1
+            else "NORMAL"
+        )
+    }
+
+    print(json.dumps(result))
+
+except Exception as e:
+    import traceback
+
+    print(json.dumps({
+        "error": str(e),
+        "trace": traceback.format_exc()
+    }))

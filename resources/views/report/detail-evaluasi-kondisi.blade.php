@@ -35,7 +35,7 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
-                    <li class="breadcrumb-item">Evaluasi Kondisi</li>
+                    <li class="breadcrumb-item"><a href="/evaluasi-kondisi">Evaluasi Kondisi</a></li>
                     <li class="breadcrumb-item active">Detail Anomali</li>
                 </ol>
             </nav>
@@ -45,12 +45,22 @@
             <div class="card mb-4 border-0 shadow-sm">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center">
-                        <h4 class="fw-bold mb-0 me-3">AWS Digi Banyuwangi</h4>
-                        <span class="badge bg-danger-light text-danger border border-danger">
-                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Status : ANOMALI
-                        </span>
+                        <h4 class="fw-bold mb-0 me-3">{{ $latest->aws->name }}</h4>
+                        {{-- <span class="badge bg-danger-light text-danger border border-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> Status : {{ $latest->status }}
+                        </span> --}}
                     </div>
-                    <p class="text-muted small mb-0 mt-2">Waktu Kejadian : 28 Agustus 2026, 05:00 WIB</p>
+                    @php
+                        $utc = \Carbon\Carbon::parse($latest->timestamp)->timezone('UTC');
+                        $wib = $utc->copy()->timezone('Asia/Jakarta');
+                    @endphp
+
+                    <p class="text-muted small mb-0 mt-2">
+                        Waktu Kejadian :
+                        {{ $utc->locale('id')->translatedFormat('d F Y, H:i') }} UTC
+                        /
+                        {{ $wib->format('H:i') }} WIB
+                    </p>
                 </div>
             </div>
 
@@ -60,12 +70,12 @@
                         <div class="card-body p-4">
                             <h6 class="text-uppercase fw-bold small text-muted mb-3">Data Saat Kejadian</h6>
                             <table class="table table-borderless table-sm small mb-0">
-                                <tr><td>Suhu Udara</td><td class="text-end fw-bold">40°C</td></tr>
-                                <tr><td>Kelembapan</td><td class="text-end fw-bold">90%</td></tr>
-                                <tr><td>Tekanan</td><td class="text-end fw-bold">1003 mbar</td></tr>
-                                <tr><td>Suhu Panci</td><td class="text-end fw-bold">26°C</td></tr>
-                                <tr><td>Level Panci</td><td class="text-end fw-bold">55 mm</td></tr>
-                                <tr><td>Radiasi Matahari</td><td class="text-end fw-bold">187 W/m2</td></tr>
+                                <tr><td>Suhu Udara</td><td class="text-end fw-bold">{{ $latest->temperature }}°C</td></tr>
+                                <tr><td>Kelembapan</td><td class="text-end fw-bold">{{ $latest->humidity }}%</td></tr>
+                                <tr><td>Tekanan</td><td class="text-end fw-bold">{{ $latest->pressure }} mbar</td></tr>
+                                <tr><td>Suhu Air</td><td class="text-end fw-bold">{{ $latest->watertemp }}°C</td></tr>
+                                <tr><td>Level Air</td><td class="text-end fw-bold">{{ $latest->waterlevel }} mm</td></tr>
+                                <tr><td>Radiasi Matahari</td><td class="text-end fw-bold">{{ $latest->solrad }} W/m²</td></tr>
                             </table>
                         </div>
                     </div>
@@ -75,7 +85,7 @@
                         <div class="card-body p-4">
                             <h6 class="text-uppercase fw-bold small text-muted mb-3">Analisa dan Rekomendasi Tindakan</h6>
                             <p class="mb-0 lh-base">
-                                Sistem mendeteksi anomali dengan skor -0.60 berdasarkan model <strong>Isolation Forest</strong>. Kombinasi nilai parameter sensor pada waktu kejadian teridentifikasi berada di luar pola normal. Disarankan untuk melakukan pemeriksaan lebih lanjut terhadap kondisi sensor AWS serta membandingkan hasil pengamatan dengan pengukuran manual.
+                                Sistem mendeteksi adanya indikasi anomali berdasarkan hasil evaluasi menggunakan model Isolation Forest. Hal ini menunjukkan bahwa kombinasi nilai parameter sensor pada waktu tersebut berbeda dari pola normal yang telah dipelajari oleh model. Disarankan untuk melakukan pemeriksaan lebih lanjut terhadap kondisi sensor AWS serta membandingkan hasil pengamatan dengan pengukuran manual.
                             </p>
                         </div>
                     </div>
@@ -118,32 +128,72 @@
                 <div class="col-lg-6 mb-4">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-body p-4">
-                            <h5 class="fw-bold">Suhu Panci (°C)</h5>
-                            <canvas id="chartSuhuPanci" height="200"></canvas>
+                            <h5 class="fw-bold">Suhu Air (°C)</h5>
+                            <canvas id="chartSuhuAir" height="200"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-4">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-body p-4">
-                            <h5 class="fw-bold">Level Panci (mm)</h5>
-                            <canvas id="chartLevelPanci" height="200"></canvas>
+                            <h5 class="fw-bold">Level Air (mm)</h5>
+                            <canvas id="chartLevelAir" height="200"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
 
-            
         </section>
-
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const labels = ['00:00', '01:00', '02:00', '03:00', '04:00', '05:00'];
+        // =========================
+        // DATA DARI LARAVEL
+        // =========================
+        const labels = @json(
+            $history->pluck('timestamp')->map(function($t){
+                return \Carbon\Carbon::parse($t)->format('H:i');
+            })
+        );
 
+        const suhu = @json($history->pluck('temperature'));
+        const lembap = @json($history->pluck('humidity'));
+        const tekanan = @json($history->pluck('pressure'));
+        const radiasi = @json($history->pluck('solrad'));
+        const suhuAir = @json($history->pluck('watertemp'));
+        const levelAir = @json($history->pluck('waterlevel'));
+        
+        const blinkingPoint = {
+            id: 'blinkingPoint',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const meta = chart.getDatasetMeta(0);
+
+                if (!meta.data.length) return;
+
+                // Ambil titik terakhir (anomali)
+                const point = meta.data[meta.data.length - 1];
+
+                // Radius berkedip
+                const radius = 6 + Math.abs(Math.sin(Date.now() / 300)) * 6;
+
+                ctx.save();
+
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+                ctx.fill();
+
+                ctx.restore();
+            }
+        };
+
+        // =========================
+        // FUNCTION CHART
+        // =========================
         function createChart(id, label, data, color) {
-            new Chart(document.getElementById(id), {
+            const chart = new Chart(document.getElementById(id), {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -151,30 +201,54 @@
                         label: label,
                         data: data,
                         borderColor: color,
-                        backgroundColor: color,
-                        tension: 0.1,
-                        pointRadius: 4,
-                        pointBackgroundColor: color
+                        tension: 0.3,
+                        pointRadius: 5,
+                        pointBackgroundColor: data.map((val, i) => {
+                            return i === data.length - 1 ? 'red' : color;
+                        })
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { display: false } },
+                    animation: false, // agar lebih halus
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
                     scales: {
-                        y: { beginAtZero: false },
-                        x: { title: { display: true, text: 'Waktu', font: { size: 10 } } }
+                        y: {
+                            beginAtZero: false
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Waktu',
+                                font: {
+                                    size: 10
+                                }
+                            }
+                        }
                     }
-                }
+                },
+                plugins: [blinkingPoint]
             });
+
+            // refresh chart agar efek berkedip berjalan
+            setInterval(() => {
+                chart.draw();
+            }, 100);
         }
 
-        // Inisialisasi Chart dengan Data Dummy
-        createChart('chartSuhu', 'Suhu', [24, 26, 26, 27, 28, 40], '#0d6efd');
-        createChart('chartLembap', 'Lembap', [73, 78, 82, 82, 86, 90], '#0d6efd');
-        createChart('chartTekanan', 'Tekanan', [1000, 1001, 1002, 1003, 1003.5, 1004], '#0d6efd');
-        createChart('chartRadiasi', 'Radiasi', [100, 200, 230, 235, 220, 280], '#0d6efd');
-        createChart('chartSuhuPanci', 'Suhu Panci', [21, 23, 23, 24, 25, 26], '#0d6efd');
-        createChart('chartLevelPanci', 'Level Panci', [52, 54, 55, 57, 58, 58], '#0d6efd');
+        // =========================
+        // INIT CHART
+        // =========================
+        createChart('chartSuhu', 'Suhu', suhu, '#0d6efd');
+        createChart('chartLembap', 'Lembap', lembap, '#0d6efd');
+        createChart('chartTekanan', 'Tekanan', tekanan, '#0d6efd');
+        createChart('chartRadiasi', 'Radiasi', radiasi, '#0d6efd');
+        createChart('chartSuhuAir', 'Suhu Air', suhuAir, '#0d6efd');
+        createChart('chartLevelAir', 'Level Air', levelAir, '#0d6efd');
     </script>
 
     @include('layouts.footer')
