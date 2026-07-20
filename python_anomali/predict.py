@@ -13,11 +13,11 @@ try:
 
     input_data = json.loads(sys.stdin.read())
 
-    aws_id = int(input_data['aws_id'])
+    aws_id = input_data['aws_id']
 
-    # Load model dan scaler
-    model_path = os.path.join(MODEL_DIR, f"model_aws_{aws_id}_001.pkl")
-    scaler_path = os.path.join(MODEL_DIR, f"scaler_aws_{aws_id}_001.pkl")
+    # load model & scaler
+    model_path = os.path.join(MODEL_DIR, f"model_aws_{aws_id}.pkl")
+    scaler_path = os.path.join(MODEL_DIR, f"scaler_aws_{aws_id}.pkl")
 
     if not os.path.exists(model_path):
         raise Exception(f"Model tidak ditemukan untuk AWS {aws_id}")
@@ -28,7 +28,7 @@ try:
     model = joblib.load(model_path)
     scaler = joblib.load(scaler_path)
 
-    # Preprocessing data
+    # PREPROCESSING
     timestamp = input_data['timestamp']
     dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
     jam = dt.hour
@@ -47,28 +47,22 @@ try:
         'solrad': input_data['solrad']
     }])
 
-    # Scaling fitur
+    # SCALING
     X_scaled = scaler.transform(features)
 
-    # Prediksi anomali
-    score = float(model.decision_function(X_scaled)[0])
-    prediction = int(model.predict(X_scaled)[0])
+    # PREDIKSI
+    score = model.decision_function(X_scaled)[0]
+    prediction = model.predict(X_scaled)[0]
 
-    # Menentukan status
     result = {
-        "score": round(score, 6),
-        "status": (
-            "ANOMALI"
-            if prediction == -1
-            else "NORMAL"
-        )
+        "score": float(score),
+        "status": "ANOMALI" if prediction == -1 else "NORMAL"
     }
 
     print(json.dumps(result))
 
 except Exception as e:
     import traceback
-
     print(json.dumps({
         "error": str(e),
         "trace": traceback.format_exc()

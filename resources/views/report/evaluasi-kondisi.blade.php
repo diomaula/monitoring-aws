@@ -34,8 +34,14 @@
             </div>
         </div>
         
-        <!-- LAST PREDIKSI -->
-        <div class="d-flex justify-content-between align-items-center mb-2">
+        <!-- BUTTON -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <button type="button" 
+                class="btn btn-outline-primary fw-bold shadow-sm" 
+                data-bs-toggle="modal" 
+                data-bs-target="#contaminationModal">
+                <i class="bi bi-sliders me-1"></i> Pengaturan Sensitivitas Anomali
+            </button>
             <p class="small">
                 Prediksi terakhir:
                 <strong>
@@ -45,6 +51,83 @@
                         : '-' }}
                 </strong>
             </p>
+        </div>
+
+        <!-- MODAL -->
+        <div class="modal fade" id="contaminationModal" tabindex="-1" aria-labelledby="contaminationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    
+                    <!-- HEADER -->
+                    <div class="modal-header bg-light">
+                        <h5 class="modal-title fw-bold text-dark" id="contaminationModalLabel">
+                            <i class="bi bi-sliders text-primary me-2"></i>
+                            Pengaturan Sensitivitas Anomali
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- FORM -->
+                    <form action="{{ route('evaluasi-kondisi') }}" method="GET">
+                        
+                        <!-- BODY -->
+                        <div class="modal-body p-4">
+                            
+                            <p class="text-muted small mb-4">
+                                Atur tingkat sensitivitas dalam mendeteksi anomali pada data.
+                                Semakin tinggi nilai, semakin banyak data dianggap anomali.
+                            </p>
+
+                            <!-- SLIDER -->
+                            <div class="mb-3 px-2">
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label class="form-label fw-bold mb-0">
+                                        Tingkat Sensitivitas
+                                    </label>
+
+                                    <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill" id="sliderValue">
+                                        {{ ($contamination ?? 0.01) * 100 }}%
+                                    </span>
+                                </div>
+
+                                <input 
+                                    type="range"
+                                    class="form-range"
+                                    min="1"
+                                    max="10"
+                                    step="1"
+                                    id="contaminationSlider"
+                                    name="contamination_value"
+                                    value="{{ ($contamination ?? 0.01) * 100 }}"
+                                >
+
+                                <div class="d-flex justify-content-between text-muted small mt-2">
+                                    <span class="fw-semibold">Rendah</span>
+                                    <span class="fw-semibold">Tinggi</span>
+                                </div>
+
+                                <small class="text-muted d-block mt-3">
+                                    Persentase data dengan skor terendah yang akan dianggap sebagai anomali.
+                                </small>
+                            </div>
+
+                        </div>
+
+                        <!-- FOOTER -->
+                        <div class="modal-footer bg-light border-top-0">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">
+                                Batal
+                            </button>
+
+                            <button type="submit" class="btn btn-primary fw-bold px-4">
+                                Terapkan
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
         </div>
 
         <section class="section">
@@ -67,8 +150,7 @@
                         $textColor = $isAnomali ? 'text-danger' : 'text-success';
 
                         // presentase
-                        // $progress = min(max(abs($aws['score']) * 100, 10), 100);
-                        $progress = min(abs($aws['score']) * 300, 100);
+                        $progress = min(max(abs($aws['score']) * 100, 10), 100);
                     @endphp
 
                     <div class="col-lg-4 col-md-6">
@@ -145,6 +227,7 @@
                     
                     <!-- FILTER -->
                     <form method="GET" action="{{ route('evaluasi-kondisi') }}" class="row g-3 align-items-end mb-4">
+                        
                         <div class="col-md-3">
                             <label class="form-label fw-bold">Bulan</label>
                             <select name="bulan" class="form-select">
@@ -167,28 +250,26 @@
                             </select>
                         </div>
 
+                        <input type="hidden" name="contamination_value" value="{{ $contamination * 100 }}">
+
                         <div class="col-md-4">
                             <div class="d-flex gap-2">
-
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-search me-1"></i>
-                                    Tampilkan
+                                    <i class="bi bi-search me-1"></i> Tampilkan
                                 </button>
 
                                 <a href="{{ route('evaluasi-kondisi.pdf', [
                                         'bulan' => $bulan,
-                                        'tahun' => $tahun
+                                        'tahun' => $tahun,
+                                        'contamination_value' => $contamination * 100
                                     ]) }}"
                                     target="_blank"
                                     class="btn btn-danger">
 
-                                    <i class="bi bi-file-earmark-pdf me-1"></i>
-                                    Cetak PDF
+                                    <i class="bi bi-file-earmark-pdf me-1"></i> Cetak PDF
                                 </a>
-
                             </div>
                         </div>
-
                     </form>
 
                     <!-- TABLE -->
@@ -260,11 +341,27 @@
             </div>
         </section>
 
-    </main>@include('layouts.footer')
+    </main>
+    @include('layouts.footer')
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
     @include('layouts.script')
+
+    <script>
+        const slider = document.getElementById('contaminationSlider');
+        const sliderValue = document.getElementById('sliderValue');
+
+        // update saat digeser
+        slider.addEventListener('input', function () {
+            sliderValue.innerText = this.value + '%';
+        });
+
+        // set awal (biar tidak kosong)
+        window.addEventListener('DOMContentLoaded', function () {
+            sliderValue.innerText = slider.value + '%';
+        });
+    </script>
 
     <script>
         setInterval(() => {
