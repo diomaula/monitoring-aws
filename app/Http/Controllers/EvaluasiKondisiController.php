@@ -13,73 +13,86 @@ class EvaluasiKondisiController extends Controller
 {
     public function index(Request $request)
     {
-        $bulan = $request->input('bulan', now()->month);
-        $tahun = $request->input('tahun', now()->year);
-        $lastPrediction = DataAws::max('timestamp');
-
-        // Data terbaru tiap AWS
-        $latestData = DataAws::with('aws')
-            ->select('aws_id')
-            ->selectRaw('MAX(timestamp) as latest_time')
-            ->groupBy('aws_id')
-            ->get();
 
         $result = [];
+        $riwayat = [];
+        $bulan = $request->input('bulan', now()->month);
+        $tahun = $request->input('tahun', now()->year);
+        $contamination = $request->input('contamination_value', 1) / 100;
+        $lastPrediction = DataAws::max('timestamp');
 
-        foreach ($latestData as $row) {
-
-            $item = DataAws::with('aws')
-                ->where('aws_id', $row->aws_id)
-                ->where('timestamp', $row->latest_time)
-                ->first();
-
-            if (!$item) {
-                continue;
-            }
-
-            $result[] = [
-                'id'     => $item->id,
-                'aws_id' => $item->aws_id,
-                'nama'   => $item->aws->name ?? '-',
-                'status' => $item->status,
-                'score'  => $item->anomaly_score,
-                'waktu'  => $item->timestamp,
-            ];
-        }
-
-        $result = collect($result)
-            ->sortBy('aws_id')
+        $allScores = DataAws::whereNotNull('anomaly_score')
+            ->pluck('anomaly_score')
+            ->sort()
             ->values();
 
-        // Riwayat anomali
-        $riwayat = DataAws::with('aws')
-            ->where('status', 'ANOMALI')
-            ->whereMonth('timestamp', $bulan)
-            ->whereYear('timestamp', $tahun)
-            ->orderBy('timestamp', 'desc')
-            ->paginate(20)
-            ->through(function ($item) {
+        if ($allScores->count() > 0) {
 
-                return [
-                    'id'      => $item->id,
-                    'nama'    => $item->aws->name ?? '-',
-                    'tanggal' => $item->timestamp,
-                    'waktu'   => $item->timestamp,
-                    'status'  => $item->status,
-                    'score'   => round($item->anomaly_score, 4),
+            // hitung treshold
+            $index = floor($contamination * $allScores->count());
+            $threshold = $allScores[$index] ?? $allScores->last();
+
+            // card data terbaru
+            $latestData = DataAws::with('aws')
+                ->whereNotNull('anomaly_score')
+                ->select('aws_id')
+                ->selectRaw('MAX(timestamp) as latest_time')
+                ->groupBy('aws_id')
+                ->get();
+
+            $result = [];
+
+            foreach ($latestData as $row) {
+
+                $item = DataAws::with('aws')
+                    ->where('aws_id', $row->aws_id)
+                    ->where('timestamp', $row->latest_time)
+                    ->first();
+
+                if (!$item) continue;
+
+                $status = $item->anomaly_score <= $threshold ? 'ANOMALI' : 'NORMAL';
+
+                $result[] = [
+                    'id'     => $item->id,
+                    'aws_id' => $item->aws_id,
+                    'nama'   => $item->aws->name ?? '-',
+                    'status' => $status,
+                    'score'  => $item->anomaly_score,
+                    'waktu'  => $item->timestamp,
                 ];
-            });
+            }
 
-        return view(
-            'report.evaluasi-kondisi',
-            compact(
-                'result',
-                'riwayat',
-                'bulan',
-                'tahun',
-                'lastPrediction'
-            )
-        );
+            $result = collect($result)->sortBy('aws_id')->values();
+    
+            $riwayat = DataAws::with('aws')
+                ->whereNotNull('anomaly_score')
+                ->whereMonth('timestamp', $bulan)
+                ->whereYear('timestamp', $tahun)
+                ->where('anomaly_score', '<=', $threshold) // hanya anomali
+                ->orderBy('timestamp', 'desc')
+                ->paginate(20)
+                ->through(function ($item) {
+
+                    return [
+                        'id'       => $item->id,
+                        'nama'     => $item->aws->name ?? '-',
+                        'tanggal'  => $item->timestamp,
+                        'waktu'    => $item->timestamp,
+                        'status'   => 'ANOMALI',
+                        'score'    => round($item->anomaly_score, 2),
+                    ];
+                });
+        }
+
+        return view('report.evaluasi-kondisi', compact(
+            'result',
+            'riwayat',
+            'bulan',
+            'tahun',
+            'contamination',
+            'lastPrediction'
+        ));
     }
 
     public function indexDetail($id)
@@ -101,47 +114,51 @@ class EvaluasiKondisiController extends Controller
     {
         $bulan = $request->input('bulan', now()->month);
         $tahun = $request->input('tahun', now()->year);
+        $contamination = $request->input('contamination_value', 1) / 100;
 
-        $riwayat = DataAws::with('aws')
-            ->where('status', 'ANOMALI')
-            ->whereMonth('timestamp', $bulan)
-            ->whereYear('timestamp', $tahun)
-            ->orderBy('timestamp', 'desc')
-            ->get()
-            ->map(function ($item) {
+        $allScores = DataAws::whereNotNull('anomaly_score')
+            ->pluck('anomaly_score')
+            ->sort()
+            ->values();
 
-                return [
-                    'id'       => $item->id,
-                    'nama'     => $item->aws->name ?? '-',
-                    'tanggal'  => $item->timestamp,
-                    'waktu'    => $item->timestamp,
-                    'status'   => $item->status,
-                    'score'    => round($item->anomaly_score, 4),
-                ];
-            });
+        $riwayat = collect();
 
-        $tglMulai = Carbon::create(
-            $tahun,
-            $bulan,
-            1
-        )->startOfMonth();
+        if ($allScores->count() > 0) {
 
-        $tglAkhir = Carbon::create(
-            $tahun,
-            $bulan,
-            1
-        )->endOfMonth();
+            $index = floor($contamination * $allScores->count());
+            $threshold = $allScores[$index] ?? $allScores->last();
 
-        $pdf = Pdf::loadView(
-            'report.pdf-evaluasi-kondisi',
-            compact(
-                'riwayat',
-                'tglMulai',
-                'tglAkhir',
-                'bulan',
-                'tahun'
-            )
-        );
+            $riwayat = DataAws::with('aws')
+                ->whereNotNull('anomaly_score')
+                ->whereMonth('timestamp', $bulan)
+                ->whereYear('timestamp', $tahun)
+                ->where('anomaly_score', '<=', $threshold)
+                ->orderBy('timestamp', 'desc')
+                ->get()
+                ->map(function ($item) {
+
+                    return [
+                        'id'       => $item->id,
+                        'nama'     => $item->aws->name ?? '-',
+                        'tanggal'  => $item->timestamp,
+                        'waktu'    => $item->timestamp,
+                        'status'   => 'ANOMALI',
+                        'score'    => round($item->anomaly_score, 2),
+                    ];
+                });
+        }
+
+        $tglMulai = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $tglAkhir = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
+        $pdf = Pdf::loadView('report.pdf-evaluasi-kondisi', compact(
+            'riwayat',
+            'tglMulai',
+            'tglAkhir',
+            'bulan',
+            'tahun',
+            'contamination'
+        ));
 
         $pdf->setPaper('a4', 'landscape');
 
